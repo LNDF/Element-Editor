@@ -1,0 +1,3 @@
+[submodule "lib/element"]
+	path = lib/element
+	url = https://github.com/LNDF/Element.git
