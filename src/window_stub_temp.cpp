@@ -1,79 +1,54 @@
 //this is a stub
 
-#include <window/window.h>
+#include <ui/ui.h>
 #include <core/log.h>
-
-static std::string empty = "";
 
 using namespace element;
 
-void window::init_backend() {
+void ui::init_backend() {
     ELM_WARN("STUBBED");
 }
 
-void window::cleanup_backend() {
+void ui::cleanup_backend() {
     ELM_WARN("STUBBED");
 }
 
-void window::create_window(const std::string& title, int width, int height, int x, int y) {
+void ui::start_ui() {
     ELM_WARN("STUBBED");
 }
 
-void window::close_window() {
+void ui::stop_ui() {
     ELM_WARN("STUBBED");
 }
 
-void window::set_title(const std::string& title) {
-    ELM_WARN("STUBBED");
-}
-
-const std::string& window::get_title() {
-    ELM_WARN("STUBBED");
-    return empty;
-}
-
-int window::get_width() {
+int ui::get_surface_width() {
     ELM_WARN("STUBBED");
     return 0;
 }
 
-int window::get_height() {
+int ui::get_surface_height() {
     ELM_WARN("STUBBED");
     return 0;
 }
 
-int window::get_x_position() {
-    ELM_WARN("STUBBED");
-    return 0;
-}
-
-int window::get_y_position() {
-    ELM_WARN("STUBBED");
-    return 0;
-}
-
-void window::set_size(int width, int height) {
+void ui::set_surface_size(int width, int height) {
     ELM_WARN("STUBBED");
 }
 
-void window::move_window(int x, int y) {
+void ui::set_pointer_lock(bool lock) {
     ELM_WARN("STUBBED");
 }
 
-void window::set_pointer_lock(bool lock) {
-    ELM_WARN("STUBBED");
-}
-
-bool window::is_pointer_locked() {
+bool ui::is_pointer_locked() {
     ELM_WARN("STUBBED");
     return false;
 }
 
-void window::set_vsync(bool lock) {
+void ui::set_vsync(bool lock) {
     ELM_WARN("STUBBED");
 }
 
-bool window::is_vsync_enabled() {
+bool ui::is_vsync_enabled() {
     ELM_WARN("STUBBED");
     return false;
 }

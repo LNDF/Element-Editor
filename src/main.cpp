@@ -18,10 +18,6 @@ int main() {
     application_settings settings;
     settings.app_name = "Element editor";
     settings.app_version = ELM_EDITOR_VERSION;
-    settings.window_height = 0;
-    settings.window_width = 0;
-    settings.window_x = 0;
-    settings.window_y = 0;
     application::setup_engine(settings);
     event_manager::register_listener<events::update>(update_callback);
     application::start();
