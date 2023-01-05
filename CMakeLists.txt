@@ -4,9 +4,17 @@ project(element-editor VERSION 0.0.1)
 #include(CTest)
 #enable_testing()
 
+#Qt
+find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
+qt_standard_project_setup()
+# only use moc and uic on current target
+set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTOUIC OFF)
+
 # source files
 file(GLOB_RECURSE SRC_FILES ./src/*.*)
-add_executable(element-editor ${SRC_FILES})
+file(GLOB_RECURSE UI_FILES ,/src/*.ui)
+add_executable(element-editor ${SRC_FILES} ${UI_FILES})
 target_include_directories(element-editor PUBLIC ./src/)
 
 # asset files
@@ -22,6 +30,10 @@ target_compile_definitions(element-editor PUBLIC ELM_EDITOR_VERSION="${PROJECT_V
 
 #LIBS
 
+# qt
+set_target_properties(element-editor PROPERTIES AUTOMOC ON AUTOUIC ON)
+target_link_libraries(element-editor PRIVATE Qt6::Widgets)
+target_link_libraries(element-editor PRIVATE Qt6::OpenGLWidgets)
 
 # element core
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)

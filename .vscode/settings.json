@@ -71,6 +71,10 @@
         "thread": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "qwidget": "cpp",
+        "qhboxlayout": "cpp",
+        "qopenglwidget": "cpp",
+        "qapplication": "cpp"
     }
 }
