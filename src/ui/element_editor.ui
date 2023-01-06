@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string notr="true">Element Editor</string>
   </property>
-  <widget class="QWidget" name="render">
+  <widget class="QWidget" name="render_canvas">
    <layout class="QHBoxLayout" name="horizontalLayout"/>
   </widget>
  </widget>
