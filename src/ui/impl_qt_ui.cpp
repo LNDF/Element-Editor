@@ -1,50 +1,24 @@
-//this is a stub
-
-#include "impl_ui_qt.h"
-
-#include <QApplication>
 #include <ui/ui.h>
-#include <ui/element_editor.h>
 #include <core/log.h>
-#include <event/event.h>
-#include <event/core_events.h>
 
-static QApplication* qt_app;
-static char* argv_0;
-static int qt_argc = 1;
-static element::ui::element_editor* main_window;
+//SEMI STUB
 
 using namespace element;
 
-static bool qt_app_process_events(const events::update& ) {
-    qt_app->processEvents();
-    return true;
-}
-
-void ui::qt_set_argv_0(char* argv0) {
-    argv_0 = argv0;
-}
-
 void ui::init_backend() {
-    ELM_DEBUG("Init Qt backend, version {0}...", QT_VERSION_STR);
-    qt_app = new QApplication(qt_argc, &argv_0);
-    event_manager::register_listener<events::update>(qt_app_process_events);
+    //nothing to do...
 }
 
 void ui::cleanup_backend() {
-    ELM_DEBUG("Stopping Qt backend...");
-    delete qt_app;
+    //nothing to do...
 }
 
 void ui::start_ui() {
-    ELM_DEBUG("Showing main window...");
-    main_window = new element_editor();
-    main_window->show();
+    //nothing to do...
 }
 
 void ui::stop_ui() {
-    ELM_DEBUG("Cleanup main window");
-    delete main_window;
+    //nothing to do...
 }
 
 int ui::get_surface_width() {

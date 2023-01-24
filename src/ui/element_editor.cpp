@@ -12,9 +12,3 @@ element_editor::element_editor() : render_opengl(nullptr) {
 element_editor::~element_editor() {
     if (render_opengl != nullptr) delete render_opengl;
 }
-
-void element_editor::closeEvent(QCloseEvent* event) {
-    event->ignore();
-    event_manager::post_event<events::close>({});
-
-}
