@@ -8,6 +8,7 @@ int main(int argc, char** argv) {
     engine_settings settings;
     settings.app_name = "Element editor";
     settings.app_version = ELM_EDITOR_VERSION;
+    settings.renderer = rendering_api::OPENGL;
     engine::setup_engine(settings);
     ELM_INFO("This is the editor. Running editor...");
     editor::run_editor(argv[0]);
