@@ -1,8 +1,6 @@
 #pragma once
 
 #include <QMainWindow>
-#include <QCloseEvent>
-#include <QOpenGLWidget>
 
 #include "ui_element_editor.h"
 
@@ -16,8 +14,6 @@ namespace element {
                 virtual ~element_editor();
             public slots:
 
-            private:
-                QOpenGLWidget* render_opengl;
         };
 
     } // namespace ui
