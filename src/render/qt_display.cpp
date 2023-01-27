@@ -25,6 +25,10 @@ namespace element {
         game_widget = widget;
     }
 
+    QWidget* qt_display_get_game_widget() {
+        return game_widget;
+    }
+
     display* create_display() {
         if (game_display == nullptr) {
             ELM_INFO("Creating new display...");
