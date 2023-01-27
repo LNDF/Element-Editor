@@ -75,6 +75,7 @@
         "qwidget": "cpp",
         "qhboxlayout": "cpp",
         "qopenglwidget": "cpp",
-        "qapplication": "cpp"
+        "qapplication": "cpp",
+        "coroutine": "cpp"
     }
 }
