@@ -11,7 +11,7 @@ using namespace element::ui;
 element_editor::element_editor() {
     setupUi(this);
     QWidget* game_widget = nullptr; //Ownership transfered
-    if (engine::settings.renderer == OPENGL) {
+    if (engine::settings.renderer == opengl) {
         ELM_DEBUG("Creating Qt widgets for OpenGL...");
         game_widget = new qt_element_gl_widget();
     } else {

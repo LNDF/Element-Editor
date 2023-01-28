@@ -20,7 +20,7 @@ void qt_opengl_rendering_context::make_current() {
         ELM_WARN("Tried to make context current bat the game Qt Widget is null");
         return;
     }
-    if (engine::settings.renderer != OPENGL) {
+    if (engine::settings.renderer != opengl) {
         ELM_WARN("Tried to make context current but OpenGL is not set as the rendering API.");
         return;
     }
