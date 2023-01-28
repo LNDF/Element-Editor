@@ -46,7 +46,6 @@ namespace element {
     void cleanup_displays() {
         ELM_INFO("Cleanning up displays...");
         delete game_display;
-        delete game_widget;
         game_display = nullptr;
         game_widget = nullptr;
     }
