@@ -76,6 +76,14 @@
         "qhboxlayout": "cpp",
         "qopenglwidget": "cpp",
         "qapplication": "cpp",
-        "coroutine": "cpp"
+        "coroutine": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp",
+        "complex": "cpp",
+        "csignal": "cpp",
+        "forward_list": "cpp",
+        "ranges": "cpp",
+        "shared_mutex": "cpp",
+        "valarray": "cpp"
     }
 }

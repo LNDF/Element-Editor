@@ -12,7 +12,7 @@ void editor::run_editor(char* exe_name) {
     qt_app = new QApplication(argc, &exe_name);
     main_window = new ui::element_editor();
     main_window->show();
-    ELM_INFO("Executing editor Qt application. Qt is taking control of the program.");
+    ELM_DEBUG("Executing editor Qt application. Qt is taking control of the program.");
     qt_app->exec();
     delete main_window;
     delete qt_app;
