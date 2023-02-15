@@ -18,15 +18,13 @@ static std::unordered_map<std::string, element::uuid> fs_uuid_map;
 
 namespace element {
     std::unique_ptr<std::istream> fs_get_resource(const uuid& id) {
-        const fs_resource_info& info = fs_map[id];
-        std::filesystem::path path = project::project_assets_path / info.path;
+        std::filesystem::path path = project::project_assets_path / id.str();
         path.make_preferred();
         return std::unique_ptr<std::istream>(new std::ifstream(path, std::ios::binary));
     }
 
     std::unique_ptr<std::ostream> fs_get_resource_ostream(const uuid& id) {
-        const fs_resource_info& info = fs_map[id];
-        std::filesystem::path path = project::project_assets_path / info.path;
+        std::filesystem::path path = project::project_assets_path / id.str();
         path.make_preferred();
         return std::unique_ptr<std::ostream>(new std::ofstream(path, std::ios::binary));
     }
@@ -66,6 +64,12 @@ namespace element {
         fs_map.erase(id);
     }
 
+    void fs_delete_resource_data(const uuid& id) {
+        std::filesystem::path path = project::project_assets_path / id.str();
+        path.make_preferred();
+        std::filesystem::remove_all(path);
+    }
+
     void fs_load_resources() {
         ELM_INFO("Loading FS map...");
         ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.c_str());
@@ -96,5 +100,11 @@ namespace element {
         std::ofstream file(project::project_fs_fsmap, std::ios::binary);
         binary_serializer serialize = create_binary_serializer(file);
         serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
+    }
+
+    uuid fs_get_new_uuid() {
+        uuid id;
+        while (fs_map.contains(id)) id.regenerate();
+        return id;
     }
 } // namespace element

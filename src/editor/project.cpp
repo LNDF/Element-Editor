@@ -23,7 +23,7 @@ namespace element {
         project_path.make_preferred();
         project_filename = project_path / "project.json";
         project_fs_path = project_path / "cache" / "fs";
-        project_fs_fsmap = project_fs_path / "map.dat";
+        project_fs_fsmap = project_fs_path / "fs_map";
         project_metadata_path = project_path / "meta";
         project_metadata_fsmap = project_metadata_path / "fs_map.json";
         project_assets_path = project_path / "assets";
