@@ -2,20 +2,32 @@
 
 #include <core/log.h>
 #include <editor/project.h>
-#include <QDir>
-#include <QFileInfo>
 
 std::unordered_map<int, int> element::asset_importer::import_handlers; //TODO
 std::unordered_map<element::uuid, std::filesystem::file_time_type> element::asset_importer::modified_tracaking;
-QFileSystemWatcher* element::asset_importer::watcher = nullptr;
+filewatch::FileWatch<element::asset_importer::path_string>* element::asset_importer::watcher = nullptr;
 
 using namespace element;
 
-void asset_importer::qt_watcher_callback(const QString& path) {
-    ELM_DEBUG("Update {0}", path.toStdString());
-    QDir qdir(path);
-    for (const QFileInfo& subdir : qdir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        watcher->addPath(subdir.absoluteFilePath());
+void asset_importer::watcher_callback(const asset_importer::path_string& path, const filewatch::Event change_type) {
+    switch (change_type) {
+        case filewatch::Event::added:
+            ELM_DEBUG("File added: {0}", path);
+            break;
+        case filewatch::Event::modified:
+            ELM_DEBUG("File modified: {0}", path);
+            break;
+        case filewatch::Event::removed:
+            ELM_DEBUG("File removed: {0}", path);
+            break;
+        case filewatch::Event::renamed_new:
+            ELM_DEBUG("File renamed to: {0}", path);
+            break;
+        case filewatch::Event::renamed_old:
+            ELM_DEBUG("File renamed from: {0}", path);
+            break;
+        default:
+            break;
     }
 }
 
@@ -26,13 +38,7 @@ void asset_importer::start() {
     }
     ELM_INFO("Starting file system watcher...");
     ELM_DEBUG("Watching path {0}", project::project_assets_path.c_str());
-    watcher = new QFileSystemWatcher();
-    watcher->addPath(project::project_assets_path.c_str());
-    QDir qdir(project::project_assets_path.c_str());
-    for (const QFileInfo& subdir : qdir.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        watcher->addPath(subdir.absoluteFilePath());
-    }
-    QObject::connect(watcher, &QFileSystemWatcher::directoryChanged, qt_watcher_callback);
+    watcher = new filewatch::FileWatch<asset_importer::path_string>(project::project_assets_path.native(), watcher_callback);
     //TODO: add specialized functions...
 }
 

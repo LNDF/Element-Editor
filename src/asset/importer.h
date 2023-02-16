@@ -1,19 +1,19 @@
 #pragma once
 
-#include <unordered_map>
 #include <filesystem>
-#include <QFileSystemWatcher>
-
+#include <unordered_map>
+#include <filewatch/filewatch.h>
 #include <utils/uuid.h>
 
 namespace element {
 
     class asset_importer {
         private:
+            using path_string = std::basic_string<std::filesystem::path::value_type>;
             static std::unordered_map<int, int> import_handlers; //TODO
             static std::unordered_map<uuid, std::filesystem::file_time_type> modified_tracaking;
-            static QFileSystemWatcher* watcher;
-            static void qt_watcher_callback(const QString& path);
+            static filewatch::FileWatch<path_string>* watcher;
+            static void watcher_callback(const path_string& path, const filewatch::Event change_type);
         public:
             static void start();
             static void stop();
