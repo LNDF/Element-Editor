@@ -2,51 +2,30 @@
 
 #include <core/log.h>
 #include <editor/project.h>
+#include <asset/asset_tracker.h>
 
-std::unordered_map<int, int> element::asset_importer::import_handlers; //TODO
 std::unordered_map<element::uuid, std::filesystem::file_time_type> element::asset_importer::modified_tracaking;
-filewatch::FileWatch<element::asset_importer::path_string>* element::asset_importer::watcher = nullptr;
+bool element::asset_importer::tracker_running = false;
 
 using namespace element;
 
-void asset_importer::watcher_callback(const asset_importer::path_string& path, const filewatch::Event change_type) {
-    switch (change_type) {
-        case filewatch::Event::added:
-            ELM_DEBUG("File added: {0}", path);
-            break;
-        case filewatch::Event::modified:
-            ELM_DEBUG("File modified: {0}", path);
-            break;
-        case filewatch::Event::removed:
-            ELM_DEBUG("File removed: {0}", path);
-            break;
-        case filewatch::Event::renamed_new:
-            ELM_DEBUG("File renamed to: {0}", path);
-            break;
-        case filewatch::Event::renamed_old:
-            ELM_DEBUG("File renamed from: {0}", path);
-            break;
-        default:
-            break;
-    }
-}
-
 void asset_importer::start() {
-    if (watcher != nullptr) {
+    if (tracker_running) {
         ELM_WARN("File system watcher already started.");
         return;
     }
     ELM_INFO("Starting file system watcher...");
+    asset_tracker::start();
     ELM_DEBUG("Watching path {0}", project::project_assets_path.c_str());
-    watcher = new filewatch::FileWatch<asset_importer::path_string>(project::project_assets_path.native(), watcher_callback);
+    tracker_running = true;
     //TODO: add specialized functions...
 }
 
 void asset_importer::stop() {
-    if (watcher != nullptr) {
+    if (tracker_running) {
         ELM_INFO("Stopping file system watcher...");
-        delete watcher;
-        watcher = nullptr;
+        asset_tracker::stop();
+        tracker_running = false;
     }
 }
 
