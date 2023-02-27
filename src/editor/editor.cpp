@@ -1,5 +1,6 @@
 #include "editor.h"
 
+#include <QMetaObject>
 #include <core/log.h>
 #include <asset/importer.h>
 
@@ -7,6 +8,10 @@ using namespace element;
 
 QApplication* editor::qt_app = nullptr;
 ui::element_editor* editor::main_window = nullptr;
+
+void editor::execute_on_editor_thread(std::function<void()> call) {
+    QMetaObject::invokeMethod(main_window, call, Qt::QueuedConnection);
+}
 
 void editor::run_editor(char* exe_name) {
     int argc = 1;

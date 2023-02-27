@@ -8,6 +8,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <editor/project.h>
+#include <editor/editor.h>
 #include <core/log.h>
 #include <errno.h>
 
