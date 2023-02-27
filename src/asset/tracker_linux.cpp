@@ -1,3 +1,6 @@
+#include <utils/platform.h>
+
+#ifdef ELM_PLATFORM_LINUX
 #include "tracker.h"
 
 #include <sys/inotify.h>
@@ -221,3 +224,5 @@ namespace element {
     }
 
 } // namespace element
+
+#endif
