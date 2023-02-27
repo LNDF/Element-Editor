@@ -1,4 +1,4 @@
-#include "asset_tracker.h"
+#include "tracker.h"
 
 #include <sys/inotify.h>
 #include <poll.h>
@@ -9,6 +9,7 @@
 #include <unordered_set>
 #include <editor/project.h>
 #include <editor/editor.h>
+#include <asset/importer.h>
 #include <core/log.h>
 #include <errno.h>
 
@@ -79,7 +80,9 @@ inline void watcher_process_delete(const std::pair<bool, std::filesystem::path>&
         wdset_map[wdset_map[wd].first].second.erase(wd);
         watcher_inotify_rm_watches(wd, true);
     }
-    ELM_WARN("delete {0}", data.second.string());
+    element::editor::execute_in_editor_thread([=]() {
+        element::asset_importer::tracker_path_delete(data.second, data.first);
+    });
 }
 
 static void watcher_inotify_process_event(inotify_event* event) {
@@ -88,7 +91,10 @@ static void watcher_inotify_process_event(inotify_event* event) {
     if (event->mask & IN_MOVED_TO && !cookie_move_data_map.empty()) {
         auto it = cookie_move_data_map.find(event->cookie);
         if (it != cookie_move_data_map.end()) {
-            ELM_WARN("move from {0} to {1}", it->second.second.string(), path.string());
+            std::filesystem::path& from = it->second.second;
+            element::editor::execute_in_editor_thread([=]() {
+                element::asset_importer::tracker_path_move(from, path, event->mask & IN_ISDIR);
+            });
             cookie_move_data_map.erase(it);
             return;
         }
@@ -103,26 +109,29 @@ static void watcher_inotify_process_event(inotify_event* event) {
             }
             bind_wd_path(nwd, path);
             watcher_inotify_add_watchers(path, nwd, event->wd);
-        } else {
-            ELM_WARN("file create {0}", path.string());
         }
+        element::editor::execute_in_editor_thread([=]() {
+            element::asset_importer::tracker_path_create(path, event->mask & IN_ISDIR);
+        });
     } else if (event->mask & IN_DELETE) {
         if (event->mask & IN_ISDIR) {
             watcher_inotify_rm_watches(wd_from_path(path), false);
         }
-        ELM_WARN("delete {0}", path.string());
+        element::editor::execute_in_editor_thread([=]() {
+            element::asset_importer::tracker_path_delete(path, event->mask & IN_ISDIR);
+        });
     } else if (event->mask & IN_MOVED_FROM) {
         cookie_move_data_map.try_emplace(event->cookie, event->mask & IN_ISDIR, std::move(path));
-    } else if (event->mask & IN_MOVE_SELF) {
+    } else if (event->mask & (IN_DELETE_SELF | IN_MOVE_SELF)) {
         if (event->wd == asset_wd) {
-            ELM_WARN("Assets directory moved");
-        }
-    } else if (event->mask & IN_DELETE_SELF) {
-        if (event->wd == asset_wd) {
-            ELM_WARN("Assets directory deleted");
+            element::editor::execute_in_editor_thread([=]() {
+                element::asset_importer::recreate_assets_dir();
+            });
         }
     } else if (event->mask & IN_MODIFY) {
-        ELM_WARN("modify {0}", path.string());
+        element::editor::execute_in_editor_thread([=]() {
+            element::asset_importer::tracker_path_modify(path);
+        });
     }
 }
 

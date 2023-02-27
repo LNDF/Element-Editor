@@ -2,12 +2,28 @@
 
 #include <core/log.h>
 #include <editor/project.h>
-#include <asset/asset_tracker.h>
+#include <asset/tracker.h>
 
 std::unordered_map<element::uuid, std::filesystem::file_time_type> element::asset_importer::modified_tracaking;
 bool element::asset_importer::tracker_running = false;
 
 using namespace element;
+
+void asset_importer::tracker_path_create(const std::filesystem::path& path, bool is_dir) {
+    ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
+}
+
+void asset_importer::tracker_path_move(const std::filesystem::path &from, const std::filesystem::path &to, bool is_dir) {
+    ELM_DEBUG("Move: is dir {0} from {1} to {2}", is_dir, from.string(), to.string());
+}
+
+void asset_importer::tracker_path_delete(const std::filesystem::path &path, bool is_dir) {
+    ELM_DEBUG("Delete: is dir {0} path {1}", is_dir, path.string());
+}
+
+void asset_importer::tracker_path_modify(const std::filesystem::path &path) {
+    ELM_DEBUG("Modify: file {0}", path.string());
+}
 
 void asset_importer::start() {
     if (tracker_running) {
@@ -49,4 +65,8 @@ void asset_importer::import(const std::string& path) {
     //TODO: delete item from cache fs folder
     //TODO import file
     //TODO: update item in "modified_tracking"
+}
+
+void asset_importer::recreate_assets_dir() {
+    ELM_WARN("Recreate asset dir");
 }

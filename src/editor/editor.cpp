@@ -9,7 +9,7 @@ using namespace element;
 QApplication* editor::qt_app = nullptr;
 ui::element_editor* editor::main_window = nullptr;
 
-void editor::execute_on_editor_thread(std::function<void()> call) {
+void editor::execute_in_editor_thread(std::function<void()> call) {
     QMetaObject::invokeMethod(main_window, call, Qt::QueuedConnection);
 }
 
