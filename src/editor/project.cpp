@@ -41,7 +41,7 @@ namespace element {
     }
 
     void project::load() {
-        ELM_INFO("Opening project {0}...", project_path.c_str());
+        ELM_INFO("Opening project {0}...", project_path.string());
         {
             std::ifstream file(project_filename);
             text_deserializer deserialize = create_text_deserializer(file);
@@ -53,7 +53,7 @@ namespace element {
     }
 
     void project::save() {
-        ELM_INFO("Saving project {0}...", project_path.c_str());
+        ELM_INFO("Saving project {0}...", project_path.string());
         project::mkdir();
         {
             std::ofstream file(project_filename);

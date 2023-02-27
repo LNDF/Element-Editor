@@ -32,7 +32,7 @@ void asset_importer::start() {
     }
     ELM_INFO("Starting file system watcher...");
     asset_tracker::start();
-    ELM_DEBUG("Watching path {0}", project::project_assets_path.c_str());
+    ELM_DEBUG("Watching path {0}", project::project_assets_path.string());
     tracker_running = true;
     //TODO: add specialized functions...
 }

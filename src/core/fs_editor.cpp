@@ -72,7 +72,7 @@ namespace element {
 
     void fs_load_resources() {
         ELM_INFO("Loading FS map...");
-        ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.c_str());
+        ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.string());
         std::ifstream file(project::project_metadata_fsmap);
         if (file.fail()) {
             ELM_WARN("Couldn't open FS map");
@@ -88,7 +88,7 @@ namespace element {
 
     void fs_save_resources() {
         ELM_INFO("Saving FS map...");
-        ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.c_str());
+        ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.string());
         std::ofstream file(project::project_metadata_fsmap);
         text_serializer serialize = create_text_serializer(file);
         serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
@@ -96,7 +96,7 @@ namespace element {
 
     void fs_save_bin_resources() {
         ELM_INFO("Saving FS map to binary...");
-        ELM_DEBUG("FS map path is {0}", project::project_fs_fsmap.c_str());
+        ELM_DEBUG("FS map path is {0}", project::project_fs_fsmap.string());
         std::ofstream file(project::project_fs_fsmap, std::ios::binary);
         binary_serializer serialize = create_binary_serializer(file);
         serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
