@@ -13,12 +13,12 @@ void asset_importer::tracker_path_create(const std::filesystem::path& path, bool
     ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
 }
 
-void asset_importer::tracker_path_move(const std::filesystem::path &from, const std::filesystem::path &to, bool is_dir) {
-    ELM_DEBUG("Move: is dir {0} from {1} to {2}", is_dir, from.string(), to.string());
+void asset_importer::tracker_path_move(const std::filesystem::path &from, const std::filesystem::path &to) {
+    ELM_DEBUG("Move: from {0} to {1}", from.string(), to.string());
 }
 
-void asset_importer::tracker_path_delete(const std::filesystem::path &path, bool is_dir) {
-    ELM_DEBUG("Delete: is dir {0} path {1}", is_dir, path.string());
+void asset_importer::tracker_path_delete(const std::filesystem::path &path) {
+    ELM_DEBUG("Delete: path {0}", path.string());
 }
 
 void asset_importer::tracker_path_modify(const std::filesystem::path &path) {

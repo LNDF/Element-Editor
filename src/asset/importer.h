@@ -13,8 +13,8 @@ namespace element {
 
         public:
             static void tracker_path_create(const std::filesystem::path& path, bool is_dir);
-            static void tracker_path_move(const std::filesystem::path& from, const std::filesystem::path& to, bool is_dir);
-            static void tracker_path_delete(const std::filesystem::path& path, bool is_dir);
+            static void tracker_path_move(const std::filesystem::path& from, const std::filesystem::path& to);
+            static void tracker_path_delete(const std::filesystem::path& path);
             static void tracker_path_modify(const std::filesystem::path& path);
         
             static void start();

@@ -17,6 +17,11 @@ static HANDLE asset_dir = nullptr;
 static HANDLE stop_event = nullptr;
 static bool watcher_running = false;
 
+std::filesystem::path last_remove;
+std::filesystem::path last_old_rename;
+bool last_remove_enabled = false;
+bool last_old_rename_enabled = false;
+
 static std::string get_last_error_str() {
     DWORD err = GetLastError();
     if (err == 0) return std::string();
@@ -37,25 +42,55 @@ static bool is_path_directory(const std::filesystem::path& path) {
 
 static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
     std::filesystem::path path = element::project::project_assets_path / event->FileName;
-    ELM_WARN("is dir {0}", is_path_directory(path));
+    bool consumed = false;
     switch (event->Action) {
         case FILE_ACTION_ADDED:
-            ELM_WARN("added path {0}", path.string());
+            if (last_remove_enabled) {
+                element::editor::execute_in_editor_thread([=]() {
+                    element::asset_importer::tracker_path_move(last_remove, path);
+                });
+                consumed = true;
+            }
+            break;
+        case FILE_ACTION_RENAMED_NEW_NAME:
+            if (last_old_rename_enabled) {
+                element::editor::execute_in_editor_thread([=]() {
+                    element::asset_importer::tracker_path_move(last_old_rename, path);
+                });
+                consumed = true;
+            }
+            break;
+    }
+    if (!consumed)  {
+        if (last_remove_enabled) {
+            element::editor::execute_in_editor_thread([=]() {
+                element::asset_importer::tracker_path_delete(path);
+            });
+        }
+    }
+    last_remove_enabled = false;
+    last_old_rename_enabled = false;
+    if (consumed) return;
+    switch (event->Action) {
+        case FILE_ACTION_ADDED:
+            element::editor::execute_in_editor_thread([=]() {
+                element::asset_importer::tracker_path_create(path, is_path_directory(path));
+            });
             break;
         case FILE_ACTION_REMOVED:
-            ELM_WARN("remove path {0}", path.string());
-            break;
-        case FILE_ACTION_MODIFIED:
-            ELM_WARN("modify path {0}", path.string());
+            last_remove_enabled = true;
+            last_remove = path;
             break;
         case FILE_ACTION_RENAMED_OLD_NAME:
-            ELM_WARN("rename old path {0}", path.string());
-            break;;
-        case FILE_ACTION_RENAMED_NEW_NAME:
-            ELM_WARN("rename new path {0}", path.string());
+            last_old_rename_enabled = true;
+            last_old_rename = path;
             break;
-        
-        default:
+        case FILE_ACTION_MODIFIED:
+            if (!is_path_directory(path)) {
+                element::editor::execute_in_editor_thread([=]() {
+                    element::asset_importer::tracker_path_modify(path);
+                });
+            }
             break;
     }
 }
@@ -71,7 +106,7 @@ static void watcher_win32_thread() {
     while (watcher_running) {
         ReadDirectoryChangesW(asset_dir, buffer, 4096 * 8, TRUE, WATCHER_FLAGS, &resultret, &overlapped, NULL);
         cleanup_io = true;
-        waitret = WaitForMultipleObjects(2, waits, FALSE, INFINITE);
+        waitret = WaitForMultipleObjects(2, waits, FALSE, (last_old_rename_enabled || last_remove_enabled) ? 50 : INFINITE);
         switch (waitret) {
             case WAIT_OBJECT_0:
                 continue;
@@ -91,6 +126,15 @@ static void watcher_win32_thread() {
                     next = event->NextEntryOffset;
                 } while (next != 0);
                 memset(buffer, 0, 4096 * 8);
+                break;
+            case WAIT_TIMEOUT:
+                last_old_rename_enabled = false;
+                if (last_remove_enabled) {
+                    element::editor::execute_in_editor_thread([=]() {
+                        element::asset_importer::tracker_path_delete(last_remove);
+                    });
+                    last_remove_enabled = false;
+                }
                 break;
             default:
                 break;
