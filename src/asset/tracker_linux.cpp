@@ -84,7 +84,7 @@ inline void watcher_process_delete(const std::pair<bool, std::filesystem::path>&
         watcher_inotify_rm_watches(wd, true);
     }
     element::editor::execute_in_editor_thread([=]() {
-        element::asset_importer::tracker_path_delete(data.second, data.first);
+        element::asset_importer::tracker_path_delete(data.second);
     });
 }
 
@@ -96,7 +96,7 @@ static void watcher_inotify_process_event(inotify_event* event) {
         if (it != cookie_move_data_map.end()) {
             std::filesystem::path& from = it->second.second;
             element::editor::execute_in_editor_thread([=]() {
-                element::asset_importer::tracker_path_move(from, path, event->mask & IN_ISDIR);
+                element::asset_importer::tracker_path_move(from, path);
             });
             cookie_move_data_map.erase(it);
             return;
@@ -104,7 +104,6 @@ static void watcher_inotify_process_event(inotify_event* event) {
     }
     if (event->mask & (IN_CREATE | IN_MOVED_TO)) {
         if (event->mask & IN_ISDIR) {
-            ELM_WARN("dir create {0}", path.string());
             int nwd = inotify_add_watch(inotify_fd, path.c_str(), IN_FLAGS);
             if (nwd == -1) {
                 ELM_ERROR("inotify_add_watch(): path {0} error {1}: {2}", path.string(), errno, strerror(errno));
@@ -121,7 +120,7 @@ static void watcher_inotify_process_event(inotify_event* event) {
             watcher_inotify_rm_watches(wd_from_path(path), false);
         }
         element::editor::execute_in_editor_thread([=]() {
-            element::asset_importer::tracker_path_delete(path, event->mask & IN_ISDIR);
+            element::asset_importer::tracker_path_delete(path);
         });
     } else if (event->mask & IN_MOVED_FROM) {
         cookie_move_data_map.try_emplace(event->cookie, event->mask & IN_ISDIR, std::move(path));
