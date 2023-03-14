@@ -4,8 +4,8 @@
 #include <editor/project.h>
 #include <asset/tracker.h>
 
-std::unordered_map<element::uuid, std::filesystem::file_time_type> element::asset_importer::modified_tracaking;
 bool element::asset_importer::tracker_running = false;
+element::asset_importer_node element::asset_importer::root_node;
 
 using namespace element;
 
@@ -48,7 +48,6 @@ void asset_importer::stop() {
 void asset_importer::load() {
     //TODO: load "modified_tracking"
     //TODO: import files if they changed
-    //TODO: save fs map
 }
 
 void asset_importer::save() {
@@ -56,15 +55,13 @@ void asset_importer::save() {
 }
 
 void asset_importer::reimport() {
-    //TODO: clear "modified_tracking"
-    //TODO: clear cache fs folder
-    //TODO: import every file and add to "modified_tracking"
+    //TODO: cleara cache fs folder
+    //TODO: import every file
 }
 
 void asset_importer::import(const std::string& path) {
     //TODO: delete item from cache fs folder
     //TODO import file
-    //TODO: update item in "modified_tracking"
 }
 
 void asset_importer::recreate_assets_dir() {

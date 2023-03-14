@@ -2,6 +2,7 @@
 
 #include <QMetaObject>
 #include <core/log.h>
+#include <core/fs_editor.h>
 #include <asset/importer.h>
 
 using namespace element;
@@ -14,6 +15,7 @@ void editor::execute_in_editor_thread(std::function<void()> call) {
 }
 
 void editor::run_editor(char* exe_name) {
+    fs_save_resources();
     int argc = 1;
     qt_app = new QApplication(argc, &exe_name);
     main_window = new ui::element_editor();

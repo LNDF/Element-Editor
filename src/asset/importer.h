@@ -3,13 +3,19 @@
 #include <filesystem>
 #include <unordered_map>
 #include <utils/uuid.h>
+#include <utils/packed_map.h>
 
 namespace element {
 
+    struct asset_importer_node {
+        bool is_dir;
+        packed_map<std::string, asset_importer_node> children;
+    };
+
     class asset_importer {
         private:
-            static std::unordered_map<uuid, std::filesystem::file_time_type> modified_tracaking;
             static bool tracker_running;
+            static asset_importer_node root_node;
 
         public:
             static void tracker_path_create(const std::filesystem::path& path, bool is_dir);
