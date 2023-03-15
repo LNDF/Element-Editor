@@ -1,6 +1,7 @@
 #include "importer.h"
 
 #include <core/log.h>
+#include <core/fs_editor.h>
 #include <editor/project.h>
 #include <asset/tracker.h>
 
@@ -8,6 +9,16 @@ bool element::asset_importer::tracker_running = false;
 element::asset_importer_node element::asset_importer::root_node;
 
 using namespace element;
+
+void asset_importer::add_dir_nodes_and_import(const std::filesystem::path& path, asset_importer_node& node) {
+    if (!std::filesystem::is_directory(path)) {
+        fs_get_uuid_from_resource_path(get_fs_path_from_system(path));
+    }
+}
+
+std::string asset_importer::get_fs_path_from_system(const std::filesystem::path& path) {
+    return std::filesystem::relative(path, project::project_assets_path).string();
+}
 
 void asset_importer::tracker_path_create(const std::filesystem::path& path, bool is_dir) {
     ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
@@ -30,6 +41,8 @@ void asset_importer::start() {
         ELM_WARN("File system watcher already started.");
         return;
     }
+    root_node.is_dir = true;
+
     ELM_INFO("Starting file system watcher...");
     asset_tracker::start();
     ELM_DEBUG("Watching path {0}", project::project_assets_path.string());
@@ -43,15 +56,6 @@ void asset_importer::stop() {
         asset_tracker::stop();
         tracker_running = false;
     }
-}
-
-void asset_importer::load() {
-    //TODO: load "modified_tracking"
-    //TODO: import files if they changed
-}
-
-void asset_importer::save() {
-    //TODO: save "modified_tracking"
 }
 
 void asset_importer::reimport() {
