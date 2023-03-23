@@ -15,5 +15,6 @@ namespace element {
     void fs_save_resources();
     void fs_save_bin_resources();
     uuid fs_get_new_uuid();
+    const std::unordered_map<element::uuid, element::fs_resource_info>& fs_get_map();
 
 } // namespace element

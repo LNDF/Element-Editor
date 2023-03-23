@@ -34,7 +34,9 @@ namespace element {
     }
 
     const uuid& fs_get_uuid_from_resource_path(const std::string& path) {
-        return fs_uuid_map.at(path);
+        auto it = fs_uuid_map.find(path);
+        if (it == fs_uuid_map.end()) return uuid::null();
+        return it->second;
     }
 
     void fs_save_resource_info(const uuid& id, const fs_resource_info& info) {
@@ -67,7 +69,7 @@ namespace element {
     void fs_delete_resource_data(const uuid& id) {
         std::filesystem::path path = project::project_assets_path / id.str();
         path.make_preferred();
-        std::filesystem::remove_all(path);
+        if (std::filesystem::exists(path)) std::filesystem::remove_all(path);
     }
 
     void fs_load_resources() {
@@ -107,4 +109,9 @@ namespace element {
         while (fs_map.contains(id)) id.regenerate();
         return id;
     }
+
+    const std::unordered_map<element::uuid, element::fs_resource_info>& fs_get_map() {
+        return fs_map;
+    }
+
 } // namespace element
