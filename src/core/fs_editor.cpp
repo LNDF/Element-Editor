@@ -18,13 +18,13 @@ static std::unordered_map<std::string, element::uuid> fs_uuid_map;
 
 namespace element {
     std::unique_ptr<std::istream> fs_get_resource(const uuid& id) {
-        std::filesystem::path path = project::project_assets_path / id.str();
+        std::filesystem::path path = project::project_fs_path / id.str();
         path.make_preferred();
         return std::unique_ptr<std::istream>(new std::ifstream(path, std::ios::binary));
     }
 
     std::unique_ptr<std::ostream> fs_get_resource_ostream(const uuid& id) {
-        std::filesystem::path path = project::project_assets_path / id.str();
+        std::filesystem::path path = project::project_fs_path / id.str();
         path.make_preferred();
         return std::unique_ptr<std::ostream>(new std::ofstream(path, std::ios::binary));
     }
@@ -67,7 +67,7 @@ namespace element {
     }
 
     void fs_delete_resource_data(const uuid& id) {
-        std::filesystem::path path = project::project_assets_path / id.str();
+        std::filesystem::path path = project::project_fs_path / id.str();
         path.make_preferred();
         if (std::filesystem::exists(path)) std::filesystem::remove_all(path);
     }
