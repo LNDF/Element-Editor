@@ -1,9 +1,15 @@
 #pragma once
 
 #include <filesystem>
+#include <core/log.h>
 #include <core/fs.h>
 #include <utils/packed_map.h>
 #include <utils/uuid.h>
+
+#include <vector>
+#include <future>
+#include <unordered_map>
+#include <unordered_set>
 
 #define ELM_REGISTER_IMPORTER(type, import_fun) static bool __elm_register_importer_##type = element::asset_importer::preregister_importer(#type, element::asset_importer_callback{import_fun})
 
@@ -23,6 +29,7 @@ namespace element {
             static bool tracker_running;
             static asset_importer_node root_node;
             static std::unordered_map<std::string, asset_importer_callback> importers;
+            static std::unordered_set<uuid> pending_to_import;
 
             static void add_dir_nodes_and_import(const std::filesystem::path& path, asset_importer_node& node, std::vector<uuid>& import_pending);
             static std::string get_fs_path_from_system(const std::filesystem::path& path);
@@ -39,13 +46,25 @@ namespace element {
             static void register_importer(std::string&& type, asset_importer_callback importer);
             static void reimport();
             static void import(const uuid& id);
-            static void import_all(const std::vector<uuid>& all);
             static void recreate_assets_dir();
+            
+            static void pending_timer_reset();
+            static void pending_import();
             
             static inline bool is_tracker_running() {return tracker_running;}
 
             static std::unordered_map<std::string, asset_importer_callback>& get_preregistered_importers();
             static bool preregister_importer(std::string&& type, asset_importer_callback importer_cb);
+
+            template<typename It>
+            static void import_all(It from, It to) {
+                typename It::difference_type count = to - from;
+                ELM_INFO("Start the processing of {} assets", count);
+                std::vector<std::future<void>> futures(count);
+                for (; from < to; from++) {
+                    futures.push_back(std::async(std::launch::async, asset_importer::import, *from));
+                }
+            }
     };
 
 } // namespace element

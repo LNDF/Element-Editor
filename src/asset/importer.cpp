@@ -1,11 +1,9 @@
 #include "importer.h"
 
-#include <core/log.h>
 #include <editor/project.h>
 #include <core/fs_editor.h>
 #include <asset/tracker.h>
-
-#include <future>
+#include <asset/importers/raw.h>
 
 bool element::asset_importer::tracker_running = false;
 element::asset_importer_node element::asset_importer::root_node;
@@ -22,7 +20,8 @@ void asset_importer::add_dir_nodes_and_import(const std::filesystem::path& path,
             uuid new_id = fs_get_new_uuid();
             fs_resource_info info;
             info.path = std::move(apath);
-            info.type = "raw"; //TODO: detect resource type
+            info.type = path.extension().string();
+            if (info.type.length() > 0) info.type.erase(0, 1);
             fs_save_resource_info(new_id, std::move(info));
             import_pending.push_back(new_id);
         } else {
@@ -94,7 +93,7 @@ void asset_importer::start() {
     }
     ELM_INFO("{} assets to import.", import_pending.size());
     fs_save_resources();
-    import_all(import_pending);
+    import_all(import_pending.begin(), import_pending.end());
     ELM_INFO("Starting file system watcher...");
     asset_tracker::start();
     ELM_DEBUG("Watching path {0}", project::project_assets_path.string());
@@ -129,23 +128,26 @@ void asset_importer::import(const uuid& id) {
     fs_resource_info info = fs_get_resource_info(id);
     auto it = importers.find(info.type);
     if (it != importers.end()) {
-        ELM_DEBUG("Importing {0} ({1}) with importer {2}.", info.path, id.str(), info.type);
+        ELM_INFO("Importing {0} ({1}).", info.path, id.str());
         it->second.import(id);
     } else {
-        ELM_WARN("Skipping {0} ({1}). Couldn't find importer for the type {2}.", info.path, id.str(), info.type);
-    }
-}
-
-void asset_importer::import_all(const std::vector<uuid>& all) {
-    ELM_INFO("Start the processing of {} assets", all.size());
-    std::vector<std::future<void>> futures(all.size());
-    for (const uuid& id : all) {
-        futures.push_back(std::async(std::launch::async, asset_importer::import, id));
+        ELM_INFO("Raw importing {0} ({1}).", info.path, id.str());
+        importers::raw_importer(id);
     }
 }
 
 void asset_importer::recreate_assets_dir() {
     ELM_WARN("Recreate asset dir");
+}
+
+void asset_importer::pending_timer_reset() {
+    //TODO
+}
+
+void asset_importer::pending_import() {
+    ELM_INFO("Importing all pending assets...");
+    import_all(pending_to_import.begin(), pending_to_import.end());
+    pending_to_import.clear();
 }
 
 std::unordered_map<std::string, asset_importer_callback>& asset_importer::get_preregistered_importers() {

@@ -13,5 +13,3 @@ void importers::raw_importer(const uuid& id) {
     auto output = fs_get_resource_ostream(id);
     *output << input.rdbuf();
 }
-
-ELM_REGISTER_IMPORTER(raw, element::importers::raw_importer);
