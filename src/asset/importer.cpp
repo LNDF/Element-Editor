@@ -5,13 +5,15 @@
 #include <asset/tracker.h>
 #include <asset/importers/raw.h>
 
+QTimer* element::asset_importer::pending_import_timer = nullptr;
 bool element::asset_importer::tracker_running = false;
 element::asset_importer_node element::asset_importer::root_node;
 std::unordered_map<std::string, element::asset_importer_callback> element::asset_importer::importers;
+std::unordered_set<element::uuid> element::asset_importer::pending_to_import;
 
 using namespace element;
 
-void asset_importer::add_dir_nodes_and_import(const std::filesystem::path& path, asset_importer_node& node, std::vector<uuid>& import_pending) {
+void asset_importer::create_dir_nodes(const std::filesystem::path& path, asset_importer_node& node, std::vector<uuid>& import_pending) {
     bool is_dir = std::filesystem::is_directory(path);
     if (!is_dir) {
         std::string apath = get_fs_path_from_system(path);
@@ -37,10 +39,49 @@ void asset_importer::add_dir_nodes_and_import(const std::filesystem::path& path,
     }
     asset_importer_node this_node;
     this_node.is_dir = is_dir;
-    node.children[path.filename()] = this_node;
     if (is_dir) {
         for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(path)) {
-            add_dir_nodes_and_import(entry, this_node, import_pending);
+            create_dir_nodes(entry, this_node, import_pending);
+        }
+    }
+    node.children[path.filename()] = this_node;
+}
+
+asset_importer_node& asset_importer::get_dir_nodes(const std::filesystem::path& path) {
+    std::filesystem::path rpath = std::filesystem::relative(path, project::project_assets_path);
+    asset_importer_node* node = &root_node;
+    for (const std::string& part : rpath) {
+        if (part == ".") continue;
+        node = &node->children[part];
+        node->is_dir = true;
+    }
+    return *node;
+}
+
+void asset_importer::fix_dir_node_paths(const std::filesystem::path& old_path, const std::filesystem::path& new_path, const asset_importer_node& dir_node) {
+    for (const auto& [name, node] : dir_node.children) {
+        if (node.is_dir) {
+            fix_dir_node_paths(old_path / name, new_path / name, node);
+        } else {
+            uuid id = fs_get_uuid_from_resource_path(get_fs_path_from_system(old_path / name));
+            const fs_resource_info& old_info = fs_get_resource_info(id);
+            fs_resource_info new_info;
+            new_info.type = old_info.type;
+            new_info.path = get_fs_path_from_system(new_path / name);
+            fs_save_resource_info(id, std::move(new_info));
+        }
+    }
+}
+
+void asset_importer::delete_dir_nodes(const std::filesystem::path& path, const asset_importer_node& node) {
+    for (const auto& [name, subnode] : node.children) {
+        if (subnode.is_dir) {
+            delete_dir_nodes(path / name, subnode);
+        } else {
+            const uuid& id = fs_get_uuid_from_resource_path(get_fs_path_from_system(path / name));
+            fs_delete_resource_data(id);
+            fs_delete_resource_info(id);
+            pending_to_import.erase(id);
         }
     }
 }
@@ -51,18 +92,81 @@ std::string asset_importer::get_fs_path_from_system(const std::filesystem::path&
 
 void asset_importer::tracker_path_create(const std::filesystem::path& path, bool is_dir) {
     ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
+    if (is_dir) {
+        std::vector<uuid> vimport;
+        create_dir_nodes(path, get_dir_nodes(path), vimport);
+        pending_to_import.insert(vimport.begin(), vimport.end());
+    } else {
+        std::filesystem::path dirpath = path;
+        dirpath.remove_filename();
+        asset_importer_node& dirnode = get_dir_nodes(dirpath);
+        asset_importer_node node;
+        node.is_dir = false;
+        dirnode.children[path.filename()] = std::move(node);
+        uuid new_id = fs_get_new_uuid();
+        fs_resource_info info;
+        info.path = get_fs_path_from_system(path);
+        info.type = path.extension().string();
+        if (info.type.length() > 0) info.type.erase(0, 1);
+        fs_save_resource_info(new_id, std::move(info));
+        pending_to_import.insert(new_id);
+    }
+    pending_timer_reset();
 }
 
 void asset_importer::tracker_path_move(const std::filesystem::path &from, const std::filesystem::path &to) {
     ELM_DEBUG("Move: from {0} to {1}", from.string(), to.string());
+    if (from == to) return;
+    std::filesystem::path fromdir = from, todir = to;
+    fromdir.remove_filename();
+    todir.remove_filename();
+    std::string fromname = from.filename(), toname = to.filename();
+    asset_importer_node& fromnode = get_dir_nodes(fromdir);
+    asset_importer_node& tonode = get_dir_nodes(todir);
+    tonode.children[toname] = std::move(fromnode.children[fromname]);
+    fromnode.children.erase(fromname);
+    if (tonode.children[toname].is_dir) {
+        fix_dir_node_paths(from, to, tonode.children[toname]);
+    } else {
+        std::string respath = get_fs_path_from_system(from), resnewpath = get_fs_path_from_system(to);
+        std::string fromext = from.extension(), toext = to.extension();
+        uuid id = fs_get_uuid_from_resource_path(respath);
+        if (fromext != toext) {
+            pending_to_import.insert(id);
+        }
+        fs_resource_info newinfo;
+        newinfo.path = std::move(resnewpath);
+        newinfo.type = std::move(toext);
+        if (newinfo.type.length() > 0) newinfo.type.erase(0, 1);
+        fs_save_resource_info(id, std::move(newinfo));
+    }
+    pending_timer_reset();
 }
 
 void asset_importer::tracker_path_delete(const std::filesystem::path &path) {
     ELM_DEBUG("Delete: path {0}", path.string());
+    std::filesystem::path dirpath = path;
+    dirpath.remove_filename();
+    asset_importer_node& dirnode = get_dir_nodes(dirpath);
+    asset_importer_node& node = dirnode.children[path.filename()];
+    if (node.is_dir) {
+        delete_dir_nodes(path, node);
+    } else {
+        uuid id = fs_get_uuid_from_resource_path(get_fs_path_from_system(path));
+        fs_delete_resource_data(id);
+        fs_delete_resource_info(id);
+        pending_to_import.erase(id);
+    }
+    dirnode.children.erase(path.filename());
+    pending_timer_reset();
 }
 
 void asset_importer::tracker_path_modify(const std::filesystem::path &path) {
     ELM_DEBUG("Modify: file {0}", path.string());
+    std::string apath = get_fs_path_from_system(path);
+    const uuid& id = fs_get_uuid_from_resource_path(apath);
+    if (!id.is_null()) pending_to_import.insert(id);
+    pending_timer_reset();
 }
 
 void asset_importer::start() {
@@ -89,7 +193,7 @@ void asset_importer::start() {
     ELM_INFO("Importing updated assets...");
     std::vector<uuid> import_pending;
     for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(project::project_assets_path)) {
-        add_dir_nodes_and_import(entry, root_node, import_pending);
+        create_dir_nodes(entry, root_node, import_pending);
     }
     ELM_INFO("{} assets to import.", import_pending.size());
     fs_save_resources();
@@ -98,12 +202,20 @@ void asset_importer::start() {
     asset_tracker::start();
     ELM_DEBUG("Watching path {0}", project::project_assets_path.string());
     tracker_running = true;
-    //TODO: add specialized functions...
+    pending_import_timer = new QTimer();
+    pending_import_timer->setSingleShot(true);
+    pending_import_timer->setTimerType(Qt::TimerType::CoarseTimer);
+    pending_import_timer->callOnTimeout(pending_import);
 }
 
 void asset_importer::stop() {
     if (tracker_running) {
         ELM_INFO("Stopping file system watcher...");
+        if (pending_import_timer->isActive()) {
+            pending_import_timer->stop();
+            pending_import();
+        }
+        delete pending_import_timer;
         asset_tracker::stop();
         root_node.children.clear();
         importers.clear();
@@ -141,13 +253,14 @@ void asset_importer::recreate_assets_dir() {
 }
 
 void asset_importer::pending_timer_reset() {
-    //TODO
+    pending_import_timer->start(100);
 }
 
 void asset_importer::pending_import() {
     ELM_INFO("Importing all pending assets...");
     import_all(pending_to_import.begin(), pending_to_import.end());
     pending_to_import.clear();
+    fs_save_resources();
 }
 
 std::unordered_map<std::string, asset_importer_callback>& asset_importer::get_preregistered_importers() {

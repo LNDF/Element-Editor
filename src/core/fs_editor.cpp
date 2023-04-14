@@ -46,8 +46,8 @@ namespace element {
         try {
             fs_map.erase(fs_uuid_map.at(info.path));
         } catch (const std::out_of_range& e) {}
-        fs_map[id] = info;
         fs_uuid_map[info.path] = id;
+        fs_map[id] = info;
     }
 
     void fs_save_resource_info(const uuid& id, fs_resource_info&& info) {
@@ -57,8 +57,8 @@ namespace element {
         try {
             fs_map.erase(fs_uuid_map.at(info.path));
         } catch (const std::out_of_range& e) {}
-        fs_map[id] = std::move(info);
         fs_uuid_map[info.path] = id;
+        fs_map[id] = std::move(info);
     }
 
     void fs_delete_resource_info(const uuid& id) {
