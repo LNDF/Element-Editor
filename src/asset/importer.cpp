@@ -4,6 +4,13 @@
 #include <core/fs_editor.h>
 #include <asset/tracker.h>
 #include <asset/importers/raw.h>
+#include <utils/platform.h>
+
+#ifdef ELM_PLATFORM_WINDOWS
+#define DOT_FOLDER L"."
+#else
+#define DOT_FOLDER "."
+#endif
 
 QTimer* element::asset_importer::pending_import_timer = nullptr;
 bool element::asset_importer::tracker_running = false;
@@ -50,8 +57,8 @@ void asset_importer::create_dir_nodes(const std::filesystem::path& path, asset_i
 asset_importer_node& asset_importer::get_dir_nodes(const std::filesystem::path& path) {
     std::filesystem::path rpath = std::filesystem::relative(path, project::project_assets_path);
     asset_importer_node* node = &root_node;
-    for (const std::string& part : rpath) {
-        if (part == ".") continue;
+    for (const std::filesystem::path::string_type part : rpath) {
+        if (part == DOT_FOLDER) continue;
         node = &node->children[part];
         node->is_dir = true;
     }
@@ -78,7 +85,7 @@ void asset_importer::delete_dir_nodes(const std::filesystem::path& path, const a
         if (subnode.is_dir) {
             delete_dir_nodes(path / name, subnode);
         } else {
-            const uuid& id = fs_get_uuid_from_resource_path(get_fs_path_from_system(path / name));
+            uuid id = fs_get_uuid_from_resource_path(get_fs_path_from_system(path / name));
             fs_delete_resource_data(id);
             fs_delete_resource_info(id);
             pending_to_import.erase(id);
@@ -93,8 +100,10 @@ std::string asset_importer::get_fs_path_from_system(const std::filesystem::path&
 void asset_importer::tracker_path_create(const std::filesystem::path& path, bool is_dir) {
     ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
     if (is_dir) {
+        std::filesystem::path dirpath = path;
+        dirpath.remove_filename();
         std::vector<uuid> vimport;
-        create_dir_nodes(path, get_dir_nodes(path), vimport);
+        create_dir_nodes(path, get_dir_nodes(dirpath), vimport);
         pending_to_import.insert(vimport.begin(), vimport.end());
     } else {
         std::filesystem::path dirpath = path;
@@ -120,7 +129,7 @@ void asset_importer::tracker_path_move(const std::filesystem::path &from, const 
     std::filesystem::path fromdir = from, todir = to;
     fromdir.remove_filename();
     todir.remove_filename();
-    std::string fromname = from.filename(), toname = to.filename();
+    std::filesystem::path::string_type fromname = from.filename(), toname = to.filename();
     asset_importer_node& fromnode = get_dir_nodes(fromdir);
     asset_importer_node& tonode = get_dir_nodes(todir);
     tonode.children[toname] = std::move(fromnode.children[fromname]);
@@ -129,7 +138,7 @@ void asset_importer::tracker_path_move(const std::filesystem::path &from, const 
         fix_dir_node_paths(from, to, tonode.children[toname]);
     } else {
         std::string respath = get_fs_path_from_system(from), resnewpath = get_fs_path_from_system(to);
-        std::string fromext = from.extension(), toext = to.extension();
+        std::string fromext = from.extension().string(), toext = to.extension().string();
         uuid id = fs_get_uuid_from_resource_path(respath);
         if (fromext != toext) {
             pending_to_import.insert(id);

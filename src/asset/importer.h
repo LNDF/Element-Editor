@@ -19,7 +19,7 @@ namespace element {
 
     struct asset_importer_node {
         bool is_dir;
-        std::unordered_map<std::string, asset_importer_node> children;
+        std::unordered_map<std::filesystem::path::string_type, asset_importer_node> children;
     };
 
     struct asset_importer_callback {
