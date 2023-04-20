@@ -39,9 +39,6 @@ target_link_libraries(element-editor PRIVATE Qt6::OpenGLWidgets)
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PRIVATE element)
 
-# filewatch
-target_include_directories(element-editor PUBLIC ./lib/filewatch/include)
-
 #end libs
 
 # CMake options
