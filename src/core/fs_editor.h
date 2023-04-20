@@ -7,14 +7,16 @@
 
 namespace element {
 
-    std::unique_ptr<std::ostream> fs_get_resource_ostream(const uuid& id);
-    void fs_save_resource_info(const uuid& id, const fs_resource_info& info);
-    void fs_save_resource_info(const uuid& id, fs_resource_info&& info);
-    void fs_delete_resource_info(const uuid& id);
-    void fs_delete_resource_data(const uuid& id);
-    void fs_save_resources();
-    void fs_save_bin_resources();
-    uuid fs_get_new_uuid();
-    const std::unordered_map<element::uuid, element::fs_resource_info>& fs_get_map();
+    namespace fs {
+        std::unique_ptr<std::ostream> get_resource_ostream(const uuid& id);
+        void save_resource_info(const uuid& id, const fs_resource_info& info);
+        void save_resource_info(const uuid& id, fs_resource_info&& info);
+        void delete_resource_info(const uuid& id);
+        void delete_resource_data(const uuid& id);
+        void save_resources();
+        void save_bin_resources();
+        uuid get_new_uuid();
+        const std::unordered_map<element::uuid, element::fs_resource_info>& get_map();
+    } // namespace fs
 
 } // namespace element

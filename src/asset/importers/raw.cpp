@@ -8,8 +8,8 @@
 using namespace element;
 
 void importers::raw_importer(const uuid& id) {
-    fs_resource_info info = fs_get_resource_info(id);
+    fs_resource_info info = fs::get_resource_info(id);
     std::ifstream input(project::project_assets_path / info.path);
-    auto output = fs_get_resource_ostream(id);
+    auto output = fs::get_resource_ostream(id);
     *output << input.rdbuf();
 }
