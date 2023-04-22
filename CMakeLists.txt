@@ -5,7 +5,7 @@ project(element-editor VERSION 0.0.1)
 #enable_testing()
 
 #Qt
-find_package(Qt6 COMPONENTS Widgets OpenGLWidgets REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
 qt_standard_project_setup()
 # only use moc and uic on current target
 set(CMAKE_AUTOMOC OFF)
@@ -33,7 +33,6 @@ target_compile_definitions(element-editor PUBLIC ELM_EDITOR_VERSION="${PROJECT_V
 # qt
 set_target_properties(element-editor PROPERTIES AUTOMOC ON AUTOUIC ON)
 target_link_libraries(element-editor PRIVATE Qt6::Widgets)
-target_link_libraries(element-editor PRIVATE Qt6::OpenGLWidgets)
 
 # element core
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)
