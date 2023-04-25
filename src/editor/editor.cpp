@@ -14,10 +14,9 @@ void editor::execute_in_editor_thread(std::function<void()> call) {
     QMetaObject::invokeMethod(main_window, call, Qt::QueuedConnection);
 }
 
-void editor::run_editor(char* exe_name) {
+void editor::run_editor(QApplication* app) {
     fs::save_resources();
-    int argc = 1;
-    qt_app = new QApplication(argc, &exe_name);
+    qt_app = app;
     main_window = new ui::element_editor();
     main_window->show();
     asset_importer::start();
@@ -25,7 +24,6 @@ void editor::run_editor(char* exe_name) {
     qt_app->exec();
     asset_importer::stop();
     delete main_window;
-    delete qt_app;
     main_window = nullptr;
     qt_app = nullptr;
 }
