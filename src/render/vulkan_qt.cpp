@@ -1,8 +1,12 @@
-#include <render/vulkan.h>
+#include "vulkan_qt.h"
 #include <core/log.h>
 #include <QGuiApplication> 
 #include <vector>
 #include <string>
+
+using namespace element;
+
+QVulkanInstance* vulkan_qt::instance = nullptr;
 
 static void editor_required_vulkan_extensions(std::vector<const char*>& extensions) {
     std::string qpa = QGuiApplication::platformName().toStdString();
