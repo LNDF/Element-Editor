@@ -17,8 +17,6 @@ void editor::execute_in_editor_thread(std::function<void()> call) {
 
 void editor::run_editor(QApplication* app) {
     fs::save_resources();
-    QVulkanInstance* q_vulkan_instance = new QVulkanInstance();
-    q_vulkan_instance->setVkInstance(vulkan::get_instance());
     qt_app = app;
     main_window = new ui::element_editor();
     main_window->show();
