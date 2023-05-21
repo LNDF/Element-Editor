@@ -27,12 +27,11 @@ target_compile_options(element-editor PRIVATE -Wall)
 
 # define options
 target_compile_definitions(element-editor PUBLIC ELM_EDITOR_VERSION="${PROJECT_VERSION}")
-
-#LIBS
+#LIBS 
 
 # qt
 set_target_properties(element-editor PROPERTIES AUTOMOC ON AUTOUIC ON)
-target_link_libraries(element-editor PRIVATE Qt6::Widgets)
+target_link_libraries(element-editor PRIVATE Qt6::Widgets Qt6::WidgetsPrivate)
 
 # element core
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)

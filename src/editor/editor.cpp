@@ -19,7 +19,6 @@ void editor::run_editor(QApplication* app) {
     fs::save_resources();
     QVulkanInstance* q_vulkan_instance = new QVulkanInstance();
     q_vulkan_instance->setVkInstance(vulkan::get_instance());
-    vulkan_qt::set_vulkan_instance(q_vulkan_instance);
     qt_app = app;
     main_window = new ui::element_editor();
     main_window->show();
@@ -30,6 +29,4 @@ void editor::run_editor(QApplication* app) {
     delete main_window;
     main_window = nullptr;
     qt_app = nullptr;
-    delete vulkan_qt::get_vulkan_instance();
-    vulkan_qt::set_vulkan_instance(nullptr);
 }

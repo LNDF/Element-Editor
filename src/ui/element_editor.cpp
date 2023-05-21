@@ -16,5 +16,4 @@ element_editor::element_editor() {
 
 element_editor::~element_editor() {
     delete game_window_container;
-    delete game_window;
 }
