@@ -3,7 +3,6 @@
 #include <render/vulkan.h>
 
 #include <QMainWindow>
-#include <QVulkanInstance>
 
 #include "ui_element_editor.h"
 

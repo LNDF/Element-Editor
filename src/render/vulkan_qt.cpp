@@ -56,7 +56,7 @@ vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
         if (!func) {
             throw new std::runtime_error("Couldn't get address of vkCreateWin32SurfaceKHR");
         } else {
-            VkResult r = func(vulkan::get_instance(), &create_info, nullptr, &c_surface)
+            VkResult r = func(vulkan::get_instance(), &create_info, nullptr, &c_surface);
             if (r != VK_SUCCESS) vk::throwResultException((vk::Result) r, "::vkCreateWin32SurfaceKHR");
         }
     }
