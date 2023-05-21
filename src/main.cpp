@@ -9,7 +9,7 @@ using namespace element;
 
 int main(int argc, char** argv) {
     ELM_INIT_LOG;
-    ELM_SET_LOG_LEVEL(ELM_LOG_LEVEL_TRACE);
+    ELM_SET_LOG_LEVEL(ELM_LOG_LEVEL_DEBUG);
     int args = 1;
     QApplication* qt_app = new QApplication(args, argv);
     //TODO: get from program arguments...
