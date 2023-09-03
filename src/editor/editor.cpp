@@ -4,7 +4,7 @@
 #include <core/log.h>
 #include <core/fs_editor.h>
 #include <asset/importer.h>
-#include <render/vulkan_qt.h>
+#include <graphics/vulkan_qt.h>
 
 using namespace element;
 
