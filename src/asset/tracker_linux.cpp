@@ -84,7 +84,7 @@ inline void watcher_process_delete(const std::pair<bool, std::filesystem::path>&
         watcher_inotify_rm_watches(wd, true);
     }
     element::editor::execute_in_editor_thread([=]() {
-        element::asset_importer::tracker_path_delete(data.second);
+        element::__detail::__asset_importer_tracker_path_delete(data.second);
     });
 }
 
@@ -96,7 +96,7 @@ static void watcher_inotify_process_event(inotify_event* event) {
         if (it != cookie_move_data_map.end()) {
             std::filesystem::path& from = it->second.second;
             element::editor::execute_in_editor_thread([=]() {
-                element::asset_importer::tracker_path_move(from, path);
+                element::__detail::__asset_importer_tracker_path_move(from, path);
             });
             cookie_move_data_map.erase(it);
             return;
@@ -113,14 +113,14 @@ static void watcher_inotify_process_event(inotify_event* event) {
             watcher_inotify_add_watchers(path, nwd, event->wd);
         }
         element::editor::execute_in_editor_thread([=]() {
-            element::asset_importer::tracker_path_create(path, event->mask & IN_ISDIR);
+            element::__detail::__asset_importer_tracker_path_create(path, event->mask & IN_ISDIR);
         });
     } else if (event->mask & IN_DELETE) {
         if (event->mask & IN_ISDIR) {
             watcher_inotify_rm_watches(wd_from_path(path), false);
         }
         element::editor::execute_in_editor_thread([=]() {
-            element::asset_importer::tracker_path_delete(path);
+            element::__detail::__asset_importer_tracker_path_delete(path);
         });
     } else if (event->mask & IN_MOVED_FROM) {
         cookie_move_data_map.try_emplace(event->cookie, event->mask & IN_ISDIR, std::move(path));
@@ -132,7 +132,7 @@ static void watcher_inotify_process_event(inotify_event* event) {
         }
     } else if (event->mask & IN_MODIFY) {
         element::editor::execute_in_editor_thread([=]() {
-            element::asset_importer::tracker_path_modify(path);
+            element::__detail::__asset_importer_tracker_path_modify(path);
         });
     }
 }

@@ -47,7 +47,7 @@ static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
         case FILE_ACTION_ADDED:
             if (last_remove_enabled) {
                 element::editor::execute_in_editor_thread([=]() {
-                    element::asset_importer::tracker_path_move(last_remove, path);
+                    element::__detail::__asset_importer_tracker_path_move(last_remove, path);
                 });
                 consumed = true;
             }
@@ -55,7 +55,7 @@ static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
         case FILE_ACTION_RENAMED_NEW_NAME:
             if (last_old_rename_enabled) {
                 element::editor::execute_in_editor_thread([=]() {
-                    element::asset_importer::tracker_path_move(last_old_rename, path);
+                    element::__detail::__asset_importer_tracker_path_move(last_old_rename, path);
                 });
                 consumed = true;
             }
@@ -64,7 +64,7 @@ static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
     if (!consumed)  {
         if (last_remove_enabled) {
             element::editor::execute_in_editor_thread([=]() {
-                element::asset_importer::tracker_path_delete(path);
+                element::__detail::__asset_importer_tracker_path_delete(path);
             });
         }
     }
@@ -74,7 +74,7 @@ static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
     switch (event->Action) {
         case FILE_ACTION_ADDED:
             element::editor::execute_in_editor_thread([=]() {
-                element::asset_importer::tracker_path_create(path, is_path_directory(path));
+                element::__detail::__asset_importer_tracker_path_create(path, is_path_directory(path));
             });
             break;
         case FILE_ACTION_REMOVED:
@@ -88,7 +88,7 @@ static void watcher_win32_process_event(FILE_NOTIFY_INFORMATION* event) {
         case FILE_ACTION_MODIFIED:
             if (!is_path_directory(path)) {
                 element::editor::execute_in_editor_thread([=]() {
-                    element::asset_importer::tracker_path_modify(path);
+                    element::__detail::__asset_importer_tracker_path_modify(path);
                 });
             }
             break;
@@ -131,7 +131,7 @@ static void watcher_win32_thread() {
                 last_old_rename_enabled = false;
                 if (last_remove_enabled) {
                     element::editor::execute_in_editor_thread([=]() {
-                        element::asset_importer::tracker_path_delete(last_remove);
+                        element::__detail::__asset_importer_tracker_path_delete(last_remove);
                     });
                     last_remove_enabled = false;
                 }
