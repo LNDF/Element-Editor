@@ -23,6 +23,6 @@ qt_vulkan_window::~qt_vulkan_window() {
 void qt_vulkan_window::resizeEvent(QResizeEvent *ev) {
     ELM_DEBUG("Editor renderer resized to {0}x{1}", ev->size().width(), ev->size().height());
     if (swapchain != nullptr) if (swapchain != nullptr) vulkan::get_device().destroySwapchainKHR(swapchain);
-    vulkan_swapchain_info info = vulkan::query_swapchain_info(surface, this->width(), this->height());
+    vulkan::swapchain_creation_info info = vulkan::query_swapchain_info(surface, this->width(), this->height());
     swapchain = vulkan::create_swapchain(info);
 }
