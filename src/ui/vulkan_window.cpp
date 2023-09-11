@@ -2,6 +2,7 @@
 
 #include <editor/editor.h>
 #include <core/log.h>
+#include <graphics/vulkan_swapchain.h>
 
 #include <QResizeEvent>
 
