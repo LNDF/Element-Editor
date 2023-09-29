@@ -38,7 +38,7 @@ static void editor_required_vulkan_extensions(std::vector<const char*>& extensio
     }
 }
 
-ELM_REGISTER_VULKAN_REQUIRED_EXTENSION_HOOK(editor_required_vulkan_extensions);
+ELM_REGISTER_VULKAN_REQUIRED_EXTENSION_HOOK(editor_required_vulkan_extensions)
 
 vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
     VkSurfaceKHR c_surface = nullptr;

@@ -3,6 +3,7 @@
 #include <core/log.h>
 #include <core/fs.h>
 #include <utils/packed_map.h>
+#include <utils/pre_exec.h>
 #include <utils/uuid.h>
 
 #include <filesystem>
@@ -13,7 +14,7 @@
 
 #include <QTimer>
 
-#define ELM_REGISTER_IMPORTER(type, import_fun) static bool __elm_register_importer_##type = element::__detail::__asset_importer_preregister_importer(#type, element::__detail::__asset_importer_callback{import_fun})
+#define ELM_REGISTER_IMPORTER(type, import_fun) ELM_PRE_EXECUTE(element::__detail::__asset_importer_preregister_importer, type, element::__detail::__asset_importer_callback{import_fun})
 
 namespace element {
     
