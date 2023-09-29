@@ -40,23 +40,27 @@ namespace element {
     }
 
     void fs::save_resource_info(const uuid& id, const fs_resource_info& info) {
-        try {
-            fs_uuid_map.erase(fs_map.at(id).path);
-        } catch (const std::out_of_range& e) {}
-        try {
-            fs_map.erase(fs_uuid_map.at(info.path));
-        } catch (const std::out_of_range& e) {}
+        auto fs_it = fs_map.find(id);
+        if (fs_it != fs_map.end()) {
+            fs_uuid_map.erase(fs_it->second.path);
+        }
+        auto id_it = fs_uuid_map.find(info.path);
+        if (id_it != fs_uuid_map.end()) {
+            fs_map.erase(id_it->second);
+        }
         fs_uuid_map[info.path] = id;
         fs_map[id] = info;
     }
 
     void fs::save_resource_info(const uuid& id, fs_resource_info&& info) {
-        try {
-            fs_uuid_map.erase(fs_map.at(id).path);
-        } catch (const std::out_of_range& e) {}
-        try {
-            fs_map.erase(fs_uuid_map.at(info.path));
-        } catch (const std::out_of_range& e) {}
+        auto fs_it = fs_map.find(id);
+        if (fs_it != fs_map.end()) {
+            fs_uuid_map.erase(fs_it->second.path);
+        }
+        auto id_it = fs_uuid_map.find(info.path);
+        if (id_it != fs_uuid_map.end()) {
+            fs_map.erase(id_it->second);
+        }
         fs_uuid_map[info.path] = id;
         fs_map[id] = std::move(info);
     }
