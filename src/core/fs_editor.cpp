@@ -8,10 +8,10 @@
 #include <core/log.h>
 #include <editor/project.h>
 #include <serialization/defs.h>
-#include <serialization/fs.h>
+#include <serialization/core/fs.h>
 #include <serialization/string.h>
 #include <serialization/unordered_map.h>
-#include <serialization/uuid.h>
+#include <serialization/utils/uuid.h>
 
 static std::unordered_map<element::uuid, element::fs_resource_info> fs_map;
 static std::unordered_map<std::string, element::uuid> fs_uuid_map;
