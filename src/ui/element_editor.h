@@ -14,6 +14,8 @@ namespace element {
             private:
                 QWindow* game_window;
                 QWidget* game_window_container;
+            protected:
+                void closeEvent(QCloseEvent* event) override;
             public:
                 element_editor();
                 virtual ~element_editor();
