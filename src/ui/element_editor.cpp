@@ -3,7 +3,7 @@
 #include <QCloseEvent>
 #include <core/log.h>
 #include <core/engine.h>
-#include <event/core_events.h>
+#include <core/core_events.h>
 #include <event/event.h>
 #include <ui/vulkan_window.h>
 
