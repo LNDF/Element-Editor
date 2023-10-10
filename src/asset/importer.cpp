@@ -15,7 +15,6 @@
 QTimer* element::__detail::__asset_importer_pending_import_timer = nullptr;
 bool element::__detail::__asset_importer_tracker_running = false;
 element::__detail::__asset_importer_node element::__detail::__asset_importer_root_node;
-std::unordered_map<std::string, element::__detail::__asset_importer_callback> element::__detail::__asset_importer_importers;
 std::unordered_set<element::uuid> element::__detail::__asset_importer_pending_to_import;
 
 using namespace element;
@@ -178,14 +177,9 @@ void __detail::__asset_importer_tracker_path_modify(const std::filesystem::path 
     __asset_importer_pending_timer_reset();
 }
 
-std::unordered_map<std::string, __detail::__asset_importer_callback>& __detail::__asset_importer_get_preregistered_importers() {
-    static std::unordered_map<std::string, __asset_importer_callback> map;
+std::unordered_map<std::string, asset_importer::asset_importer_callback>& __detail::__asset_importer_get_importers() {
+    static std::unordered_map<std::string, asset_importer::asset_importer_callback> map;
     return map;
-}
-
-bool __detail::__asset_importer_preregister_importer(std::string&& type, __asset_importer_callback importer_cb) {
-    __asset_importer_get_preregistered_importers().try_emplace(std::move(type), importer_cb);
-    return true;
 }
 
 void __detail::__asset_importer_pending_timer_reset() {
@@ -197,10 +191,9 @@ void asset_importer::start() {
         ELM_WARN("File system watcher already started.");
         return;
     }
-    std::unordered_map<std::string, asset_importer_callback>& preregistered = __detail::__asset_importer_get_preregistered_importers();
-    __detail::__asset_importer_importers.insert(preregistered.begin(), preregistered.end());
-    ELM_DEBUG("Registered importers: {}", __detail::__asset_importer_importers.size());
-    for (const auto& [type, cbs] : __detail::__asset_importer_importers) {
+    auto& importers = __detail::__asset_importer_get_importers();
+    ELM_DEBUG("Registered importers: {}", importers.size());
+    for (const auto& [type, cbs] : importers) {
         ELM_DEBUG("    {}", type);
     }
     __detail::__asset_importer_root_node.is_dir = true;
@@ -241,17 +234,20 @@ void asset_importer::stop() {
         delete __detail::__asset_importer_pending_import_timer;
         asset_tracker::stop();
         __detail::__asset_importer_root_node.children.clear();
-        __detail::__asset_importer_importers.clear();
         __detail::__asset_importer_tracker_running = false;
     }
 }
 
 void asset_importer::register_importer(const std::string& type, asset_importer_callback importer) {
-    __detail::__asset_importer_importers.try_emplace(type, importer);
+    __detail::__asset_importer_get_importers().try_emplace(type, importer);
 }
 
 void asset_importer::register_importer(std::string&& type, asset_importer_callback importer) {
-    __detail::__asset_importer_importers.try_emplace(std::move(type), importer);
+    __detail::__asset_importer_get_importers().try_emplace(std::move(type), importer);
+}
+
+void asset_importer::unregister_importer(const std::string& type) {
+    __detail::__asset_importer_get_importers().erase(type);
 }
 
 void asset_importer::reimport() {
@@ -261,10 +257,10 @@ void asset_importer::reimport() {
 
 void asset_importer::import(const uuid& id) {
     fs_resource_info info = fs::get_resource_info(id);
-    auto it = __detail::__asset_importer_importers.find(info.type);
-    if (it != __detail::__asset_importer_importers.end()) {
+    auto it = __detail::__asset_importer_get_importers().find(info.type);
+    if (it != __detail::__asset_importer_get_importers().end()) {
         ELM_INFO("Importing {0} ({1}).", info.path, id.str());
-        it->second.import(id);
+        it->second(id);
     } else {
         ELM_INFO("Raw importing {0} ({1}).", info.path, id.str());
         importers::raw_importer(id);
