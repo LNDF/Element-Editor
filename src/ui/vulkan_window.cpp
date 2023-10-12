@@ -10,15 +10,15 @@ using namespace element;
 
 qt_vulkan_window::qt_vulkan_window(QWindow* parent) : QWindow(parent) {
     create();
-    surface = vulkan_create_surface_from_qt(this);
-    if (!vulkan::is_device_created()) {
+    surface = vulkan::create_surface_from_qt(this);
+    if (vulkan::device == nullptr) {
         vulkan::init_device(surface);
     }
 }
 
 qt_vulkan_window::~qt_vulkan_window() {
     if (swapchain_created) vulkan::destroy_swapchain(swapchain);
-    vulkan::get_instance().destroySurfaceKHR(surface, nullptr, vulkan::get_dld());
+    vulkan::instance.destroySurfaceKHR(surface, nullptr, vulkan::dld);
     swapchain_created = false;
 }
 

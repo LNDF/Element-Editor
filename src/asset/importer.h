@@ -34,11 +34,6 @@ namespace element {
         extern __asset_importer_node __asset_importer_root_node;
         extern std::unordered_set<uuid> __asset_importer_pending_to_import;
 
-        extern QTimer* __asset_importer_pending_import_timer;
-        extern  bool __asset_importer_tracker_running;
-        extern __asset_importer_node __asset_importer_root_node;
-        extern std::unordered_set<uuid> __asset_importer_pending_to_import;
-
         void __asset_importer_create_dir_nodes(const std::filesystem::path& path, __asset_importer_node& node, std::vector<uuid>& import_pending);
         __asset_importer_node& __asset_importer_get_dir_nodes(const std::filesystem::path& path);
         void __asset_importer_fix_dir_node_paths(const std::filesystem::path& old_path, const std::filesystem::path& new_path, const __asset_importer_node& dir_node);

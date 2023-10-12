@@ -4,14 +4,11 @@
 #include <ui/element_editor.h>
 
 namespace element {
-    class editor {
-        public:
-            static void execute_in_editor_thread(std::function<void()> call);
-            static void run_editor(QApplication* app);
-            inline static QApplication* get_qt_app() {return qt_app;}
-            inline static ui::element_editor* get_main_window() {return main_window;}
-        private:
-            static QApplication* qt_app;
-            static ui::element_editor* main_window;
-    };
+    namespace editor {
+        extern QApplication* qt_app;
+        extern ui::element_editor* main_window;
+
+        void execute_in_editor_thread(std::function<void()> call);
+        void run_editor(QApplication* app);
+    }
 } // namespace element

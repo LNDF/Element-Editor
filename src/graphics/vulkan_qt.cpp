@@ -40,7 +40,7 @@ static void editor_required_vulkan_extensions(std::vector<const char*>& extensio
 
 ELM_REGISTER_VULKAN_REQUIRED_EXTENSION_HOOK(editor_required_vulkan_extensions)
 
-vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
+vk::SurfaceKHR element::vulkan::create_surface_from_qt(QWindow* window) {
     VkSurfaceKHR c_surface = nullptr;
     std::string qpa = QGuiApplication::platformName().toStdString();
 #if defined(ELM_PLATFORM_WINDOWS)
@@ -52,7 +52,7 @@ vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
         create_info.flags = 0;
         create_info.hinstance = nullptr;
         create_info.hwnd = (HWND) window->winId();
-        const PFN_vkCreateWin32SurfaceKHR func = (PFN_vkCreateWin32SurfaceKHR) vulkan::get_dld().vkGetInstanceProcAddr(vulkan::get_instance(), "vkCreateWin32SurfaceKHR");
+        const PFN_vkCreateWin32SurfaceKHR func = (PFN_vkCreateWin32SurfaceKHR) dld.vkGetInstanceProcAddr(instance, "vkCreateWin32SurfaceKHR");
         if (!func) {
             throw new std::runtime_error("Couldn't get address of vkCreateWin32SurfaceKHR");
         } else {
@@ -70,11 +70,11 @@ vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
         create_info.flags = 0;
         create_info.dpy = (Display*) qpni->nativeResourceForWindow("display", window);
         create_info.window = (Window) window->winId();
-        const PFN_vkCreateXlibSurfaceKHR func = (PFN_vkCreateXlibSurfaceKHR) vulkan::get_dld().vkGetInstanceProcAddr(vulkan::get_instance(), "vkCreateXlibSurfaceKHR");
+        const PFN_vkCreateXlibSurfaceKHR func = (PFN_vkCreateXlibSurfaceKHR) dld.vkGetInstanceProcAddr(instance, "vkCreateXlibSurfaceKHR");
         if (!func) {
             throw new std::runtime_error("Couldn't get address of vkCreateXlibSurfaceKHR");
         } else {
-            VkResult r = func(vulkan::get_instance(), &create_info, nullptr, &c_surface);
+            VkResult r = func(instance, &create_info, nullptr, &c_surface);
             if (r != VK_SUCCESS) vk::detail::throwResultException((vk::Result) r, "::vkCreateXlibSurfaceKHR");
         }
     } else if (qpa == "wayland" || qpa == "wayland-egl") {
@@ -85,11 +85,11 @@ vk::SurfaceKHR element::vulkan_create_surface_from_qt(QWindow* window) {
         create_info.flags = 0;
         create_info.display = (wl_display*) qpni->nativeResourceForWindow("display", window);
         create_info.surface = (wl_surface*) qpni->nativeResourceForWindow("surface", window);
-        const PFN_vkCreateWaylandSurfaceKHR func = (PFN_vkCreateWaylandSurfaceKHR)vulkan::get_dld().vkGetInstanceProcAddr(vulkan::get_instance(), "vkCreateWaylandSurfaceKHR");
+        const PFN_vkCreateWaylandSurfaceKHR func = (PFN_vkCreateWaylandSurfaceKHR) dld.vkGetInstanceProcAddr(instance, "vkCreateWaylandSurfaceKHR");
         if (!func) {
             throw new std::runtime_error("Couldn't get address of vkCreateWaylandSurfaceKHR");
         } else {
-            VkResult r = func(vulkan::get_instance(), &create_info, nullptr, &c_surface);
+            VkResult r = func(instance, &create_info, nullptr, &c_surface);
             if (r != VK_SUCCESS) vk::detail::throwResultException((vk::Result) r, "::vkCreateWaylandSurfaceKHR");
         }
     }

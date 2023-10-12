@@ -5,7 +5,9 @@
 #include <QWindow>
 
 namespace element {
+    namespace vulkan {
 
-    vk::SurfaceKHR vulkan_create_surface_from_qt(QWindow* window);
+        vk::SurfaceKHR create_surface_from_qt(QWindow* window);
 
+    } // namespace vulkan
 } // namespace element

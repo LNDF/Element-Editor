@@ -4,25 +4,24 @@
 #include <filesystem>
 
 namespace element {
-    
-    class project {
-        public:
-            static std::string name;
-            static std::string author;
-            static std::string version;
-            static std::filesystem::path project_path;
-            static std::filesystem::path project_filename;
-            static std::filesystem::path project_fs_path;
-            static std::filesystem::path project_fs_fsmap;
-            static std::filesystem::path project_metadata_path;
-            static std::filesystem::path project_metadata_fsmap;
-            static std::filesystem::path project_assets_path;
+    namespace project {
+        
+        extern std::string name;
+        extern std::string author;
+        extern std::string version;
+        extern std::filesystem::path project_path;
+        extern std::filesystem::path project_filename;
+        extern std::filesystem::path project_fs_path;
+        extern std::filesystem::path project_fs_fsmap;
+        extern std::filesystem::path project_metadata_path;
+        extern std::filesystem::path project_metadata_fsmap;
+        extern std::filesystem::path project_assets_path;
 
-            static void open(const std::filesystem::path& path);
-            static bool exists();
-            static void mkdir();
-            static void load();
-            static void save();
-    };
+        void open(const std::filesystem::path& path);
+        bool exists();
+        void mkdir();
+        void load();
+        void save();
 
+    } // namespace project
 } // namespace element
