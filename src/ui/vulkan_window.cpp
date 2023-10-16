@@ -3,6 +3,7 @@
 #include <editor/editor.h>
 #include <core/log.h>
 #include <graphics/vulkan_swapchain.h>
+#include <render/render.h>
 
 #include <QResizeEvent>
 
@@ -13,6 +14,7 @@ qt_vulkan_window::qt_vulkan_window(QWindow* parent) : QWindow(parent) {
     surface = vulkan::create_surface_from_qt(this);
     if (vulkan::device == nullptr) {
         vulkan::init_device(surface);
+        render::init_renderer();
     }
 }
 
