@@ -57,7 +57,7 @@ vk::SurfaceKHR element::vulkan::create_surface_from_qt(QWindow* window) {
             throw new std::runtime_error("Couldn't get address of vkCreateWin32SurfaceKHR");
         } else {
             VkResult r = func(vulkan::get_instance(), &create_info, nullptr, &c_surface);
-            if (r != VK_SUCCESS) vk::detail::throwResultException((vk::Result) r, "::vkCreateWin32SurfaceKHR");
+            if (r != VK_SUCCESS) if (r != VK_SUCCESS) throw std::runtime_error("::vkCreateWin32SurfaceKHR");
         }
     }
 #elif defined(ELM_PLATFORM_LINUX)
@@ -75,7 +75,7 @@ vk::SurfaceKHR element::vulkan::create_surface_from_qt(QWindow* window) {
             throw new std::runtime_error("Couldn't get address of vkCreateXlibSurfaceKHR");
         } else {
             VkResult r = func(instance, &create_info, nullptr, &c_surface);
-            if (r != VK_SUCCESS) vk::detail::throwResultException((vk::Result) r, "::vkCreateXlibSurfaceKHR");
+            if (r != VK_SUCCESS) throw std::runtime_error("::vkCreateXlibSurfaceKHR");
         }
     } else if (qpa == "wayland" || qpa == "wayland-egl") {
         ELM_DEBUG("Creating Wayland surface...");
@@ -90,7 +90,7 @@ vk::SurfaceKHR element::vulkan::create_surface_from_qt(QWindow* window) {
             throw new std::runtime_error("Couldn't get address of vkCreateWaylandSurfaceKHR");
         } else {
             VkResult r = func(instance, &create_info, nullptr, &c_surface);
-            if (r != VK_SUCCESS) vk::detail::throwResultException((vk::Result) r, "::vkCreateWaylandSurfaceKHR");
+            if (r != VK_SUCCESS) if (r != VK_SUCCESS) throw std::runtime_error("::vkCreateWaylandSurfaceKHR");
         }
     }
 #endif
