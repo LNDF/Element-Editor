@@ -2,6 +2,8 @@
 
 #include <core/log.h>
 #include <core/fs.h>
+#include <event/event.h>
+#include <asset/asset_events.h>
 #include <utils/packed_map.h>
 #include <utils/pre_exec.h>
 #include <utils/uuid.h>
@@ -60,6 +62,7 @@ namespace element {
         void unregister_importer(const std::string& type);
         void reimport();
         void import(const uuid& id);
+        void import(const uuid& id, bool call_event);
         void recreate_assets_dir();
         
         void pending_import();
@@ -71,8 +74,14 @@ namespace element {
             ELM_INFO("Starting to import assets...");
             std::vector<std::future<void>> futures;
             for (; from != to; from++) {
-                futures.push_back(std::async(std::launch::async, asset_importer::import, *from));
+                futures.push_back(std::async<void(const uuid&, bool)>(std::launch::async, asset_importer::import, *from, false));
             }
+            events::asset_updated event;
+            for (; from != to; from++) {
+                event.id = *from;
+                event_manager::send_event(event);
+            }
+            
         }
     } // namespace asset_importer
 

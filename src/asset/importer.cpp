@@ -3,7 +3,7 @@
 #include <editor/project.h>
 #include <core/fs_editor.h>
 #include <asset/tracker.h>
-#include <asset/importers/raw.h>
+#include <asset/importers/default_importer.h>
 #include <utils/platform.h>
 
 #ifdef ELM_PLATFORM_WINDOWS
@@ -161,6 +161,9 @@ void __detail::__asset_importer_tracker_path_delete(const std::filesystem::path 
         __asset_importer_delete_dir_nodes(path, node);
     } else {
         uuid id = fs::get_uuid_from_resource_path(__asset_importer_get_fs_path_from_system(path));
+        events::asset_deleted event;
+        event.id = id;
+        event_manager::send_event(event);
         fs::delete_resource_data(id);
         fs::delete_resource_info(id);
         __asset_importer_pending_to_import.erase(id);
@@ -256,6 +259,10 @@ void asset_importer::reimport() {
 }
 
 void asset_importer::import(const uuid& id) {
+    import(id, false);
+}
+
+void asset_importer::import(const uuid& id, bool call_event) {
     fs_resource_info info = fs::get_resource_info(id);
     auto it = __detail::__asset_importer_get_importers().find(info.type);
     if (it != __detail::__asset_importer_get_importers().end()) {
@@ -263,7 +270,12 @@ void asset_importer::import(const uuid& id) {
         it->second(id);
     } else {
         ELM_INFO("Raw importing {0} ({1}).", info.path, id.str());
-        importers::raw_importer(id);
+        importers::default_importer(id);
+    }
+    if (call_event) {
+        events::asset_updated event;
+        event.id = id;
+        event_manager::send_event(event);
     }
 }
 

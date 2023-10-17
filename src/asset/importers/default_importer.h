@@ -5,7 +5,7 @@
 namespace element {
     namespace importers {
         
-        void raw_importer(const uuid& id);
+        void default_importer(const uuid& id);
 
     } // namespace importers
 } // namespace element
