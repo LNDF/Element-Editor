@@ -3,7 +3,6 @@
 #include <core/fs.h>
 
 #include <ostream>
-#include <unordered_map>
 
 namespace element {
 
@@ -16,7 +15,6 @@ namespace element {
         void save_resources();
         void save_bin_resources();
         uuid get_new_uuid();
-        const std::unordered_map<element::uuid, element::fs_resource_info>& get_map();
     } // namespace fs
 
 } // namespace element
