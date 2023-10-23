@@ -4,6 +4,10 @@ project(element-editor VERSION 0.0.1)
 #include(CTest)
 #enable_testing()
 
+macro(OVERRIDE_OPTION option type value)
+  set(${option} ${value} CACHE ${type} "" FORCE)
+endmacro()
+
 #Qt
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 qt_standard_project_setup()
@@ -40,6 +44,23 @@ target_link_libraries(element-editor PRIVATE element)
 # Vulkan (shaderc)
 find_package(Vulkan COMPONENTS shaderc_combined REQUIRED)
 target_link_libraries(element-editor PUBLIC Vulkan::shaderc_combined)
+
+# SPIRV-Cross
+OVERRIDE_OPTION(SPIRV_CROSS_SHARED BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_STATIC BOOL ON)
+OVERRIDE_OPTION(SPIRV_CROSS_CLI BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_TESTS BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_GLSL BOOL ON)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_HLSL BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_MSL BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_CPP BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_REFLECT BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_C_API BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_ENABLE_UTIL BOOL OFF)
+OVERRIDE_OPTION(SPIRV_CROSS_SKIP_INSTALL BOOL OFF)
+add_subdirectory(lib/SPIRV-Cross EXCLUDE_FROM_ALL)
+target_link_libraries(element-editor PUBLIC spirv-cross-glsl)
+target_include_directories(element-editor PUBLIC lib/SPIRV-Cross)
 
 #end libs
 
