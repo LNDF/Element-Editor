@@ -37,6 +37,10 @@ target_link_libraries(element-editor PRIVATE Qt6::Widgets Qt6::WidgetsPrivate)
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PRIVATE element)
 
+# Vulkan (shaderc)
+find_package(Vulkan COMPONENTS shaderc_combined REQUIRED)
+target_link_libraries(element-editor PUBLIC Vulkan::shaderc_combined)
+
 #end libs
 
 # CMake options
