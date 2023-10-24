@@ -4,6 +4,7 @@
 #include <core/fs.h>
 #include <event/event.h>
 #include <asset/asset_events.h>
+#include <asset/importers/null_importer.h>
 #include <utils/packed_map.h>
 #include <utils/pre_exec.h>
 #include <utils/uuid.h>
@@ -17,6 +18,7 @@
 #include <QTimer>
 
 #define ELM_REGISTER_IMPORTER(type, import_fun) ELM_PRE_EXECUTE(element::asset_importer::register_importer, type, import_fun)
+#define ELM_REGISTER_SKIP_IMPORT(type) ELM_REGISTER_IMPORTER(type, element::importers::null_importer)
 
 namespace element {
     
