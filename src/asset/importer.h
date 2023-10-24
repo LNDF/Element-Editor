@@ -72,9 +72,11 @@ namespace element {
         template<typename It>
         void import_all(It from, It to) {
             ELM_INFO("Starting to import assets...");
-            std::vector<std::future<void>> futures;
-            for (; from != to; from++) {
-                futures.push_back(std::async<void(const uuid&, bool)>(std::launch::async, asset_importer::import, *from, false));
+            {
+                std::vector<std::future<void>> futures;
+                for (It i = from; i != to; i+) {
+                    futures.push_back(std::async<void(const uuid&, bool)>(std::launch::async, asset_importer::import, *i, false));
+                }
             }
             events::asset_updated event;
             for (; from != to; from++) {
