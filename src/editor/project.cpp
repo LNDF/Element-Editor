@@ -3,7 +3,9 @@
 #include <fstream>
 
 #include <core/log.h>
+#include <editor/project_events.h>
 #include <serialization/defs.h>
+#include <event/event.h>
 
 using namespace element;
     
@@ -50,6 +52,8 @@ void project::load() {
                     ELM_SERIALIZE_NVP("version", version));
     }
     ELM_INFO("Opened project {0} version {1} by {2}", name, version, author);
+    events::project_opened event;
+    event_manager::send_event(event);
 }
 
 void project::save() {
@@ -62,4 +66,6 @@ void project::save() {
                     ELM_SERIALIZE_NVP("author",  author),
                     ELM_SERIALIZE_NVP("version", version));
     }
+    events::project_saved event;
+    event_manager::send_event(event);
 }
