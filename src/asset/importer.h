@@ -74,7 +74,7 @@ namespace element {
             ELM_INFO("Starting to import assets...");
             {
                 std::vector<std::future<void>> futures;
-                for (It i = from; i != to; i+) {
+                for (It i = from; i != to; i++) {
                     futures.push_back(std::async<void(const uuid&, bool)>(std::launch::async, asset_importer::import, *i, false));
                 }
             }
