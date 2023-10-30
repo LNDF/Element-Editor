@@ -9,16 +9,18 @@ namespace element {
 
         struct compilation_result {
             std::vector<std::uint32_t> spv;
-            std::size_t num_errors;
-            std::size_t num_warnings;
             std::string message;
+            bool success = false;
         };
         
-        enum shader_type {
+        enum shader_stage {
             fragment, vertex
         };
 
-        compilation_result compile_shader(const std::filesystem::path& path, shader_type type);
+        compilation_result compile_shader(const std::filesystem::path& path, shader_stage type);
+
+        void compiler_init();
+        void compiler_cleanup();
 
     } // namespace shader
 } // namespace element

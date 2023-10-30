@@ -3,7 +3,7 @@
 #include <utils/uuid.h>
 
 static void vert_importer(const element::uuid& id) {
-    element::importers::helpers::shader_compile(id, element::shader::shader_type::vertex);
+    element::importers::helpers::shader_compile(id, element::shader::shader_stage::vertex);
 }
 
 ELM_REGISTER_IMPORTER("vert", vert_importer)

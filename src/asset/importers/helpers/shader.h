@@ -6,7 +6,7 @@
 namespace element {
     namespace importers {
         namespace helpers {
-            void shader_compile(const uuid& id, shader::shader_type type);
+            void shader_compile(const uuid& id, shader::shader_stage type);
         } // namespace helpers
     } // namespace importers
 } // namespace element

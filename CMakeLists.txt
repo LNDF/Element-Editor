@@ -42,10 +42,9 @@ add_subdirectory(lib/element EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PRIVATE element)
 
 # Vulkan (shader)
-find_package(Vulkan COMPONENTS shaderc_combined glslang SPIRV-Tools REQUIRED)
+find_package(Vulkan COMPONENTS SPIRV-Tools glslang REQUIRED)
 target_link_libraries(element-editor PUBLIC Vulkan::SPIRV-Tools)
 target_link_libraries(element-editor PUBLIC Vulkan::glslang)
-target_link_libraries(element-editor PUBLIC Vulkan::shaderc_combined)
 
 # SPIRV-Cross
 OVERRIDE_OPTION(SPIRV_CROSS_SHARED BOOL OFF)
