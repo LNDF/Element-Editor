@@ -4,3 +4,12 @@
 [submodule "lib/SPIRV-Cross"]
 	path = lib/SPIRV-Cross
 	url = https://github.com/KhronosGroup/SPIRV-Cross
+[submodule "lib/glslang"]
+	path = lib/glslang
+	url = https://github.com/KhronosGroup/glslang
+[submodule "lib/SPIRV-Tools"]
+	path = lib/SPIRV-Tools
+	url = https://github.com/KhronosGroup/SPIRV-Tools
+[submodule "lib/SPIRV-Headers"]
+	path = lib/SPIRV-Headers
+	url = https://github.com/KhronosGroup/SPIRV-Headers
