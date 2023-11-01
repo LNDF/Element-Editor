@@ -3,10 +3,43 @@
 #include <core/log.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
 #include <fstream>
+#include <memory>
 
 using namespace element;
 
 //Reference: https://lxjk.github.io/2020/03/10/Translate-GLSL-to-SPIRV-for-Vulkan-at-Runtime.html
+
+class shader_includer : public glslang::TShader::Includer  {
+    IncludeResult* include_if_exists(const std::filesystem::path& inc_path) {
+        std::ifstream stream(inc_path, std::ios::binary);
+        if (!stream.good()) return nullptr;
+        stream.seekg(0, std::ios::end);
+        long stream_size = stream.tellg();
+        char* code = new char[stream_size];
+        stream.read(code, stream_size);
+        IncludeResult* result = new IncludeResult(inc_path.string(), code, stream_size, nullptr);
+        return result;
+    }
+
+    virtual IncludeResult* includeSystem(const char* includee, const char* includer, size_t depth) final override {
+        if (depth > 50) return nullptr;
+        std::filesystem::path inc_path = std::filesystem::absolute("resouces/shader_include");
+        inc_path /= includee;
+        return include_if_exists(inc_path);
+    }
+
+    virtual IncludeResult* includeLocal(const char* includee, const char* includer, size_t depth) final override {
+        if (depth > 50) return nullptr;
+        std::filesystem::path inc_path = std::filesystem::absolute(includer).remove_filename();
+        inc_path /= includee;
+        return include_if_exists(inc_path);
+    }
+
+    virtual void releaseInclude(IncludeResult* result) final override {
+        delete result->headerData;
+        delete result;
+    }
+};
 
 static void init_glslang_resources(TBuiltInResource& resources) {
     resources.maxLights = 32;
@@ -128,29 +161,29 @@ shader::compilation_result shader::compile_shader(const std::filesystem::path& p
         break;
     }
     std::ifstream stream(path, std::ios::binary);
-    if (!stream.is_open()) {
+    if (!stream.good()) {
         ret.message = "Couldn't open input source file";
         return ret;
     }
     stream.seekg(0, std::ios::end);
-    std::size_t stream_size = stream.tellg();
+    long stream_size = stream.tellg();
     stream.seekg(0, std::ios::beg);
-    std::string source(stream_size, 0);
-    int source_len = source.length();
+    std::unique_ptr<char[]> source(new char[stream_size]);
     std::string path_str = path.string();
-    stream.read(&source[0], stream_size);
+    stream.read(source.get(), stream_size);
     glslang::TShader shader(glslang_stage);
     glslang::TProgram program;
     TBuiltInResource resources = {};
+    shader_includer includer;
     init_glslang_resources(resources);
     EShMessages messages = (EShMessages)(EShMsgSpvRules | EShMsgVulkanRules);
-    const char* sources[] = {source.c_str()};
+    const char* sources[] = {source.get()};
     const char* names[] = {path_str.c_str()};
     shader.setEnhancedMsgs();
     shader.setEnvClient(glslang::EShClient::EShClientVulkan, glslang::EshTargetClientVersion::EShTargetVulkan_1_0);
     shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
-    shader.setStringsWithLengthsAndNames(sources, &source_len, names, 1);
-    if (!shader.parse(&resources, 100, false, messages)) { //TODO: includer
+    shader.setStringsWithLengthsAndNames(sources, reinterpret_cast<const int*>(&stream_size), names, 1);
+    if (!shader.parse(&resources, 100, false, messages, includer)) {
         ret.message = shader.getInfoLog();
         return ret;
     }
@@ -161,6 +194,7 @@ shader::compilation_result shader::compile_shader(const std::filesystem::path& p
     }
     glslang::TIntermediate* intermediate = program.getIntermediate(glslang_stage);
     glslang::GlslangToSpv(*intermediate, ret.spv);
+    ret.success = true;
     return ret;
 }
 

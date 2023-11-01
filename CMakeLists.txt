@@ -22,8 +22,7 @@ add_executable(element-editor ${SRC_FILES} ${UI_FILES})
 target_include_directories(element-editor PUBLIC ./src/)
 
 # asset files
-file(GLOB_RECURSE RESOURCE_FILES ./resources/*.*)
-file(COPY ${RESOURCE_FILES} DESTINATION ${CMAKE_BINARY_DIR})
+file(COPY ./resources DESTINATION ${CMAKE_BINARY_DIR})
 
 # compile options
 set_property(TARGET element-editor PROPERTY CXX_STANDARD 20)
