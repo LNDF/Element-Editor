@@ -10,35 +10,42 @@ using namespace element;
 //Reference: https://lxjk.github.io/2020/03/10/Translate-GLSL-to-SPIRV-for-Vulkan-at-Runtime.html
 
 class shader_includer : public glslang::TShader::Includer  {
-    IncludeResult* include_if_exists(const std::filesystem::path& inc_path) {
-        std::ifstream stream(inc_path, std::ios::binary);
-        if (!stream.good()) return nullptr;
-        stream.seekg(0, std::ios::end);
-        long stream_size = stream.tellg();
-        char* code = new char[stream_size];
-        stream.read(code, stream_size);
-        IncludeResult* result = new IncludeResult(inc_path.string(), code, stream_size, nullptr);
-        return result;
-    }
+    private:
+        IncludeResult* include_if_exists(const std::filesystem::path& inc_path) {
+            std::ifstream stream(inc_path, std::ios::binary);
+            if (stream.fail()) return nullptr;
+            stream.seekg(0, std::ios::end);
+            long stream_size = stream.tellg();
+            stream.seekg(0, std::ios::beg);
+            char* code = new char[stream_size];
+            stream.read(code, stream_size);
+            IncludeResult* result = new IncludeResult(inc_path.string(), code, stream_size, nullptr);
+            return result;
+        }
 
-    virtual IncludeResult* includeSystem(const char* includee, const char* includer, size_t depth) final override {
-        if (depth > 50) return nullptr;
-        std::filesystem::path inc_path = std::filesystem::absolute("resouces/shader_include");
-        inc_path /= includee;
-        return include_if_exists(inc_path);
-    }
+        virtual IncludeResult* includeSystem(const char* includee, const char* includer, size_t depth) final override {
+            if (depth > 50) return nullptr;
+            std::filesystem::path inc_path = std::filesystem::absolute("resouces/shader_include");
+            inc_path /= includee;
+            return include_if_exists(inc_path);
+        }
 
-    virtual IncludeResult* includeLocal(const char* includee, const char* includer, size_t depth) final override {
-        if (depth > 50) return nullptr;
-        std::filesystem::path inc_path = std::filesystem::absolute(includer).remove_filename();
-        inc_path /= includee;
-        return include_if_exists(inc_path);
-    }
+        virtual IncludeResult* includeLocal(const char* includee, const char* includer, size_t depth) final override {
+            if (depth > 50) return nullptr;
+            std::filesystem::path inc_path = std::filesystem::absolute(includer).remove_filename();
+            inc_path /= includee;
+            IncludeResult* res = include_if_exists(inc_path);
+            if (res !=  nullptr) local_includes.push_back(inc_path);
+            return res;
+        }
 
-    virtual void releaseInclude(IncludeResult* result) final override {
-        delete result->headerData;
-        delete result;
-    }
+        virtual void releaseInclude(IncludeResult* result) final override {
+            if (result == nullptr) return;
+            delete result->headerData;
+            delete result;
+        }
+    public:
+        std::vector<std::filesystem::path> local_includes;
 };
 
 static void init_glslang_resources(TBuiltInResource& resources) {
@@ -161,7 +168,7 @@ shader::compilation_result shader::compile_shader(const std::filesystem::path& p
         break;
     }
     std::ifstream stream(path, std::ios::binary);
-    if (!stream.good()) {
+    if (stream.fail()) {
         ret.message = "Couldn't open input source file";
         return ret;
     }
@@ -180,10 +187,14 @@ shader::compilation_result shader::compile_shader(const std::filesystem::path& p
     const char* sources[] = {source.get()};
     const char* names[] = {path_str.c_str()};
     shader.setEnhancedMsgs();
+    shader.setOverrideVersion(450);
+    shader.setPreamble("#extension GL_GOOGLE_include_directive : require\n");
     shader.setEnvClient(glslang::EShClient::EShClientVulkan, glslang::EshTargetClientVersion::EShTargetVulkan_1_0);
     shader.setEnvTarget(glslang::EShTargetLanguage::EShTargetSpv, glslang::EShTargetLanguageVersion::EShTargetSpv_1_0);
     shader.setStringsWithLengthsAndNames(sources, reinterpret_cast<const int*>(&stream_size), names, 1);
-    if (!shader.parse(&resources, 100, false, messages, includer)) {
+    bool parsed = shader.parse(&resources, 100, false, messages, includer);
+    ret.local_includes = std::move(includer.local_includes);
+    if (!parsed) {
         ret.message = shader.getInfoLog();
         return ret;
     }

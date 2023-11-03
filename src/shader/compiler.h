@@ -9,6 +9,7 @@ namespace element {
 
         struct compilation_result {
             std::vector<std::uint32_t> spv;
+            std::vector<std::filesystem::path> local_includes;
             std::string message;
             bool success = false;
         };
