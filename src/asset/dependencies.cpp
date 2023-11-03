@@ -53,12 +53,21 @@ static void update_path_dependents(const uuid& id, const packed_set<std::string>
     }
 }
 
-void asset_importer::create_dependents_data(const uuid& id, const std::string& path) {
+void __detail::__asset_importer_fix_dependents_import(const uuid& id, const std::string& path) {
     for (const auto& [dep_id, deps] : path_dependencies_map) {
         if (deps.contains(path)) {
             dependents_map[id].insert(dep_id);
         }
     }
+}
+
+void __detail::__asset_importer_fix_dependents_move(const uuid& id, const std::string& old, const std::string& path) {
+    for (const auto& [dep_id, deps] : path_dependencies_map) {
+        if (deps.contains(old)) {
+            dependents_map[id].erase(dep_id);
+        }
+    }
+    __asset_importer_fix_dependents_import(id, path);
 }
 
 void asset_importer::load_dependencies() {
@@ -115,9 +124,14 @@ void asset_importer::delete_dependency_data(const uuid& id) {
     }
     it = dependents_map.find(id);
     if (it != dependents_map.end()) {
+        packed_set<uuid> dependents_to_remove;
         for (const uuid& dep : it->second) {
+            if (!id_dependencies_map[dep].contains(id)) {
+                dependents_to_remove.insert(dep);
+            }
             asset_importer::import(dep);
         }
+        it->second.erase(dependents_to_remove.begin(), dependents_to_remove.end());
     }
 }
 
@@ -140,37 +154,37 @@ const packed_set<uuid>& asset_importer::get_dependents(const uuid& id) {
 }
 
 void asset_importer::set_id_dependencies(const uuid& id, const packed_set<uuid>& deps) {
+    update_id_dependents(id, deps);
     if (deps.empty()) {
-        delete_dependency_data(id);
+        id_dependencies_map.erase(id);
     } else {
-        update_id_dependents(id, deps);
         id_dependencies_map[id] = deps;
     }
 }
 
 void asset_importer::set_id_dependencies(const uuid& id, packed_set<uuid>&& deps) {
+    update_id_dependents(id, deps);
     if (deps.empty()) {
-        delete_dependency_data(id);
+        id_dependencies_map.erase(id);
     } else {
-        update_id_dependents(id, deps);
         id_dependencies_map[id] = std::move(deps);
     }
 }
 
 void asset_importer::set_path_dependencies(const uuid& id, const packed_set<std::string>& deps) {
+    update_path_dependents(id, deps);
     if (deps.empty()) {
-        delete_dependency_data(id);
+        path_dependencies_map.erase(id);
     } else {
-        update_path_dependents(id, deps);
         path_dependencies_map[id] = deps;
     }
 }
 
 void asset_importer::set_path_dependencies(const uuid& id, packed_set<std::string>&& deps) {
+    update_path_dependents(id, deps);
     if (deps.empty()) {
-        delete_dependency_data(id);
+        path_dependencies_map.erase(id);
     } else {
-        update_path_dependents(id, deps);
         path_dependencies_map[id] = std::move(deps);
     }
 }

@@ -49,7 +49,7 @@ static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, ass
             info.type = path.extension().string();
             if (info.type.length() > 0) info.type.erase(0, 1);
             fs::save_resource_info(new_id, std::move(info));
-            asset_importer::create_dependents_data(new_id, apath);
+            __detail::__asset_importer_fix_dependents_import(new_id, apath);
             asset_importer::import(new_id);
         } else {
             fs_resource_info info = fs::get_resource_info(id);
@@ -99,14 +99,15 @@ static void fix_dir_node_paths(const std::filesystem::path& old_path, const std:
         }
     } else {
         uuid id = fs::get_uuid_from_resource_path(asset_importer::get_fs_path_from_system(old_path));
+        std::string old_apath = asset_importer::get_fs_path_from_system(old_path);
+        std::string new_apath = asset_importer::get_fs_path_from_system(new_path);
         fs_resource_info new_info;
         new_info.type = new_path.extension().string();
-        new_info.path = asset_importer::get_fs_path_from_system(new_path);
+        new_info.path = new_apath;
         if (new_info.type.length() > 0) new_info.type.erase(0, 1);
         fs::save_resource_info(id, std::move(new_info));
-        if (old_path.extension() != new_path.extension()) {
-            asset_importer::import(id);
-        }
+        __detail::__asset_importer_fix_dependents_move(id, old_apath, new_apath);
+        asset_importer::import(id);
     }
 }
 
