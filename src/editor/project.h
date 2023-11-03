@@ -15,6 +15,7 @@ namespace element {
         extern std::filesystem::path project_fs_fsmap;
         extern std::filesystem::path project_metadata_path;
         extern std::filesystem::path project_metadata_fsmap;
+        extern std::filesystem::path project_metadata_dependencies;
         extern std::filesystem::path project_assets_path;
 
         void open(const std::filesystem::path& path);

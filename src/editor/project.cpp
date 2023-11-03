@@ -18,6 +18,7 @@ std::filesystem::path project::project_fs_path;
 std::filesystem::path project::project_fs_fsmap;
 std::filesystem::path project::project_metadata_path;
 std::filesystem::path project::project_metadata_fsmap;
+std::filesystem::path project::project_metadata_dependencies;
 std::filesystem::path project::project_assets_path;
 
 void project::open(const std::filesystem::path& path) {
@@ -28,6 +29,7 @@ void project::open(const std::filesystem::path& path) {
     project_fs_fsmap = project_fs_path / "fs_map";
     project_metadata_path = project_path / "meta";
     project_metadata_fsmap = project_metadata_path / "fs_map.json";
+    project_metadata_dependencies = project_metadata_path / "dependencies.json";
     project_assets_path = project_path / "assets";
 }
 
@@ -40,6 +42,8 @@ void project::mkdir() {
     std::filesystem::create_directories(project_fs_path);
     std::filesystem::create_directories(project_metadata_path);
     std::filesystem::create_directories(project_assets_path);
+    events::project_opened event;
+    event_manager::send_event(event);
 }
 
 void project::load() {
@@ -51,9 +55,7 @@ void project::load() {
                     ELM_SERIALIZE_NVP("author",  author),
                     ELM_SERIALIZE_NVP("version", version));
     }
-    ELM_INFO("Opened project {0} version {1} by {2}", name, version, author);
-    events::project_opened event;
-    event_manager::send_event(event);
+    ELM_INFO("Loaded project {0} version {1} by {2}", name, version, author);
 }
 
 void project::save() {

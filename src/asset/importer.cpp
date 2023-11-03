@@ -6,6 +6,7 @@
 #include <editor/project.h>
 #include <asset/asset_events.h>
 #include <asset/tracker.h>
+#include <asset/dependencies.h>
 #include <asset/importers/default_importer.h>
 #include <utils/platform.h>
 #include <utils/packed_set.h>
@@ -32,6 +33,11 @@ static element::packed_set<element::uuid> pending_to_import;
 
 using namespace element;
 
+static std::unordered_map<std::string, asset_importer::asset_importer_callback>& get_importers() {
+    static std::unordered_map<std::string, asset_importer::asset_importer_callback> map;
+    return map;
+}
+
 static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, asset_importer_node& node) {
     if (!is_dir) {
         std::string apath = asset_importer::get_fs_path_from_system(path);
@@ -45,13 +51,17 @@ static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, ass
             fs::save_resource_info(new_id, std::move(info));
             asset_importer::import(new_id);
         } else {
-            std::filesystem::path bin_path = project::project_fs_path / id.str();
-            if (std::filesystem::exists(bin_path)) {
-                std::filesystem::file_time_type path_time = std::filesystem::last_write_time(path);
-                std::filesystem::file_time_type bin_time = std::filesystem::last_write_time(bin_path);
-                if (path_time > bin_time) asset_importer::import(id);
-            } else {
-                asset_importer::import(id);
+            fs_resource_info info = fs::get_resource_info(id);
+            auto it = get_importers().find(info.type);
+            if (it == get_importers().end() || it->second != importers::null_importer) {
+                std::filesystem::path bin_path = project::project_fs_path / id.str();
+                if (std::filesystem::exists(bin_path)) {
+                    std::filesystem::file_time_type path_time = std::filesystem::last_write_time(path);
+                    std::filesystem::file_time_type bin_time = std::filesystem::last_write_time(bin_path);
+                    if (path_time > bin_time) asset_importer::import(id);
+                } else {
+                    asset_importer::import(id);
+                }
             }
         }
     }
@@ -111,13 +121,9 @@ static void delete_dir_nodes(const std::filesystem::path& path, const asset_impo
         event_manager::send_event(event);
         fs::delete_resource_data(id);
         fs::delete_resource_info(id);
+        asset_importer::delete_dependency_data(id);
         pending_to_import.erase(id);
     }
-}
-
-static std::unordered_map<std::string, asset_importer::asset_importer_callback>& get_importers() {
-    static std::unordered_map<std::string, asset_importer::asset_importer_callback> map;
-    return map;
 }
 
 static void async_asset_import(const uuid& id) {
@@ -144,12 +150,14 @@ void asset_importer::start() {
     }
     root_node.is_dir = true;
     ELM_INFO("Detecting removed assets...");
+    load_dependencies();
     std::unordered_map<uuid, fs_resource_info> fs_map = fs::get_map();
     for (const auto& [id, info] : fs_map) {
         if (!std::filesystem::exists(project::project_assets_path / info.path)) {
             ELM_DEBUG("{} was removed", info.path);
             fs::delete_resource_data(id);
             fs::delete_resource_info(id);
+            delete_dependency_data(id);
         }
     }
     ELM_INFO("Importing updated assets...");
@@ -230,6 +238,10 @@ void asset_importer::import_pending_assets() {
                 futures.push_back(std::async(std::launch::async, async_asset_import, id));
             }
         }
+        for (const uuid& id : currently_importing) {
+            const auto& deps = get_dependents(id);
+            pending_to_import.insert(deps.begin(), deps.end());
+        }
         imported_assets.insert(currently_importing.begin(), currently_importing.end());
         currently_importing = std::move(pending_to_import);
         pending_to_import.clear();
@@ -243,6 +255,7 @@ void asset_importer::import_pending_assets() {
     }
     ELM_INFO("Finished importing {0} assets.", imported_assets.size());
     fs::save_resources();
+    save_dependencies();
 }
 
 void __detail::__asset_importer_tracker_path_create(const std::filesystem::path& path, bool is_dir) {
@@ -273,6 +286,8 @@ void __detail::__asset_importer_tracker_path_delete(const std::filesystem::path 
     asset_importer_node& dirnode = get_dir_node(dirpath);
     asset_importer_node& node = dirnode.children[path.filename()];
     delete_dir_nodes(path, node);
+    fs::save_resources();
+    asset_importer::save_dependencies();
     dirnode.children.erase(path.filename());
 }
 
