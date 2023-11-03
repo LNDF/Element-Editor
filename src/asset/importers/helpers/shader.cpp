@@ -7,6 +7,7 @@
 #include <editor/project.h>
 #include <utils/packed_set.h>
 #include <filesystem>
+#include <string>
 
 using namespace element;
 
@@ -21,10 +22,10 @@ void element::importers::helpers::shader_compile(const uuid& id, shader::shader_
     } else {
         fs::delete_resource_data(id);
     }
-    packed_set<uuid> dependencies;
+    packed_set<std::string> dependencies;
     dependencies.reserve(result.local_includes.size());
     for (const std::filesystem::path& inc_path : result.local_includes) {
-        dependencies.insert(fs::get_uuid_from_resource_path(asset_importer::get_fs_path_from_system(inc_path)));
+        dependencies.insert(asset_importer::get_fs_path_from_system(inc_path));
     }
-    asset_importer::set_dependencies(id, std::move(dependencies));
+    asset_importer::set_path_dependencies(id, std::move(dependencies));
 }

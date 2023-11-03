@@ -109,12 +109,6 @@ void fs::save_bin_resources() {
     serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
 }
 
-uuid fs::get_new_uuid() {
-    uuid id;
-    while (fs_map.contains(id)) id.regenerate();
-    return id;
-}
-
 const std::unordered_map<element::uuid, element::fs_resource_info>& fs::get_map() {
     return fs_map;
 }

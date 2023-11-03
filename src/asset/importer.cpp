@@ -43,12 +43,13 @@ static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, ass
         std::string apath = asset_importer::get_fs_path_from_system(path);
         const uuid& id = fs::get_uuid_from_resource_path(apath);
         if (id.is_null()) {
-            uuid new_id = fs::get_new_uuid();
+            uuid new_id;
             fs_resource_info info;
-            info.path = std::move(apath);
+            info.path = apath;
             info.type = path.extension().string();
             if (info.type.length() > 0) info.type.erase(0, 1);
             fs::save_resource_info(new_id, std::move(info));
+            asset_importer::create_dependents_data(new_id, apath);
             asset_importer::import(new_id);
         } else {
             fs_resource_info info = fs::get_resource_info(id);

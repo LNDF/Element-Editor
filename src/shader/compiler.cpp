@@ -35,7 +35,7 @@ class shader_includer : public glslang::TShader::Includer  {
             std::filesystem::path inc_path = std::filesystem::absolute(includer).remove_filename();
             inc_path /= includee;
             IncludeResult* res = include_if_exists(inc_path);
-            if (res !=  nullptr) local_includes.push_back(inc_path);
+            local_includes.push_back(inc_path);
             return res;
         }
 

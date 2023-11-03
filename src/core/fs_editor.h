@@ -14,7 +14,6 @@ namespace element {
         void delete_resource_data(const uuid& id);
         void save_resources();
         void save_bin_resources();
-        uuid get_new_uuid();
     } // namespace fs
 
 } // namespace element
