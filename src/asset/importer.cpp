@@ -55,7 +55,7 @@ static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, ass
             fs_resource_info info = fs::get_resource_info(id);
             auto it = get_importers().find(info.type);
             if (it == get_importers().end() || it->second != importers::null_importer) {
-                std::filesystem::path bin_path = project::project_fs_path / id.str();
+                std::filesystem::path bin_path = fs::get_resource_data_path(id);
                 if (std::filesystem::exists(bin_path)) {
                     std::filesystem::file_time_type path_time = std::filesystem::last_write_time(path);
                     std::filesystem::file_time_type bin_time = std::filesystem::last_write_time(bin_path);

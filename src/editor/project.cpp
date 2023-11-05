@@ -14,23 +14,19 @@ std::string project::author;
 std::string project::version;
 std::filesystem::path project::project_path;
 std::filesystem::path project::project_filename;
-std::filesystem::path project::project_fs_path;
-std::filesystem::path project::project_fs_fsmap;
+std::filesystem::path project::project_cache_path;
 std::filesystem::path project::project_metadata_path;
-std::filesystem::path project::project_metadata_fsmap;
-std::filesystem::path project::project_metadata_dependencies;
 std::filesystem::path project::project_assets_path;
 
 void project::open(const std::filesystem::path& path) {
     project_path = std::filesystem::absolute(path);
     project_path.make_preferred();
     project_filename = project_path / "project.json";
-    project_fs_path = project_path / "cache" / "fs";
-    project_fs_fsmap = project_fs_path / "fs_map";
+    project_cache_path = project_path / "cache";
     project_metadata_path = project_path / "meta";
-    project_metadata_fsmap = project_metadata_path / "fs_map.json";
-    project_metadata_dependencies = project_metadata_path / "dependencies.json";
     project_assets_path = project_path / "assets";
+    events::project_opened event;
+    event_manager::send_event(event);
 }
 
 bool project::exists() {
@@ -39,15 +35,13 @@ bool project::exists() {
 
 void project::mkdir() {
     std::filesystem::create_directories(project_path);
-    std::filesystem::create_directories(project_fs_path);
+    std::filesystem::create_directories(project_cache_path);
     std::filesystem::create_directories(project_metadata_path);
     std::filesystem::create_directories(project_assets_path);
-    events::project_opened event;
-    event_manager::send_event(event);
 }
 
 void project::load() {
-    ELM_INFO("Opening project {0}...", project_path.string());
+    ELM_INFO("Loading project {0}...", project_path.string());
     {
         std::ifstream file(project_filename);
         text_deserializer deserialize = create_text_deserializer(file);

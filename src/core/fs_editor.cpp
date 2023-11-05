@@ -3,7 +3,6 @@
 #include <fstream>
 #include <stdexcept>
 #include <utility>
-#include <filesystem>
 
 #include <core/log.h>
 #include <editor/project.h>
@@ -13,19 +12,24 @@
 #include <serialization/unordered_map.h>
 #include <serialization/utils/uuid.h>
 
+static std::filesystem::path fs_path;
+static std::filesystem::path fs_map_path;
+static std::filesystem::path fs_map_bin_path;
+
+
 static std::unordered_map<element::uuid, element::fs_resource_info> fs_map;
 static std::unordered_map<std::string, element::uuid> fs_uuid_map;
 
 using namespace element;
 
 std::unique_ptr<std::istream> fs::get_resource(const uuid& id) {
-    std::filesystem::path path = project::project_fs_path / id.str();
+    std::filesystem::path path = fs_path / id.str();
     path.make_preferred();
     return std::unique_ptr<std::istream>(new std::ifstream(path, std::ios::binary));
 }
 
 std::unique_ptr<std::ostream> fs::get_resource_ostream(const uuid& id) {
-    std::filesystem::path path = project::project_fs_path / id.str();
+    std::filesystem::path path = fs_path / id.str();
     path.make_preferred();
     return std::unique_ptr<std::ostream>(new std::ofstream(path, std::ios::binary));
 }
@@ -72,17 +76,25 @@ void fs::delete_resource_info(const uuid& id) {
 }
 
 void fs::delete_resource_data(const uuid& id) {
-    std::filesystem::path path = project::project_fs_path / id.str();
+    std::filesystem::path path = fs_path / id.str();
     path.make_preferred();
     if (std::filesystem::exists(path)) std::filesystem::remove_all(path);
 }
 
+std::filesystem::path fs::get_resource_data_path(const uuid& id) {
+    return fs_path / id.str();
+}
+
 void fs::load_resources() {
     ELM_INFO("Loading FS map...");
-    ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.string());
-    std::ifstream file(project::project_metadata_fsmap);
+    fs_path = project::project_cache_path / "fs";
+    fs_map_path = project::project_metadata_path / "fs_map.json";
+    fs_map_bin_path = fs_path / "fs_map.bin";
+    std::filesystem::create_directories(fs_path);
+    ELM_DEBUG("FS map path is {0}", fs_map_path.string());
+    std::ifstream file(fs_map_path);
     if (file.fail()) {
-        ELM_WARN("Couldn't open FS map");
+        ELM_WARN("Couldn't load FS map. Is this a new project?");
         return;
     }
     text_deserializer deserialize = create_text_deserializer(file);
@@ -95,16 +107,15 @@ void fs::load_resources() {
 
 void fs::save_resources() {
     ELM_INFO("Saving FS map...");
-    ELM_DEBUG("FS map path is {0}", project::project_metadata_fsmap.string());
-    std::ofstream file(project::project_metadata_fsmap);
+    std::ofstream file(fs_map_path);
     text_serializer serialize = create_text_serializer(file);
     serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
 }
 
 void fs::save_bin_resources() {
     ELM_INFO("Saving FS map to binary...");
-    ELM_DEBUG("FS map path is {0}", project::project_fs_fsmap.string());
-    std::ofstream file(project::project_fs_fsmap, std::ios::binary);
+    ELM_DEBUG("FS map path is {0}", fs_map_bin_path.string());
+    std::ofstream file(fs_map_bin_path, std::ios::binary);
     binary_serializer serialize = create_binary_serializer(file);
     serialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
 }

@@ -14,6 +14,7 @@
 
 using namespace element;
 
+static std::filesystem::path dependencies_path;
 static packed_set<uuid> empty_id_set;
 static packed_set<std::string> empty_path_set;
 
@@ -72,8 +73,9 @@ void __detail::__asset_importer_fix_dependents_move(const uuid& id, const std::s
 
 void asset_importer::load_dependencies() {
     ELM_INFO("Loading import dependencies...");
-    ELM_DEBUG("Dependencies path is {0}", project::project_metadata_dependencies.string());
-    std::ifstream file(project::project_metadata_dependencies);
+    dependencies_path = project::project_metadata_path / "dependencies.json";
+    ELM_DEBUG("Dependencies path is {0}", dependencies_path.string());
+    std::ifstream file(dependencies_path);
     if (file.fail()) {
         ELM_WARN("Couldn't load dependencies. If this is not a new project, please reimport assets.");
         return;
@@ -97,8 +99,7 @@ void asset_importer::load_dependencies() {
 
 void asset_importer::save_dependencies() {
     ELM_INFO("Saving import dependencies...");
-    ELM_DEBUG("Dependencies path is {0}", project::project_metadata_dependencies.string());
-    std::ofstream file(project::project_metadata_dependencies, std::ios::binary);
+    std::ofstream file(dependencies_path, std::ios::binary);
     text_serializer serialize = create_text_serializer(file);
     serialize(ELM_SERIALIZE_NVP("id_dependencies", id_dependencies_map));
     serialize(ELM_SERIALIZE_NVP("path_dependencies", path_dependencies_map));
