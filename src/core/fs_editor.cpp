@@ -7,6 +7,7 @@
 #include <core/log.h>
 #include <editor/project.h>
 #include <serialization/defs.h>
+#include <serialization/serializers_editor.h>
 #include <serialization/core/fs.h>
 #include <serialization/string.h>
 #include <serialization/unordered_map.h>

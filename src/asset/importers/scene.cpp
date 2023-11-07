@@ -2,6 +2,8 @@
 #include <core/fs_editor.h>
 #include <editor/project.h>
 #include <scenegraph/scene.h>
+#include <serialization/defs.h>
+#include <serialization/serializers_editor.h>
 #include <serialization/scenegraph.h>
 #include <utils/uuid.h>
 #include <fstream>
@@ -15,7 +17,7 @@ static void scene_importer(const uuid& id) {
     scenegraph::scene s;
     text_deserializer deserialize = create_text_deserializer(input);
     binary_serializer serialize = create_binary_serializer(*output);
-    deserialize(s);
+    deserialize(ELM_SERIALIZE_NVP("scene", s));
     serialize(s);
 }
 

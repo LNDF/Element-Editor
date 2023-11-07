@@ -5,6 +5,7 @@
 #include <editor/project.h>
 #include <asset/importer.h>
 #include <serialization/defs.h>
+#include <serialization/serializers_editor.h>
 #include <serialization/unordered_map.h>
 #include <serialization/utils/packed_set.h>
 #include <serialization/utils/uuid.h>

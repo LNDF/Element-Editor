@@ -4,6 +4,7 @@
 
 #include <core/log.h>
 #include <editor/project_events.h>
+#include <serialization/serializers_editor.h>
 #include <serialization/defs.h>
 #include <event/event.h>
 
