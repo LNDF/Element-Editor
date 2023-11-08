@@ -231,6 +231,7 @@ void asset_importer::import_pending_assets() {
     std::uint32_t iteration = 1;
     pending_to_import.clear();
     should_restart_timer = false;
+    events::asset_updated event;
     while (currently_importing.size() > 0) {
         ELM_INFO("Importing... (iteration {0})", iteration++);
         {
@@ -243,6 +244,8 @@ void asset_importer::import_pending_assets() {
         for (const uuid& id : currently_importing) {
             const auto& deps = get_dependents(id);
             pending_to_import.insert(deps.begin(), deps.end());
+            event.id = id;
+            event_manager::send_event(event);
         }
         imported_assets.insert(currently_importing.begin(), currently_importing.end());
         currently_importing = std::move(pending_to_import);
@@ -250,11 +253,6 @@ void asset_importer::import_pending_assets() {
         currently_importing.erase(imported_assets.begin(), imported_assets.end());
     }
     should_restart_timer = true;
-    events::asset_updated event;
-    for (const uuid& id : imported_assets) {
-        event.id = id;
-        event_manager::send_event(event);
-    }
     ELM_INFO("Finished importing {0} assets.", imported_assets.size());
     fs::save_resources();
     save_dependencies();
