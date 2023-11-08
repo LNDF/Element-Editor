@@ -3,6 +3,7 @@
 #include <core/log.h>
 #include <core/fs.h>
 #include <event/event.h>
+#include <asset/asset_events.h>
 #include <editor/project.h>
 #include <editor/project_events.h>
 #include <serialization/defs.h>
@@ -164,4 +165,23 @@ static bool set_shader_reflect_path(events::project_opened& event) {
     return true;
 }
 
-ELM_REGISTER_EVENT_CALLBACK(events::project_opened, set_shader_reflect_path, event_callback_priority::medium)
+static void delete_reflect_cache(const uuid& id) {
+    fs_resource_info info = fs::get_resource_info(id);
+    if (info.type == "vert" || info.type == "frag") {
+        std::filesystem::remove(shader_reflect_path / (id.str() + ".json"));
+    }
+}
+
+static bool delete_reflect_cache_when_updated(events::asset_updated& event) {
+    delete_reflect_cache(event.id);
+    return true;
+}
+
+static bool delete_reflect_cache_when_deleted(events::asset_deleted& event) {
+    delete_reflect_cache(event.id);
+    return true;
+}
+
+ELM_REGISTER_EVENT_CALLBACK(events::project_opened, set_shader_reflect_path, event_callback_priority::highest)
+ELM_REGISTER_EVENT_CALLBACK(events::asset_updated, delete_reflect_cache_when_updated, event_callback_priority::highest)
+ELM_REGISTER_EVENT_CALLBACK(events::asset_deleted, delete_reflect_cache_when_deleted, event_callback_priority::highest)
