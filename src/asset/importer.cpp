@@ -153,10 +153,13 @@ void asset_importer::start() {
     root_node.is_dir = true;
     ELM_INFO("Detecting removed assets...");
     load_dependencies();
+    events::asset_deleted delete_event;
     std::unordered_map<uuid, fs_resource_info> fs_map = fs::get_map();
     for (const auto& [id, info] : fs_map) {
         if (!std::filesystem::exists(project::project_assets_path / info.path)) {
             ELM_DEBUG("{} was removed", info.path);
+            delete_event.id = id;
+            event_manager::send_event(delete_event);
             fs::delete_resource_data(id);
             fs::delete_resource_info(id);
             delete_dependency_data(id);
