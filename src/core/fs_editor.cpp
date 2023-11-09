@@ -17,11 +17,12 @@ static std::filesystem::path fs_path;
 static std::filesystem::path fs_map_path;
 static std::filesystem::path fs_map_bin_path;
 
-
 static std::unordered_map<element::uuid, element::fs_resource_info> fs_map;
 static std::unordered_map<std::string, element::uuid> fs_uuid_map;
 
 using namespace element;
+
+static fs_resource_info empty_info;
 
 std::unique_ptr<std::istream> fs::get_resource(const uuid& id) {
     std::filesystem::path path = fs_path / id.str();
@@ -36,7 +37,9 @@ std::unique_ptr<std::ostream> fs::get_resource_ostream(const uuid& id) {
 }
 
 const fs_resource_info& fs::get_resource_info(const uuid& id) {
-    return fs_map.at(id);
+    auto it = fs_map.find(id);
+    if (it == fs_map.end()) return empty_info;
+    return it->second;
 }
 
 const uuid& fs::get_uuid_from_resource_path(const std::string& path) {
