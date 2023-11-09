@@ -5,7 +5,7 @@
 #include <string>
 
 namespace element {
-    namespace shader {
+    namespace render {
 
         struct compilation_result {
             std::vector<std::uint32_t> spv;

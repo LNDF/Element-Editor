@@ -1,4 +1,4 @@
-#include "compiler.h"
+#include "shader_compiler.h"
 
 #include <core/log.h>
 #include <glslang/SPIRV/GlslangToSpv.h>
@@ -152,7 +152,7 @@ static void init_glslang_resources(TBuiltInResource& resources) {
     resources.limits.generalConstantMatrixVectorIndexing = 1;
 }
 
-shader::compilation_result shader::compile_shader(const std::filesystem::path& path, shader_stage stage) {
+render::compilation_result render::compile_shader(const std::filesystem::path& path, shader_stage stage) {
     compilation_result ret;
     EShLanguage glslang_stage;
     switch (stage) {
@@ -209,12 +209,12 @@ shader::compilation_result shader::compile_shader(const std::filesystem::path& p
     return ret;
 }
 
-void shader::compiler_init() {
+void render::compiler_init() {
     ELM_INFO("Initializing shader compiler...");
     glslang::InitializeProcess();
 }
 
-void shader::compiler_cleanup() {
+void render::compiler_cleanup() {
     ELM_INFO("Cleanning up shader compiler...");
     glslang::FinalizeProcess();
 }

@@ -5,7 +5,7 @@
 #include <core/fs_editor.h>
 #include <asset/importer.h>
 #include <graphics/vulkan_qt.h>
-#include <shader/compiler.h>
+#include <render/shader_compiler.h>
 
 using namespace element;
 
@@ -21,12 +21,12 @@ void editor::run_editor(QApplication* app) {
     qt_app = app;
     main_window = new ui::element_editor();
     main_window->show();
-    shader::compiler_init();
+    render::compiler_init();
     asset_importer::start();
     ELM_DEBUG("Executing editor Qt application. Qt is taking control of the program.");
     qt_app->exec();
     asset_importer::stop();
-    shader::compiler_cleanup();
+    render::compiler_cleanup();
     delete main_window;
     main_window = nullptr;
     qt_app = nullptr;

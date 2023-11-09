@@ -5,25 +5,25 @@
 #include <asset/dependencies.h>
 #include <core/fs_editor.h>
 #include <editor/project.h>
-#include <shader/reflect.h>
+#include <render/shader_reflect.h>
 #include <utils/packed_set.h>
 #include <serialization/defs.h>
 #include <serialization/serializers.h>
-#include <serialization/shader.h>
+#include <serialization/render/shader.h>
 #include <filesystem>
 #include <string>
 
 using namespace element;
 
-void element::importers::helpers::shader_compile(const uuid& id, shader::shader_stage type) {
+void element::importers::helpers::shader_compile(const uuid& id, render::shader_stage type) {
     fs_resource_info info = fs::get_resource_info(id);
     std::filesystem::path path = project::project_assets_path / info.path;
-    shader::compilation_result result = shader::compile_shader(path, type);
+    render::compilation_result result = render::compile_shader(path, type);
     if (!result.success) ELM_ERROR("Error during shader compilation:\n{0}", result.message);
     if (result.spv.size() > 0) {
         auto output = fs::get_resource_ostream(id);
-        shader::shader_data data;
-        data.layout = shader::reflect_from_spv(result.spv);
+        render::shader data;
+        data.reflect = render::reflect_from_spv(result.spv);
         data.spv = std::move(result.spv);
         binary_serializer serialize = create_binary_serializer(*output);
         serialize(data);

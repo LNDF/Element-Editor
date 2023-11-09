@@ -1,4 +1,4 @@
-#include "reflect.h"
+#include "shader_reflect.h"
 
 #include <core/log.h>
 #include <spirv_cross.hpp>
@@ -6,42 +6,42 @@
 
 using namespace element;
 
-static shader::member_type member_type_from_spirv_cross(const spirv_cross::SPIRType::BaseType& type) {
+static render::member_type member_type_from_spirv_cross(const spirv_cross::SPIRType::BaseType& type) {
     switch (type) {
         case spirv_cross::SPIRType::Boolean:
-            return shader::member_type::boolean_type;
+            return render::member_type::boolean_type;
         case spirv_cross::SPIRType::SByte:
-            return shader::member_type::sint8_type;
+            return render::member_type::sint8_type;
         case spirv_cross::SPIRType::UByte:
-            return shader::member_type::uint8_type;
+            return render::member_type::uint8_type;
         case spirv_cross::SPIRType::Short:
-            return shader::member_type::sint16_type;
+            return render::member_type::sint16_type;
         case spirv_cross::SPIRType::UShort:
-            return shader::member_type::uint16_type;
+            return render::member_type::uint16_type;
         case spirv_cross::SPIRType::Int:
-            return shader::member_type::sint32_type;
+            return render::member_type::sint32_type;
         case spirv_cross::SPIRType::UInt:
-            return shader::member_type::uint32_type;
+            return render::member_type::uint32_type;
         case spirv_cross::SPIRType::Int64:
-            return shader::member_type::sint64_type;
+            return render::member_type::sint64_type;
         case spirv_cross::SPIRType::UInt64:
-            return shader::member_type::uint64_type;
+            return render::member_type::uint64_type;
         case spirv_cross::SPIRType::Half:
-            return shader::member_type::float16_type;
+            return render::member_type::float16_type;
         case spirv_cross::SPIRType::Float:
-            return shader::member_type::float32_type;
+            return render::member_type::float32_type;
         case spirv_cross::SPIRType::Double:
-            return shader::member_type::float64_type;
+            return render::member_type::float64_type;
         case spirv_cross::SPIRType::Struct:
-            return shader::member_type::struct_type;
+            return render::member_type::struct_type;
         case spirv_cross::SPIRType::SampledImage:
-            return shader::member_type::sampler_type;
+            return render::member_type::sampler_type;
         default:
-            return shader::member_type::unknown;
+            return render::member_type::unknown;
     }
 }
 
-static void populate_array(shader::member_layout& target, const spirv_cross::SPIRType& type) {
+static void populate_array(render::member_layout& target, const spirv_cross::SPIRType& type) {
     const auto& array = type.array;
     if (!array.empty()) {
         target.array_cols = array[0];
@@ -54,7 +54,7 @@ static void populate_array(shader::member_layout& target, const spirv_cross::SPI
     }
 }
 
-static void populate_resource(shader::resource_layout& target, const spirv_cross::Resource& res, const spirv_cross::Compiler& comp) {
+static void populate_resource(render::resource_layout& target, const spirv_cross::Resource& res, const spirv_cross::Compiler& comp) {
     const auto& type = comp.get_type(res.type_id);
     target.binding = comp.get_decoration(res.id, spv::Decoration::DecorationBinding);
     target.set = comp.get_decoration(res.id, spv::Decoration::DecorationDescriptorSet);
@@ -62,15 +62,15 @@ static void populate_resource(shader::resource_layout& target, const spirv_cross
     populate_array(target, type);
 }
 
-static void populate_uniform_block_resource(shader::resource_layout& target, const spirv_cross::Resource& res, const spirv_cross::Compiler& comp) {
+static void populate_uniform_block_resource(render::resource_layout& target, const spirv_cross::Resource& res, const spirv_cross::Compiler& comp) {
     populate_resource(target, res, comp);
     const auto& base_type = comp.get_type(res.base_type_id);
     if (base_type.member_types.empty()) return;
     target.size = comp.get_declared_struct_size(base_type);
-    target.type = shader::member_type::struct_type;
+    target.type = render::member_type::struct_type;
     std::uint32_t member_count = base_type.member_types.size();
     for (std::uint32_t i = 0; i < member_count; ++i) {
-        shader::member_layout member;
+        render::member_layout member;
         const auto& member_type = comp.get_type(base_type.member_types[i]);
         member.size = comp.get_declared_struct_member_size(base_type, i);
         member.offset = comp.type_struct_member_offset(base_type, i);
@@ -89,8 +89,8 @@ static void populate_uniform_block_resource(shader::resource_layout& target, con
     }
 }
 
-shader::shader_layout shader::reflect_from_spv(const std::vector<std::uint32_t>& spv) {
-    shader::shader_layout result;
+render::layout render::reflect_from_spv(const std::vector<std::uint32_t>& spv) {
+    render::layout result;
     spirv_cross::Compiler compiler(spv);
     spirv_cross::ShaderResources resources = compiler.get_shader_resources();
     const auto& push_constants = resources.push_constant_buffers;
@@ -112,7 +112,7 @@ shader::shader_layout shader::reflect_from_spv(const std::vector<std::uint32_t>&
     }
     for (const auto& image : sampled_images) {
         populate_resource(result.descriptor_sets[offs], image, compiler);
-        result.descriptor_sets[offs].type = shader::member_type::sampler_type;
+        result.descriptor_sets[offs].type = render::member_type::sampler_type;
         result.descriptor_sets[offs++].sampler_resource = true;
     }
     return result;
