@@ -1,22 +1,10 @@
 #include "reflect.h"
 
 #include <core/log.h>
-#include <core/fs.h>
-#include <event/event.h>
-#include <asset/asset_events.h>
-#include <editor/project.h>
-#include <editor/project_events.h>
-#include <serialization/defs.h>
-#include <serialization/serializers_editor.h>
-#include <serialization/shader/layout.h>
 #include <spirv_cross.hpp>
 #include <spirv.hpp>
-#include <fstream>
-#include <filesystem>
 
 using namespace element;
-
-static std::filesystem::path shader_reflect_path;
 
 static shader::member_type member_type_from_spirv_cross(const spirv_cross::SPIRType::BaseType& type) {
     switch (type) {
@@ -101,8 +89,8 @@ static void populate_uniform_block_resource(shader::resource_layout& target, con
     }
 }
 
-shader::layout shader::reflect_from_spv(const std::vector<std::uint32_t>& spv) {
-    shader::layout result;
+shader::shader_layout shader::reflect_from_spv(const std::vector<std::uint32_t>& spv) {
+    shader::shader_layout result;
     spirv_cross::Compiler compiler(spv);
     spirv_cross::ShaderResources resources = compiler.get_shader_resources();
     const auto& push_constants = resources.push_constant_buffers;
@@ -129,59 +117,3 @@ shader::layout shader::reflect_from_spv(const std::vector<std::uint32_t>& spv) {
     }
     return result;
 }
-
-shader::layout shader::get_reflection_data(const uuid& id) {
-    std::ifstream cache_stream(shader_reflect_path / (id.str() + ".json"));
-    if (!cache_stream.fail()) {
-        text_deserializer deserialize = create_text_deserializer(cache_stream);
-        layout result;
-        deserialize(ELM_SERIALIZE_NVP("layout", result));
-        return result;
-    }
-    std::unique_ptr<std::istream> spv_stream = fs::get_resource(id);
-    if (spv_stream->fail()) {
-        return shader::layout();
-    }
-    spv_stream->seekg(0, std::ios::end);
-    std::size_t stream_size = spv_stream->tellg();
-    spv_stream->seekg(0, std::ios::beg);
-    std::vector<std::uint32_t> spv;
-    spv.resize(stream_size / sizeof(std::uint32_t));
-    spv_stream->read((char*) &spv[0], stream_size);
-    layout result = reflect_from_spv(spv);
-    save_reflection_data(id, result);
-    return result;
-}
-
-void shader::save_reflection_data(const uuid& id, const shader::layout& layout) {
-    std::filesystem::create_directories(shader_reflect_path);
-    std::ofstream cache_stream(shader_reflect_path / (id.str() + ".json"));
-    text_serializer serialize = create_text_serializer(cache_stream);
-    serialize(ELM_SERIALIZE_NVP("layout", layout));
-}
-
-static bool set_shader_reflect_path(events::project_opened& event) {
-    shader_reflect_path = project::project_cache_path / "shader_reflect";
-    return true;
-}
-
-static void delete_reflect_cache(const uuid& id) {
-    fs_resource_info info = fs::get_resource_info(id);
-    if (info.type == "vert" || info.type == "frag") {
-        std::filesystem::remove(shader_reflect_path / (id.str() + ".json"));
-    }
-}
-
-static bool delete_reflect_cache_when_updated(events::asset_updated& event) {
-    delete_reflect_cache(event.id);
-    return true;
-}
-
-static bool delete_reflect_cache_when_deleted(events::asset_deleted& event) {
-    delete_reflect_cache(event.id);
-    return true;
-}
-
-ELM_REGISTER_EVENT_CALLBACK(events::project_opened, set_shader_reflect_path, event_callback_priority::highest)
-ELM_REGISTER_EVENT_CALLBACK(events::asset_updated, delete_reflect_cache_when_updated, event_callback_priority::highest)
-ELM_REGISTER_EVENT_CALLBACK(events::asset_deleted, delete_reflect_cache_when_deleted, event_callback_priority::highest)
