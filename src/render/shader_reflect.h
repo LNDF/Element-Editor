@@ -6,7 +6,7 @@
 namespace element {
     namespace render {
         
-        layout reflect_from_spv(const std::vector<std::uint32_t>& spv);
+        shader_layout reflect_from_spv(const std::vector<std::uint32_t>& spv);
 
     } // namespace shader
 } // namespace element
