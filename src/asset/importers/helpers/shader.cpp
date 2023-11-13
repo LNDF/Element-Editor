@@ -5,11 +5,7 @@
 #include <asset/dependencies.h>
 #include <core/fs_editor.h>
 #include <editor/project.h>
-#include <render/shader_reflect.h>
 #include <utils/packed_set.h>
-#include <serialization/defs.h>
-#include <serialization/serializers.h>
-#include <serialization/render/shader.h>
 #include <filesystem>
 #include <string>
 
@@ -22,11 +18,7 @@ void element::importers::helpers::shader_compile(const uuid& id, render::shader_
     if (!result.success) ELM_ERROR("Error during shader compilation:\n{0}", result.message);
     if (result.spv.size() > 0) {
         auto output = fs::get_resource_ostream(id);
-        render::shader data;
-        data.reflect = render::reflect_from_spv(result.spv);
-        data.spv = std::move(result.spv);
-        binary_serializer serialize = create_binary_serializer(*output);
-        serialize(data);
+        output->write(reinterpret_cast<const char*>(result.spv.data()), sizeof(std::uint32_t) * result.spv.size());
     } else {
         fs::delete_resource_data(id);
     }

@@ -1,8 +1,21 @@
 #include "shader_reflect.h"
 
+#include <core/fs.h>
 #include <core/log.h>
+#include <event/event.h>
+#include <asset/asset_events.h>
+#include <editor/project.h>
+#include <editor/project_events.h>
+#include <serialization/defs.h>
+#include <serialization/serializers_editor.h>
+#include <serialization/render/shader_layout.h>
+#include <render/shader.h>
 #include <spirv_cross.hpp>
 #include <spirv.hpp>
+#include <filesystem>
+#include <fstream>
+
+static std::filesystem::path shader_reflect_path;
 
 using namespace element;
 
@@ -41,7 +54,7 @@ static render::shader_block_member_type member_type_from_spirv_cross(const spirv
     }
 }
 
-static void populate_array(render::shader_block& target, const spirv_cross::SPIRType& type) {
+static void populate_array(render::shader_block_member& target, const spirv_cross::SPIRType& type) {
     const auto& array = type.array;
     if (!array.empty()) {
         target.array_cols = array[0];
@@ -70,14 +83,14 @@ static void populate_uniform_block_resource(render::shader_resource_layout& targ
     target.type = render::shader_block_member_type::struct_type;
     std::uint32_t member_count = base_type.member_types.size();
     for (std::uint32_t i = 0; i < member_count; ++i) {
-        render::shader_block member;
+        render::shader_block_member member;
         const auto& member_type = comp.get_type(base_type.member_types[i]);
         member.size = comp.get_declared_struct_member_size(base_type, i);
         member.offset = comp.type_struct_member_offset(base_type, i);
         if (!member_type.array.empty()) {
             member.array_stride = comp.type_struct_member_array_stride(base_type, i);
         }
-        if (member_type.columns > 0) {
+        if (member_type.columns > 1) {
             member.matrix_stride = comp.type_struct_member_matrix_stride(base_type, i);
         }
         member.name = comp.get_member_name(base_type.self, i);
@@ -117,3 +130,52 @@ render::shader_layout render::reflect_from_spv(const std::vector<std::uint32_t>&
     }
     return result;
 }
+
+
+render::shader_layout render::get_shader_reflection_data(const uuid& id) {
+    std::ifstream cache_stream(shader_reflect_path / (id.str() + ".json"));
+    if (!cache_stream.fail()) {
+        text_deserializer deserialize = create_text_deserializer(cache_stream);
+        shader_layout result;
+        deserialize(ELM_SERIALIZE_NVP("layout", result));
+        return result;
+    }
+    std::vector<std::uint32_t> spv = render::load_shader_spv(id);
+    if (spv.empty()) return shader_layout();
+    shader_layout result = reflect_from_spv(spv);
+    save_shader_reflection_data(id, result);
+    return result;
+}
+
+void render::save_shader_reflection_data(const uuid& id, const shader_layout& layout) {
+    std::filesystem::create_directories(shader_reflect_path);
+    std::ofstream cache_stream(shader_reflect_path / (id.str() + ".json"));
+    text_serializer serialize = create_text_serializer(cache_stream);
+    serialize(ELM_SERIALIZE_NVP("layout", layout));
+}
+
+static bool set_shader_reflect_path(events::project_opened& event) {
+    shader_reflect_path = project::project_cache_path / "shader_reflect";
+    return true;
+}
+
+static void delete_reflect_cache(const uuid& id) {
+    fs_resource_info info = fs::get_resource_info(id);
+    if (info.type == "vert" || info.type == "frag") {
+        std::filesystem::remove(shader_reflect_path / (id.str() + ".json"));
+    }
+}
+
+static bool delete_reflect_cache_when_updated(events::asset_updated& event) {
+    delete_reflect_cache(event.id);
+    return true;
+}
+
+static bool delete_reflect_cache_when_deleted(events::asset_deleted& event) {
+    delete_reflect_cache(event.id);
+    return true;
+}
+
+ELM_REGISTER_EVENT_CALLBACK(events::project_opened, set_shader_reflect_path, event_callback_priority::highest)
+ELM_REGISTER_EVENT_CALLBACK(events::asset_updated, delete_reflect_cache_when_updated, event_callback_priority::highest)
+ELM_REGISTER_EVENT_CALLBACK(events::asset_deleted, delete_reflect_cache_when_deleted, event_callback_priority::highest)
