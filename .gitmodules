@@ -13,3 +13,6 @@
 [submodule "lib/SPIRV-Headers"]
 	path = lib/SPIRV-Headers
 	url = https://github.com/KhronosGroup/SPIRV-Headers
+[submodule "lib/assimp"]
+	path = lib/assimp
+	url = https://github.com/assimp/assimp

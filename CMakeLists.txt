@@ -27,6 +27,7 @@ file(COPY ./resources DESTINATION ${CMAKE_BINARY_DIR})
 # compile options
 set_property(TARGET element-editor PROPERTY CXX_STANDARD 20)
 target_compile_options(element-editor PRIVATE -Wall)
+override_option(BUILD_SHARED_LIBS BOOL OFF)
 
 # define options
 target_compile_definitions(element-editor PUBLIC ELM_EDITOR_VERSION="${PROJECT_VERSION}")
@@ -40,6 +41,13 @@ target_link_libraries(element-editor PRIVATE Qt6::Widgets Qt6::WidgetsPrivate)
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PRIVATE element)
 
+# assimp
+override_option(ASSIMP_NO_EXPORT BOOL ON)
+override_option(ASSIMP_INSTALL_PDB BOOL OFF)
+override_option(ASSIMP_INSTALL BOOL OFF)
+override_option(ASSIMP_BUILD_TESTS BOOL OFF)
+add_subdirectory(lib/assimp EXCLUDE_FROM_ALL)
+target_link_libraries(element-editor PUBLIC assimp)
 
 # SPIRV-Tools
 override_option(SPIRV_SKIP_TESTS BOOL ON)
