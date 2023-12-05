@@ -9,12 +9,12 @@ namespace cereal {
     
     template<class Archive>
     void serialize(Archive& ar, element::mesh::mesh& mesh) {
-        ar("version", mesh.version);
-        ar("positions", mesh.positions);
-        ar("normals", mesh.normals);
-        ar("tangents", mesh.tangents);
-        ar("tex_coords", mesh.tex_coords);
-        ar("indices", mesh.indices);
+        ar(make_nvp("version", mesh.version));
+        ar(make_nvp("positions", mesh.positions));
+        ar(make_nvp("normals", mesh.normals));
+        ar(make_nvp("tangents", mesh.tangents));
+        ar(make_nvp("tex_coords", mesh.tex_coords));
+        ar(make_nvp("indices", mesh.indices));
     }
 
 } //namespace cereal
