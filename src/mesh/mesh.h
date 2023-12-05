@@ -13,6 +13,7 @@ namespace element {
             std::vector<glm::vec3> normals;
             std::vector<glm::vec3> tangents;
             std::vector<glm::vec2> tex_coords;
+            std::vector<std::uint32_t> indices;
         };
 
     } //namespace mesh

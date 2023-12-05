@@ -14,6 +14,7 @@ namespace cereal {
         ar("normals", mesh.normals);
         ar("tangents", mesh.tangents);
         ar("tex_coords", mesh.tex_coords);
+        ar("indices", mesh.indices);
     }
 
 } //namespace cereal
