@@ -46,6 +46,7 @@ override_option(ASSIMP_NO_EXPORT BOOL ON)
 override_option(ASSIMP_INSTALL_PDB BOOL OFF)
 override_option(ASSIMP_INSTALL BOOL OFF)
 override_option(ASSIMP_BUILD_TESTS BOOL OFF)
+override_option(ASSIMP_WARNINGS_AS_ERRORS BOOL OFF)
 add_subdirectory(lib/assimp EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PUBLIC assimp)
 
