@@ -45,11 +45,11 @@ class unique_name_generator {
         }
 };
 
-static void extract_all_meshes(const aiMesh** meshes, std::uint32_t count, const std::filesystem::path& out) {
+static void extract_all_meshes(aiMesh** meshes, std::uint32_t count, const std::filesystem::path& out) {
     unique_name_generator name_gen("mesh");
     std::filesystem::create_directories(out);
     for (std::uint32_t i = 0; i < count; ++i) {
-        const aiMesh* input_mesh = meshes[i];
+        aiMesh* input_mesh = meshes[i];
         mesh::mesh output_mesh;
         std::uint32_t num_vertices = input_mesh->mNumVertices;
         if (input_mesh->HasPositions()) {
@@ -106,7 +106,7 @@ void mesh::model_import(const model_import_settings& settings) {
     if (settings.fix_infacing_normals) flags |= aiProcess_FixInfacingNormals;
     if (settings.optimize_meshes) flags |= aiProcess_OptimizeMeshes;
     if (settings.optimize_graph) flags |= aiProcess_OptimizeGraph;
-    if (settings.flip_faces) aiProcess_FlipWindingOrder;
+    if (settings.flip_faces) flags |= aiProcess_FlipWindingOrder;
     const aiScene* scene = importer.ReadFile(settings.model.string(), flags);
     if (true) { //TODO: split by material
         extract_all_meshes(scene->mMeshes, scene->mNumMeshes, settings.destination / "meshes");
