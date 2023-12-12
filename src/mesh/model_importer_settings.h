@@ -6,7 +6,6 @@ namespace element {
     namespace mesh {
 
         struct model_import_settings {
-            bool calc_tangent = true;
             float tangent_smooth_angle = 175.0f;
             bool join_identical_vertices = true;
             bool force_generate_normals = true;
