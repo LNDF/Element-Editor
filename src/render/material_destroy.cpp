@@ -5,7 +5,17 @@
 
 static void destroy_material_common(const element::uuid& id) {
     element::fs_resource_info info = element::fs::get_resource_info(id);
-    if (info.type == "material") element::render::destroy_material(id);
+    if (info.type == "material") {
+        std::uint32_t references = 0;
+        element::render::gpu_material* gpu_mat = element::render::get_gpu_material(id);
+        if (gpu_mat != nullptr) {
+            references = gpu_mat->get_references();
+        }
+        element::render::destroy_material(id);
+        if (references > 0) {
+            element::render::get_or_create_gpu_material(id)->__set_references(references);
+        }
+    }
 }
 
 static bool destroy_material_after_inport(element::events::asset_updated& event) {
