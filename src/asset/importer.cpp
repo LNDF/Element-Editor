@@ -261,6 +261,10 @@ void asset_importer::import_pending_assets() {
     save_dependencies();
 }
 
+bool asset_importer::is_tracker_running() {
+    return tracker_running;
+}
+
 void __detail::__asset_importer_tracker_path_create(const std::filesystem::path& path, bool is_dir) {
     ELM_DEBUG("Create: is dir {0} path {1}", is_dir, path.string());
     std::filesystem::path dirpath = path;
