@@ -35,4 +35,5 @@ void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
     swapchain = vulkan::create_swapchain(info);
     render::select_swapchain(swapchain);
     swapchain_created = true;
+    render::render_screen_safe();
 }
