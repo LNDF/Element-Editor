@@ -27,6 +27,7 @@ static void open_and_import(const uuid& id, const std::string& path) {
     deserialize(ELM_SERIALIZE_NVP("scene", s));
     scenegraph::import_scene(id, std::move(s));
     render::get_screen_scene_renderer()->select_scene(id, scenegraph::get_editor_camera());
+    render::render_screen_safe();
 }
 
 void scenegraph::open_scene(const uuid& id) {
@@ -51,5 +52,6 @@ bool scenegraph::close_scene() {
     //TODO: saving and stuff
     render::get_screen_scene_renderer()->select_scene(uuid::null());
     scenegraph::destroy_all_scenes();
+    render::render_screen_safe();
     return true;
 }
