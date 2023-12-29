@@ -16,7 +16,7 @@ namespace element {
             void resizeEvent(QResizeEvent *ev) override;
         public:
             qt_vulkan_window(QWindow* parent = nullptr);
-            virtual ~qt_vulkan_window();disc
+            virtual ~qt_vulkan_window();
     };
 
 } // namespace element
