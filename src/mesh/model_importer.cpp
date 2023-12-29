@@ -67,13 +67,18 @@ static void extract_all_meshes(aiMesh** meshes, std::uint32_t count, const std::
         if (input_mesh->HasTextureCoords(0)) {
             output_mesh.tex_coords.resize(num_vertices);
             for (std::uint32_t j = 0; j < num_vertices; ++j) {
-                output_mesh.tex_coords[i].x = input_mesh->mTextureCoords[0][j].x;
-                output_mesh.tex_coords[i].y = input_mesh->mTextureCoords[0][j].y;
+                output_mesh.tex_coords[j].x = input_mesh->mTextureCoords[0][j].x;
+                output_mesh.tex_coords[j].y = input_mesh->mTextureCoords[0][j].y;
             }
         }
         if (input_mesh->HasFaces()) {
-            output_mesh.indices.resize(input_mesh->mNumFaces);
-            memcpy(&output_mesh.indices[0], input_mesh->mFaces, sizeof(std::uint32_t) * input_mesh->mNumFaces);
+            std::size_t offset = 0;
+            output_mesh.indices.resize(input_mesh->mNumFaces * 3);
+            for (std::uint32_t j = 0; j < input_mesh->mNumFaces; ++j) {
+                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[0];
+                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[1];
+                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[2];
+            }
         }
         std::ofstream stream(out / (name_gen.get(input_mesh->mName.C_Str()) + ".mesh"));
         binary_serializer serialize = create_binary_serializer(stream);
