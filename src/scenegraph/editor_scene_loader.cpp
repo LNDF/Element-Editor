@@ -2,30 +2,25 @@
 
 #include <core/fs.h>
 #include <core/log.h>
-#include <editor/project.h>
+#include <asset/loaders/scene.h>
 #include <scenegraph/scene_manager.h>
 #include <scenegraph/editor_camera_node_storage.h>
 #include <render/render.h>
 #include <serialization/defs.h>
 #include <serialization/serializers_editor.h>
-#include <serialization/scenegraph.h>
 #include <fstream>
 #include <filesystem>
 
 using namespace element;
 
 static void open_and_import(const uuid& id, const std::string& path) {
-    std::filesystem::path sys_path = project::project_assets_path / path;
-    std::ifstream stream(sys_path);
-    if (stream.fail()) {
-        ELM_WARN("Couldn't open scene {0} {{1}}", sys_path.string(), id.str());
+    std::optional<scenegraph::scene> s = asset_loader::scene_text_load(path);
+    if (!s.has_value()) {
+        ELM_WARN("Couldn't open scene {0} {{1}}", path, id.str());
         return;
     }
     if (!scenegraph::close_scene()) return;
-    scenegraph::scene s;
-    text_deserializer deserialize = create_text_deserializer(stream);
-    deserialize(ELM_SERIALIZE_NVP("scene", s));
-    scenegraph::import_scene(id, std::move(s));
+    scenegraph::import_scene(id, std::move(s.value()));
     render::get_screen_scene_renderer()->select_scene(id, scenegraph::get_editor_camera());
     render::render_screen_safe();
 }
