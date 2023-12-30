@@ -21,8 +21,9 @@ static void open_and_import(const uuid& id, const std::string& path) {
     }
     if (!scenegraph::close_scene()) return;
     scenegraph::import_scene(id, std::move(s.value()));
+    if (render::get_screen_scene_renderer() == nullptr) return;
     render::get_screen_scene_renderer()->select_scene(id, scenegraph::get_editor_camera());
-    render::render_screen_safe();
+    render::render_screen();
 }
 
 void scenegraph::open_scene(const uuid& id) {
