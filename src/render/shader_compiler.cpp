@@ -25,7 +25,7 @@ class shader_includer : public glslang::TShader::Includer  {
 
         virtual IncludeResult* includeSystem(const char* includee, const char* includer, size_t depth) final override {
             if (depth > 50) return nullptr;
-            std::filesystem::path inc_path = std::filesystem::absolute("resouces/shader_include");
+            std::filesystem::path inc_path = std::filesystem::absolute("resources/shader_include");
             inc_path /= includee;
             return include_if_exists(inc_path);
         }
