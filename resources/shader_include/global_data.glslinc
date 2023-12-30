@@ -4,8 +4,8 @@ layout(set = 0, binding = 0) uniform _engine_data {
     uint64_t time;
 } engine_data;
 
-layout(set = 0, binding = 1) uniform _scene_data {
+layout(set = 0, binding = 1) uniform _camera_data {
     mat4 view;
     mat4 projection;
     mat4 view_projection;
-} scene_data;
+} camera_data;
