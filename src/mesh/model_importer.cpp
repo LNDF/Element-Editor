@@ -75,9 +75,9 @@ static void extract_all_meshes(aiMesh** meshes, std::uint32_t count, const std::
             std::size_t offset = 0;
             output_mesh.indices.resize(input_mesh->mNumFaces * 3);
             for (std::uint32_t j = 0; j < input_mesh->mNumFaces; ++j) {
-                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[0];
-                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[1];
-                output_mesh.indices[offset++] = input_mesh->mFaces[i].mIndices[2];
+                output_mesh.indices[offset++] = input_mesh->mFaces[j].mIndices[0];
+                output_mesh.indices[offset++] = input_mesh->mFaces[j].mIndices[1];
+                output_mesh.indices[offset++] = input_mesh->mFaces[j].mIndices[2];
             }
         }
         std::ofstream stream(out / (name_gen.get(input_mesh->mName.C_Str()) + ".mesh"));
