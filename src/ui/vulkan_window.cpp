@@ -5,7 +5,7 @@
 #include <event/event.h>
 #include <editor/editor.h>
 #include <resource/async_loader_events.h>
-#include <graphics/vulkan_swapchain.h>
+#include <render/vulkan_swapchain.h>
 #include <render/render.h>
 
 #include <QResizeEvent>

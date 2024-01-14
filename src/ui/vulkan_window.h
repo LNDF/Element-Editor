@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QWindow>
-#include <graphics/vulkan_qt.h>
-#include <graphics/vulkan_swapchain.h>
+#include <render/vulkan_qt.h>
+#include <render/vulkan_swapchain.h>
 
 namespace element {
     
