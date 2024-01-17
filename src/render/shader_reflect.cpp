@@ -132,7 +132,7 @@ render::shader_layout render::reflect_from_spv(const std::vector<std::uint32_t>&
 }
 
 
-render::shader_layout render::get_shader_reflection_data(const uuid& id) {
+std::optional<render::shader_layout> render::get_shader_reflection_data(const uuid& id) {
     std::ifstream cache_stream(shader_reflect_path / (id.str() + ".json"));
     if (!cache_stream.fail()) {
         text_deserializer deserialize = create_text_deserializer(cache_stream);
@@ -141,7 +141,7 @@ render::shader_layout render::get_shader_reflection_data(const uuid& id) {
         return result;
     }
     std::vector<std::uint32_t> spv = render::load_shader_spv(id);
-    if (spv.empty()) return shader_layout();
+    if (spv.empty()) return std::nullopt;
     shader_layout result = reflect_from_spv(spv);
     save_shader_reflection_data(id, result);
     return result;

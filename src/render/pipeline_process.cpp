@@ -3,6 +3,7 @@
 #include <core/log.h>
 #include <core/fs.h>
 #include <render/shader_reflect.h>
+#include <optional>
 
 using namespace element;
 
@@ -21,25 +22,26 @@ static bool check_layout_compatibility(const uuid& vert_id, const uuid& frag_id,
 }
 
 bool render::pipeline_create_layout_data(pipeline_data& data) {
-    shader_layout vert_layout = get_shader_reflection_data(data.vert_id);
-    shader_layout frag_layout = get_shader_reflection_data(data.frag_id);
-    if (vert_layout.push_constants.size > 0) {
+    std::optional<shader_layout> vert_layout = get_shader_reflection_data(data.vert_id);
+    std::optional<shader_layout> frag_layout = get_shader_reflection_data(data.frag_id);
+    if (!vert_layout.has_value() || !frag_layout.has_value()) return false;
+    if (vert_layout->push_constants.size > 0) {
         data.push_constants.second |= vk::ShaderStageFlagBits::eVertex;
-        data.push_constants.first = vert_layout.push_constants;
+        data.push_constants.first = vert_layout->push_constants;
     }
-    if (frag_layout.push_constants.size > 0) {
+    if (frag_layout->push_constants.size > 0) {
         data.push_constants.second |= vk::ShaderStageFlagBits::eFragment;
-        if (vert_layout.push_constants.size == 0) {
-            data.push_constants.first = frag_layout.push_constants;
-        } else if (vert_layout.push_constants.size != frag_layout.push_constants.size) {
+        if (vert_layout->push_constants.size == 0) {
+            data.push_constants.first = frag_layout->push_constants;
+        } else if (vert_layout->push_constants.size != frag_layout->push_constants.size) {
             ELM_ERROR("Error processing pipeline.\nVertex shader {0} and fragment shader {1} have different push constant block sizes", fs::get_resource_info(data.vert_id).path, fs::get_resource_info(data.frag_id).path);
             return false;
         }
     }
-    for (const shader_resource_layout& vert_res : vert_layout.descriptor_sets) {
+    for (const shader_resource_layout& vert_res : vert_layout->descriptor_sets) {
         bool found_in_frag = false;
         vk::ShaderStageFlags stage = vk::ShaderStageFlagBits::eVertex;
-        for (const shader_resource_layout& frag_res : frag_layout.descriptor_sets) {
+        for (const shader_resource_layout& frag_res : frag_layout->descriptor_sets) {
             if (vert_res.set == frag_res.set && vert_res.binding == frag_res.binding) {
                 found_in_frag = true;
                 if (!check_layout_compatibility(data.vert_id, data.frag_id, vert_res, frag_res)) return false;
@@ -48,9 +50,9 @@ bool render::pipeline_create_layout_data(pipeline_data& data) {
         if (found_in_frag) stage |= vk::ShaderStageFlagBits::eFragment;
         data.layouts.emplace_back(vert_res, stage);
     }
-    for (const shader_resource_layout& frag_res : frag_layout.descriptor_sets) {
+    for (const shader_resource_layout& frag_res : frag_layout->descriptor_sets) {
         bool found_in_vert = false;
-        for (const shader_resource_layout& vert_res : vert_layout.descriptor_sets) {
+        for (const shader_resource_layout& vert_res : vert_layout->descriptor_sets) {
             if (vert_res.set == frag_res.set && vert_res.binding == frag_res.binding) {
                 found_in_vert = true;
                 break;
