@@ -5,8 +5,8 @@
 #include <utils/uuid.h>
 #include <filesystem>
 
-#define ELM_REGISTER_IMPORTER(type, import_fun) ELM_PRE_EXECUTE(element::asset_importer::register_importer, type, import_fun)
-#define ELM_REGISTER_SKIP_IMPORT(type) ELM_REGISTER_IMPORTER(type, element::importers::null_importer)
+#define ELM_REGISTER_IMPORTER(type, import_fun, min_iteration) ELM_PRE_EXECUTE(element::asset_importer::register_importer, type, import_fun, min_iteration)
+#define ELM_REGISTER_SKIP_IMPORT(type) ELM_REGISTER_IMPORTER(type, element::importers::null_importer, 1)
 
 namespace element {
     
@@ -22,8 +22,8 @@ namespace element {
 
         void start();
         void stop();
-        void register_importer(const std::string& type, asset_importer_callback importer);
-        void register_importer(std::string&& type, asset_importer_callback importer);
+        void register_importer(const std::string& type, asset_importer_callback importer, std::uint32_t min_iteration);
+        void register_importer(std::string&& type, asset_importer_callback importer, std::uint32_t min_iteration);
         void unregister_importer(const std::string& type);
         std::string get_fs_path_from_system(const std::filesystem::path& path);
         void reimport();

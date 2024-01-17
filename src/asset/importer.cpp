@@ -25,6 +25,11 @@ struct asset_importer_node {
     std::unordered_map<std::filesystem::path::string_type, asset_importer_node> children;
 };
 
+struct asset_importer_data {
+    element::asset_importer::asset_importer_callback callback;
+    std::uint32_t min_iteration;
+};
+
 static QTimer* pending_import_timer = nullptr;
 static bool tracker_running = false;
 static bool should_restart_timer = false;
@@ -33,8 +38,8 @@ static element::packed_set<element::uuid> pending_to_import;
 
 using namespace element;
 
-static std::unordered_map<std::string, asset_importer::asset_importer_callback>& get_importers() {
-    static std::unordered_map<std::string, asset_importer::asset_importer_callback> map;
+static std::unordered_map<std::string, asset_importer_data>& get_importers() {
+    static std::unordered_map<std::string, asset_importer_data> map;
     return map;
 }
 
@@ -54,7 +59,7 @@ static void create_dir_nodes(const std::filesystem::path& path, bool is_dir, ass
         } else {
             fs_resource_info info = fs::get_resource_info(id);
             auto it = get_importers().find(info.type);
-            if (it == get_importers().end() || it->second != importers::null_importer) {
+            if (it == get_importers().end() || it->second.callback != importers::null_importer) {
                 std::filesystem::path bin_path = fs::get_resource_data_path(id);
                 if (std::filesystem::exists(bin_path)) {
                     std::filesystem::file_time_type path_time = std::filesystem::last_write_time(path);
@@ -128,18 +133,6 @@ static void delete_dir_nodes(const std::filesystem::path& path, const asset_impo
     }
 }
 
-static void async_asset_import(const uuid& id) {
-    fs_resource_info info = fs::get_resource_info(id);
-    auto it = get_importers().find(info.type);
-    if (it != get_importers().end()) {
-        ELM_INFO("Importing {0} ({1}).", info.path, id.str());
-        it->second(id);
-    } else {
-        ELM_INFO("Importing {0} ({1}) with default importer.", info.path, id.str());
-        importers::default_importer(id);
-    }
-}
-
 void asset_importer::start() {
     if (tracker_running) {
         ELM_WARN("File system watcher already started.");
@@ -197,12 +190,12 @@ void asset_importer::stop() {
     }
 }
 
-void asset_importer::register_importer(const std::string& type, asset_importer_callback importer) {
-    get_importers().try_emplace(type, importer);
+void asset_importer::register_importer(const std::string& type, asset_importer_callback importer, std::uint32_t min_iteration) {
+    get_importers().try_emplace(type, importer, min_iteration);
 }
 
-void asset_importer::register_importer(std::string&& type, asset_importer_callback importer) {
-    get_importers().try_emplace(std::move(type), importer);
+void asset_importer::register_importer(std::string&& type, asset_importer_callback importer, std::uint32_t min_iteration) {
+    get_importers().try_emplace(std::move(type), importer, min_iteration);
 }
 
 void asset_importer::unregister_importer(const std::string& type) {
@@ -231,18 +224,36 @@ void asset_importer::import_pending_assets() {
     ELM_INFO("Starting to import assets...");
     packed_set<uuid> imported_assets;
     packed_set<uuid> currently_importing(std::move(pending_to_import));
-    std::uint32_t iteration = 1;
+    std::uint32_t iteration = 0;
     pending_to_import.clear();
     should_restart_timer = false;
     events::asset_updated event;
     while (currently_importing.size() > 0) {
-        ELM_INFO("Importing... (iteration {0})", iteration++);
+        ELM_INFO("Importing... (iteration {0})", ++iteration);
         {
             std::vector<std::future<void>> futures;
             futures.reserve(currently_importing.size());
             for (const uuid& id : currently_importing) {
-                futures.push_back(std::async(std::launch::async, async_asset_import, id));
+                fs_resource_info info = fs::get_resource_info(id);
+                asset_importer_callback importer;
+                auto it = get_importers().find(info.type);
+                if (it != get_importers().end()) {
+                    if (it->second.min_iteration > iteration) {
+                        pending_to_import.insert(id);
+                        continue;
+                    }
+                    ELM_INFO("Importing {0} ({1}).", info.path, id.str());
+                    importer = it->second.callback;
+                } else {
+                    ELM_INFO("Importing {0} ({1}) with default importer.", info.path, id.str());
+                    importer = importers::default_importer;
+                }
+                futures.push_back(std::async(std::launch::async, importer, id));
+                imported_assets.insert(id);
             }
+        }
+        for (const auto& pending : pending_to_import) {
+            currently_importing.erase(pending);
         }
         for (const uuid& id : currently_importing) {
             const auto& deps = get_dependents(id);
@@ -250,10 +261,11 @@ void asset_importer::import_pending_assets() {
             event.id = id;
             event_manager::send_event(event);
         }
-        imported_assets.insert(currently_importing.begin(), currently_importing.end());
         currently_importing = std::move(pending_to_import);
         pending_to_import.clear();
-        currently_importing.erase(imported_assets.begin(), imported_assets.end());
+        for (const auto& imported : imported_assets) {
+            currently_importing.erase(imported);
+        }
     }
     should_restart_timer = true;
     ELM_INFO("Finished importing {0} assets.", imported_assets.size());

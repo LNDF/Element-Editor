@@ -6,4 +6,4 @@ static void vert_importer(const element::uuid& id) {
     element::importers::helpers::shader_compile(id, element::render::shader_stage::vertex);
 }
 
-ELM_REGISTER_IMPORTER("vert", vert_importer)
+ELM_REGISTER_IMPORTER("vert", vert_importer, 1)

@@ -29,4 +29,4 @@ static void pipeline_importer(const uuid& id) {
     asset_importer::set_id_dependencies(id, std::move(dependencies));
 }
 
-ELM_REGISTER_IMPORTER("pipeline", pipeline_importer)
+ELM_REGISTER_IMPORTER("pipeline", pipeline_importer, 2)

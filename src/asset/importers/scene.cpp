@@ -18,4 +18,4 @@ static void scene_importer(const uuid& id) {
     serialize(s.value());
 }
 
-ELM_REGISTER_IMPORTER("scene", scene_importer)
+ELM_REGISTER_IMPORTER("scene", scene_importer, 1)

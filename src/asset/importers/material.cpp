@@ -27,4 +27,4 @@ static void material_importer(const uuid& id) {
     asset_importer::set_id_dependencies(id, std::move(dependencies));
 }
 
-ELM_REGISTER_IMPORTER("material", material_importer)
+ELM_REGISTER_IMPORTER("material", material_importer, 3)

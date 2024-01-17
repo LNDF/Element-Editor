@@ -36,4 +36,4 @@ static void mesh_importer(const uuid& id) {
     serialize(rm);
 }
 
-ELM_REGISTER_IMPORTER("mesh", mesh_importer)
+ELM_REGISTER_IMPORTER("mesh", mesh_importer, 1)

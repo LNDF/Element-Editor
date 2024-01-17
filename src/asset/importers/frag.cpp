@@ -6,4 +6,4 @@ static void frag_importer(const element::uuid& id) {
     element::importers::helpers::shader_compile(id, element::render::shader_stage::fragment);
 }
 
-ELM_REGISTER_IMPORTER("frag", frag_importer)
+ELM_REGISTER_IMPORTER("frag", frag_importer, 1)
