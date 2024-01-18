@@ -227,8 +227,8 @@ void asset_importer::import_pending_assets() {
     std::uint32_t iteration = 0;
     pending_to_import.clear();
     should_restart_timer = false;
-    events::asset_updated event;
     while (currently_importing.size() > 0) {
+        events::asset_updated event;
         ELM_INFO("Importing... (iteration {0})", ++iteration);
         {
             std::vector<std::future<void>> futures;
@@ -271,6 +271,8 @@ void asset_importer::import_pending_assets() {
     ELM_INFO("Finished importing {0} assets.", imported_assets.size());
     fs::save_resources();
     save_dependencies();
+    events::assets_imported event;
+    event_manager::send_event(event);
 }
 
 bool asset_importer::is_tracker_running() {

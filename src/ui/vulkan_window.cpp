@@ -2,9 +2,6 @@
 
 #include <editor/editor.h>
 #include <core/log.h>
-#include <event/event.h>
-#include <editor/editor.h>
-#include <resource/async_loader_events.h>
 #include <render/vulkan_swapchain.h>
 #include <render/render.h>
 
@@ -44,10 +41,3 @@ void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
     }
     render::render_screen_safe();
 }
-
-static bool render_on_resource_load(events::end_loading& event) {
-    editor::execute_in_editor_thread(render::render_screen_safe);
-    return true;
-}
-
-ELM_REGISTER_EVENT_CALLBACK(events::end_loading, render_on_resource_load, event_callback_priority::highest)

@@ -13,7 +13,9 @@ namespace element {
             uuid id;
         };
         
-        
+        struct assets_imported {
+
+        };
 
     } // namespace events
     
