@@ -28,7 +28,9 @@ static bool reload_material_after_inport(element::events::asset_updated& event) 
     if (info.type == "material") {
         element::render::material* old_mat = element::material_manager::get(event.id, false);
         element::uuid old_pipeline = element::uuid::null();
+        bool has_gpu_mat = false;
         if (old_mat != nullptr) {
+            has_gpu_mat = element::render::get_gpu_material(event.id) != nullptr;
             old_pipeline = old_mat->get_pipeline_id();
         }
         element::render::destroy_material(event.id);
@@ -41,6 +43,7 @@ static bool reload_material_after_inport(element::events::asset_updated& event) 
             if (old_pipeline != new_pipeline) {
                 scene_render_material_pipeline_update(event.id, old_pipeline, new_pipeline);
             }
+            if (has_gpu_mat) element::render::get_or_create_gpu_material(event.id);
         } else if (old_mat == nullptr && new_mat != nullptr) {
             scene_render_material_enable(event.id, new_pipeline);
         } else if (old_mat != nullptr && new_mat == nullptr) {

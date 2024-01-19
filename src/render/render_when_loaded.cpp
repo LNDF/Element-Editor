@@ -13,8 +13,6 @@ static bool render_on_resource_load(events::resource_end_loading& event) {
 
 static bool render_on_assets_imported(events::assets_imported& event) {
     render::render_screen_safe();
-    render::render_screen_safe();
-    //FOR SOME REASON, I NEED TO DO THIS TWOICE. TODO: fix
     return true;
 }
 
