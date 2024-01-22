@@ -16,6 +16,51 @@
   <widget class="QWidget" name="render_canvas">
    <layout class="QHBoxLayout" name="horizontalLayout"/>
   </widget>
+  <widget class="QDockWidget" name="scene_dock">
+   <property name="minimumSize">
+    <size>
+     <width>160</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Scene</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="scene"/>
+  </widget>
+  <widget class="QDockWidget" name="filesystem_dock">
+   <property name="minimumSize">
+    <size>
+     <width>120</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Filesytem</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>1</number>
+   </attribute>
+   <widget class="QWidget" name="filesystem"/>
+  </widget>
+  <widget class="QDockWidget" name="properties_dock">
+   <property name="minimumSize">
+    <size>
+     <width>200</width>
+     <height>250</height>
+    </size>
+   </property>
+   <property name="windowTitle">
+    <string>Properties</string>
+   </property>
+   <attribute name="dockWidgetArea">
+    <number>2</number>
+   </attribute>
+   <widget class="QWidget" name="properties"/>
+  </widget>
  </widget>
  <resources/>
  <connections/>
