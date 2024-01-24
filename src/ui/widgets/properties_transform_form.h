@@ -9,7 +9,7 @@
 namespace element {
     namespace ui {
         
-        class properties_transform : public properties_standard_form {
+        class properties_transform_form : public properties_standard_form {
             Q_OBJECT
             private:
                 scenegraph::node_ref node;
@@ -17,7 +17,7 @@ namespace element {
                 vec3_input* rotation_input;
                 vec3_input* scale_input;
             public:
-                properties_transform(const scenegraph::node_ref& node, QWidget* parent = nullptr);
+                properties_transform_form(const scenegraph::node_ref& node, QWidget* parent = nullptr);
             private slots:
                 void set_position(glm::vec3 position);
                 void set_rotation(glm::vec3 rotation);
