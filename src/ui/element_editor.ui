@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>925</width>
-    <height>587</height>
+    <width>1126</width>
+    <height>586</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -139,7 +139,7 @@
   <widget class="QDockWidget" name="properties_dock">
    <property name="minimumSize">
     <size>
-     <width>283</width>
+     <width>403</width>
      <height>250</height>
     </size>
    </property>
@@ -194,7 +194,7 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>279</width>
+          <width>399</width>
           <height>130</height>
          </rect>
         </property>

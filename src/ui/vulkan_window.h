@@ -17,6 +17,8 @@ namespace element {
         public:
             qt_vulkan_window(QWindow* parent = nullptr);
             virtual ~qt_vulkan_window();
+        public slots:
+            void render();
     };
 
 } // namespace element

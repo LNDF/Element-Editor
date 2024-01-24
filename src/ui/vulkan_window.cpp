@@ -39,5 +39,9 @@ void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
     if (first_time) {
         scenegraph::open_scene("test.scene");
     }
+    render();
+}
+
+void qt_vulkan_window::render() {
     render::render_screen_safe();
 }
