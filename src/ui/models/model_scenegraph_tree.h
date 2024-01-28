@@ -18,6 +18,7 @@ namespace element {
                 std::type_index insertion_type;
 
                 scenegraph::node_ref* get_node_ref(const uuid& id) const;
+                const scenegraph::node_ref& ref_from_index(const QModelIndex& index) const;
             public:
                 model_scenegraph_tree();
 
