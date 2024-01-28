@@ -5,6 +5,7 @@
 #include <core/engine.h>
 #include <core/core_events.h>
 #include <event/event.h>
+#include <ui/models/model_scenegraph_tree.h>
 #include <ui/vulkan_window.h>
 
 using namespace element::ui;
@@ -19,6 +20,8 @@ element_editor::element_editor() {
 
 element_editor::~element_editor() {
     delete game_window_container;
+    QAbstractItemModel* m = scene_tree->model();
+    if (m != nullptr) delete m;
 }
 
 void element_editor::closeEvent(QCloseEvent* event) {
@@ -27,4 +30,10 @@ void element_editor::closeEvent(QCloseEvent* event) {
     if (event_manager::send_event(close_event)) {
         event->accept();
     }
+}
+
+void element_editor::load_scene() {
+    QAbstractItemModel* m = scene_tree->model();
+    scene_tree->setModel(new model_scenegraph_tree());
+    if (m != nullptr) delete m;
 }

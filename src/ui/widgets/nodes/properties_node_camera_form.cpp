@@ -25,7 +25,7 @@ properties_node_camera_form::properties_node_camera_form(const scenegraph::camer
     connect(fov_input, SIGNAL(valueChanged(double)), SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
 }
 
-void properties_node_camera_form::set_far_plane(double near_plane) {
+void properties_node_camera_form::set_near_plane(double near_plane) {
     if (node.exists()) node->set_near_plane((float) near_plane);
 }
 

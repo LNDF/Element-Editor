@@ -20,6 +20,8 @@ namespace element {
                 element_editor();
                 virtual ~element_editor();
 
+                void load_scene();
+
                 inline QWindow* get_game_window() {return game_window;}
                 inline QWidget* get_game_window_container() {return game_window_container;}
         };
