@@ -3,10 +3,13 @@
 #include <scenegraph/node.h>
 #include <scenegraph/node_type_info.h>
 #include <scenegraph/editor_scene_loader.h>
+#include <QMimeData>
 
 using namespace element::ui;
 using namespace element;
 
+static QString mime_type("application/x-element-node-ref");
+#include <core/log.h>
 scenegraph::node_ref* model_scenegraph_tree::get_node_ref(const uuid& id) const {
     auto it = node_refs.find(id);
     if (it == node_refs.end()) {
@@ -23,12 +26,24 @@ const scenegraph::node_ref& model_scenegraph_tree::ref_from_index(const QModelIn
     }
 }
 
+QModelIndex model_scenegraph_tree::index_from_ref(const scenegraph::node_ref& ref) const {
+    if (current_scene == nullptr || ref == nullptr) return QModelIndex();
+    const scenegraph::node_ref& parent = ref->get_parent();
+    if (parent == nullptr) return QModelIndex();
+    QModelIndex parent_index = index_from_ref(parent);
+    int row = 0;
+    const auto& children = parent->get_children();
+    while (children[row] != ref) ++row;
+    return index(row, 0, parent_index);
+    
+}
+
 model_scenegraph_tree::model_scenegraph_tree() : insertion_type(std::type_index(typeid(scenegraph::node))) {
     current_scene = scenegraph::get_current_scene();
 }
 
 QModelIndex model_scenegraph_tree::index(int row, int column, const QModelIndex &parent) const {
-    if (current_scene == nullptr || column != 0) return QModelIndex();
+    if (current_scene == nullptr || column != 0 || !hasIndex(row, column, parent)) return QModelIndex();
     const scenegraph::node_ref& ref = ref_from_index(parent);
     if (ref == nullptr) return QModelIndex();
     const uuid& id = ref->get_children()[row].get_id();
@@ -41,12 +56,11 @@ QModelIndex model_scenegraph_tree::parent(const QModelIndex &index) const {
     if (ref == nullptr) return QModelIndex();
     const scenegraph::node_ref& parent = ref->get_parent();
     if (parent == nullptr) return QModelIndex();
-    int row = 0;
     const scenegraph::node_ref& pparent = parent->get_parent();
-    if (pparent != nullptr) {
-        const auto& pparent_children = pparent->get_children();
-        while (pparent_children[row] != parent) row++;
-    }
+    if (pparent == nullptr) return QModelIndex();
+    int row = 0;
+    const auto& pparent_children = pparent->get_children();
+    while (pparent_children[row] != parent) ++row;
     return createIndex(row, 0, get_node_ref(parent.get_id()));
 }
 
@@ -94,18 +108,22 @@ bool model_scenegraph_tree::moveRows(const QModelIndex &sourceParent, int source
     const scenegraph::node_ref& ref_src = ref_from_index(sourceParent);
     const scenegraph::node_ref& ref_dst = ref_from_index(destinationParent);
     if (ref_src == nullptr || ref_dst == nullptr) return false;
-    beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild);
+    if (destinationChild == -1) destinationChild = 0;
     if (ref_src == ref_dst) {
+        int move_diff = destinationChild - sourceRow;
+        if (move_diff == 0 || move_diff == 1) return false;
+        beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild);
         if (sourceRow < destinationChild) {
             for (int i = count - 1; i >= 0; --i) {
                 ref_src->move_child(sourceRow + i, destinationChild + i);
             }
-        } else {
+        } else if (sourceRow > destinationChild) {
             for (int i = 0; i < count; ++i) {
                 ref_src->move_child(sourceRow + i, destinationChild + i);
             }
         }
     } else {
+        beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild);
         const auto& children = ref_src->get_children();
         for (int i = count - 1; i >= 0; --i) {
             ref_dst->add_child(children[sourceRow + i], destinationChild);
@@ -139,9 +157,50 @@ bool model_scenegraph_tree::setData(const QModelIndex &index, const QVariant &va
 }
 
 Qt::DropActions model_scenegraph_tree::supportedDragActions() const {
-    return Qt::MoveAction;
+    return Qt::CopyAction;
 }
 
 Qt::DropActions model_scenegraph_tree::supportedDropActions() const {
-    return Qt::MoveAction;
+    return Qt::CopyAction;
+}
+
+QMimeData* model_scenegraph_tree::mimeData(const QModelIndexList &indexes) const {
+    QMimeData* data = new QMimeData();
+    QByteArray encoded;
+    QDataStream stream(&encoded, QDataStream::WriteOnly);
+    for (const auto& index : indexes) {
+        const scenegraph::node_ref& ref = ref_from_index(index);
+        if (ref != nullptr) stream.writeRawData((const char*) ref.get_id().bytes, 16);
+    }
+    data->setData(QString(mime_type), encoded);
+    return data;
+}
+
+QStringList model_scenegraph_tree::mimeTypes() const {
+    return QStringList({QString(mime_type)});
+}
+
+bool model_scenegraph_tree::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
+    if (data->hasFormat(mime_type)) {
+        bool ret = false;
+        QByteArray encoded = data->data(mime_type);
+        QDataStream stream(&encoded, QDataStream::ReadOnly);
+        uuid id = uuid::null();
+        int drow = row;
+        while (!stream.atEnd()) {
+            stream.readRawData((char*) id.bytes, 16);
+            scenegraph::node_ref ref = id;
+            if (ref == nullptr || ref == ref_from_index(parent)) continue;
+            const scenegraph::node_ref& parent_ref = ref->get_parent();
+            if (parent_ref == nullptr) continue;
+            int srow = 0;
+            const auto& children = parent_ref->get_children();
+            while (children[srow] != ref) ++srow;
+            QModelIndex src_parent = index_from_ref(parent_ref);
+            moveRow(src_parent, srow, parent, drow++);
+            ret = true;
+        }
+        return ret;
+    }
+    return false;
 }

@@ -19,6 +19,7 @@ namespace element {
 
                 scenegraph::node_ref* get_node_ref(const uuid& id) const;
                 const scenegraph::node_ref& ref_from_index(const QModelIndex& index) const;
+                QModelIndex index_from_ref(const scenegraph::node_ref& ref) const;
             public:
                 model_scenegraph_tree();
 
@@ -34,6 +35,9 @@ namespace element {
                 virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
                 virtual Qt::DropActions supportedDragActions() const;
                 virtual Qt::DropActions supportedDropActions() const;
+                QMimeData* mimeData(const QModelIndexList &indexes) const;
+                QStringList mimeTypes() const;
+                bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
         };
 
     } // namespace ui
