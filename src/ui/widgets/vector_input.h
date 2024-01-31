@@ -14,7 +14,7 @@ namespace element {
             private:
                 QHBoxLayout* vec2_input_layout = nullptr;
                 QLabel* labels[2];
-                double_input* inputs[2];
+                real_input* inputs[2];
             public:
                 vec2_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i);
@@ -37,7 +37,7 @@ namespace element {
             private:
                 QHBoxLayout* vec3_input_layout = nullptr;
                 QLabel* labels[3];
-                double_input* inputs[3];
+                real_input* inputs[3];
             public:
                 vec3_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i);
@@ -62,7 +62,7 @@ namespace element {
             private:
                 QHBoxLayout* vec4_input_layout = nullptr;
                 QLabel* labels[4];
-                double_input* inputs[4];
+                real_input* inputs[4];
             public:
                 vec4_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i);

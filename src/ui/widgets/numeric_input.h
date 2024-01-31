@@ -8,14 +8,18 @@ namespace element {
         
         class integer_input : public QSpinBox {
             Q_OBJECT
+            protected:
+                virtual QString textFromValue(int value) const;
             public:
                 integer_input(QWidget* parent = nullptr);
         };
 
-        class double_input : public QDoubleSpinBox {
+        class real_input : public QDoubleSpinBox {
             Q_OBJECT
             public:
-                double_input(QWidget* parent = nullptr);
+                real_input(QWidget* parent = nullptr);
+
+                virtual QString textFromValue(double value) const;
         };
 
     } // namespace ui

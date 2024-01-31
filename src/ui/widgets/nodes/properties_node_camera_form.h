@@ -12,9 +12,9 @@ namespace element {
             Q_OBJECT
             private:
                 scenegraph::camera_node_ref node;
-                double_input* near_plane_input;
-                double_input* far_plane_input;
-                double_input* fov_input;
+                real_input* near_plane_input;
+                real_input* far_plane_input;
+                real_input* fov_input;
             public:
                 properties_node_camera_form(const scenegraph::camera_node_ref& node, QWidget* parent = nullptr);
             private slots:
