@@ -51,6 +51,9 @@ void element_editor::load_scene() {
     if (first_time) {
         connect(scene_tree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(node_selected(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
     }
+    if (current_properties_container != nullptr) {
+        connect(scene_tree_model, SIGNAL(rowsMoved(const QModelIndex&, int, int, const QModelIndex&, int)), current_properties_container, SLOT(load_values()), Qt::ConnectionType::DirectConnection);
+    }
 }
 #include <scenegraph/node.h>
 void element_editor::node_selected(const QModelIndex& index) {
@@ -60,4 +63,7 @@ void element_editor::node_selected(const QModelIndex& index) {
     auto factory = get_node_properties_container_factory(std::type_index(typeid(*ref.get_node())));
     current_properties_container = factory(ref, nullptr);
     load_properties_container();
+    if (scene_tree_model != nullptr) {
+        connect(scene_tree_model, SIGNAL(rowsMoved(const QModelIndex&, int, int, const QModelIndex&, int)), current_properties_container, SLOT(load_values()), Qt::ConnectionType::DirectConnection);
+    }
 }
