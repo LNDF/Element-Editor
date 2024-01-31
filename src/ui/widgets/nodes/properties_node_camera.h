@@ -12,7 +12,7 @@ namespace element {
             private:
                 properties_node_camera_form* camera;
             public:
-                properties_node_camera(const scenegraph::camera_node_ref& node, QWidget* parent = nullptr);
+                properties_node_camera(const scenegraph::node_ref& node, QWidget* parent = nullptr);
             public slots:
                 virtual void load_values();
         };

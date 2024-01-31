@@ -10,6 +10,7 @@ integer_input::integer_input(QWidget* parent) : QSpinBox(parent) {
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
+    setMinimumSize(QSize(0, 0));
     setMinimum(std::numeric_limits<int>::min());
     setMaximum(std::numeric_limits<int>::max());
     setStepType(QAbstractSpinBox::AdaptiveDecimalStepType);
@@ -21,7 +22,8 @@ double_input::double_input(QWidget* parent) : QDoubleSpinBox(parent) {
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
-    setMinimum(std::numeric_limits<double>::min());
+    setMinimumSize(QSize(0, 0));
+    setMinimum(-std::numeric_limits<double>::max());
     setMaximum(std::numeric_limits<double>::max());
     setStepType(QAbstractSpinBox::AdaptiveDecimalStepType);
 }

@@ -15,7 +15,7 @@ static void add_labels(std::uint32_t count, QLabel** labels, double_input** inpu
         inputs[i] = new double_input(parent);
         inputs[i]->setObjectName(input_names[i]);
         layout->addWidget(inputs[i]);
-        QObject::connect(inputs[i], SIGNAL(valueChanged(double)), parent, SLOT(value_changed()), Qt::ConnectionType::DirectConnection);
+        QObject::connect(inputs[i], SIGNAL(valueChanged(double)), parent, SLOT(change_component()), Qt::ConnectionType::DirectConnection);
     }
 }
 
@@ -25,6 +25,7 @@ vec2_input::vec2_input(QWidget* parent) : QWidget(parent) {
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
+    setMinimumSize(QSize(0, 0));
     vec2_input_layout = new QHBoxLayout(this);
     vec2_input_layout->setObjectName("vec2_input_layout");
     vec2_input_layout->setSpacing(0);
@@ -59,6 +60,7 @@ vec3_input::vec3_input(QWidget* parent) : QWidget(parent) {
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
+    setMinimumSize(QSize(0, 0));
     vec3_input_layout = new QHBoxLayout(this);
     vec3_input_layout->setObjectName("vec3_input_layout");
     vec3_input_layout->setSpacing(0);
@@ -94,6 +96,7 @@ vec4_input::vec4_input(QWidget* parent) : QWidget(parent) {
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
+    setMinimumSize(QSize(0, 0));
     vec4_input_layout = new QHBoxLayout(this);
     vec4_input_layout->setObjectName("vec4_input_layout");
     vec4_input_layout->setSpacing(0);

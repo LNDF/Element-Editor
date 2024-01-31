@@ -18,11 +18,11 @@ namespace element {
                 std::type_index insertion_type;
 
                 scenegraph::node_ref* get_node_ref(const uuid& id) const;
-                const scenegraph::node_ref& ref_from_index(const QModelIndex& index) const;
                 QModelIndex index_from_ref(const scenegraph::node_ref& ref) const;
             public:
                 model_scenegraph_tree();
 
+                const scenegraph::node_ref& ref_from_index(const QModelIndex& index) const;
                 virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
                 virtual QModelIndex parent(const QModelIndex &index) const;
                 virtual int rowCount(const QModelIndex &parent) const;

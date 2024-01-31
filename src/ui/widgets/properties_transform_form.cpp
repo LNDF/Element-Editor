@@ -19,12 +19,12 @@ properties_transform_form::properties_transform_form(const scenegraph::node_ref&
     add_property(QCoreApplication::translate("element-editor", "Rotation"), rotation_input);
     add_property(QCoreApplication::translate("element-editor", "Scale"), scale_input);
     load_values();
-    connect(position_input, SIGNAL(values_changed(glm::vec3)), this, SLOT(set_position(glm::vec3)), Qt::ConnectionType::DirectConnection);
-    connect(rotation_input, SIGNAL(values_changed(glm::vec3)), this, SLOT(set_rotation(glm::vec3)), Qt::ConnectionType::DirectConnection);
-    connect(scale_input, SIGNAL(values_changed(glm::vec3)), this, SLOT(set_scale(glm::vec3)), Qt::ConnectionType::DirectConnection);
-    connect(position_input, SIGNAL(values_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
-    connect(rotation_input, SIGNAL(values_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
-    connect(scale_input, SIGNAL(values_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+    connect(position_input, SIGNAL(value_changed(glm::vec3)), this, SLOT(set_position(glm::vec3)), Qt::ConnectionType::DirectConnection);
+    connect(rotation_input, SIGNAL(value_changed(glm::vec3)), this, SLOT(set_rotation(glm::vec3)), Qt::ConnectionType::DirectConnection);
+    connect(scale_input, SIGNAL(value_changed(glm::vec3)), this, SLOT(set_scale(glm::vec3)), Qt::ConnectionType::DirectConnection);
+    connect(position_input, SIGNAL(value_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+    connect(rotation_input, SIGNAL(value_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+    connect(scale_input, SIGNAL(value_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
 }
 
 void properties_transform_form::set_position(glm::vec3 position) {
