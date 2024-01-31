@@ -8,7 +8,6 @@ properties_standard_form::properties_standard_form(QWidget* parent) : QGroupBox(
     size_policy.setVerticalStretch(0);
     size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
     setSizePolicy(size_policy);
-    setMinimumSize(QSize(0, 0));
     setFlat(true);
     properties_standard_form_layout = new QFormLayout(this);
     properties_standard_form_layout->setObjectName("properties_standard_form_layout");

@@ -16,7 +16,6 @@ properties_node::properties_node(const scenegraph::node_ref& node, QWidget* pare
     transform->setObjectName("transform");
     layout()->addWidget(transform);
     connect(transform, SIGNAL(values_changed()), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
-    
 }
 
 void properties_node::load_values() {
