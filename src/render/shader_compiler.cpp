@@ -1,6 +1,7 @@
 #include "shader_compiler.h"
 
 #include <core/log.h>
+#include <glslang/Public/ShaderLang.h>
 #include <SPIRV/GlslangToSpv.h>
 #include <fstream>
 #include <memory>
