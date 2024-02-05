@@ -284,6 +284,10 @@ void __detail::__asset_importer_tracker_path_create(const std::filesystem::path&
     std::filesystem::path dirpath = path;
     dirpath.remove_filename();
     create_dir_nodes(path, is_dir, get_dir_node(dirpath));
+    events::asset_file_created event;
+    event.path = path;
+    event.is_dir = is_dir;
+    event_manager::send_event(event);
 }
 
 void __detail::__asset_importer_tracker_path_move(const std::filesystem::path &from, const std::filesystem::path &to) {
@@ -298,6 +302,10 @@ void __detail::__asset_importer_tracker_path_move(const std::filesystem::path &f
     tonode.children[toname] = std::move(fromnode.children[fromname]);
     fromnode.children.erase(fromname);
     fix_dir_node_paths(from, to, tonode.children[toname]);
+    events::asset_file_moved event;
+    event.from = from;
+    event.to = to;
+    event_manager::send_event(event);
 }
 
 void __detail::__asset_importer_tracker_path_delete(const std::filesystem::path &path) {
@@ -310,6 +318,9 @@ void __detail::__asset_importer_tracker_path_delete(const std::filesystem::path 
     fs::save_resources();
     asset_importer::save_dependencies();
     dirnode.children.erase(path.filename());
+    events::asset_file_deleted event;
+    event.path = path;
+    event_manager::send_event(event);
 }
 
 void __detail::__asset_importer_tracker_path_modify(const std::filesystem::path &path) {

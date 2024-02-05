@@ -18,6 +18,7 @@ namespace element {
                 std::type_index insertion_type;
 
                 scenegraph::node_ref* get_node_ref(const uuid& id) const;
+                void remove_node_ref(const scenegraph::node_ref& ref);
                 QModelIndex index_from_ref(const scenegraph::node_ref& ref) const;
             public:
                 model_scenegraph_tree();
@@ -35,9 +36,9 @@ namespace element {
                 virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
                 virtual Qt::DropActions supportedDragActions() const;
                 virtual Qt::DropActions supportedDropActions() const;
-                QMimeData* mimeData(const QModelIndexList &indexes) const;
-                QStringList mimeTypes() const;
-                bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+                virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
+                virtual QStringList mimeTypes() const;
+                virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
         };
 
     } // namespace ui

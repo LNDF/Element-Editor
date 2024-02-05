@@ -17,12 +17,14 @@ element_editor::element_editor() {
     game_window = new qt_vulkan_window();
     game_window_container = QWidget::createWindowContainer(game_window);
     render_canvas->layout()->addWidget(game_window_container);
-
+    assets_tree_model = new model_assets_tree();
+    filesystem_tree->setModel(assets_tree_model);
 }
 
 element_editor::~element_editor() {
     delete game_window_container;
     if (scene_tree_model != nullptr) delete scene_tree_model;
+    delete assets_tree_model;
 }
 
 void element_editor::load_properties_container() {

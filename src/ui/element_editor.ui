@@ -137,8 +137,17 @@
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
-       <property name="textElideMode">
-        <enum>Qt::ElideLeft</enum>
+       <property name="dragEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="dragDropMode">
+        <enum>QAbstractItemView::DragDrop</enum>
+       </property>
+       <property name="sortingEnabled">
+        <bool>true</bool>
+       </property>
+       <property name="headerHidden">
+        <bool>true</bool>
        </property>
       </widget>
      </item>
@@ -199,6 +208,14 @@
         <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
        </property>
        <widget class="QWidget" name="properties_container_default">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>399</width>
+          <height>554</height>
+         </rect>
+        </property>
        </widget>
       </widget>
      </item>

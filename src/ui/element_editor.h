@@ -1,6 +1,7 @@
 #pragma once
 
 #include <render/vulkan.h>
+#include <ui/models/model_assets_tree.h>
 #include <ui/models/model_scenegraph_tree.h>
 #include <ui/widgets/properties_container.h>
 #include <QMainWindow>
@@ -16,6 +17,7 @@ namespace element {
                 QWindow* game_window;
                 QWidget* game_window_container;
                 model_scenegraph_tree* scene_tree_model = nullptr;
+                model_assets_tree* assets_tree_model = nullptr;
                 properties_container* current_properties_container = nullptr;
 
                 void load_properties_container();

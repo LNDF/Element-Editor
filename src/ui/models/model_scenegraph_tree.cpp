@@ -9,13 +9,20 @@ using namespace element::ui;
 using namespace element;
 
 static QString mime_type("application/x-element-node-ref");
-#include <core/log.h>
+
 scenegraph::node_ref* model_scenegraph_tree::get_node_ref(const uuid& id) const {
     auto it = node_refs.find(id);
     if (it == node_refs.end()) {
         it = node_refs.try_emplace(id, id).first;
     }
     return &it->second;
+}
+
+void model_scenegraph_tree::remove_node_ref(const scenegraph::node_ref& ref) {
+    for (const auto& child : ref->get_children()) {
+        remove_node_ref(child);
+    }
+    node_refs.erase(ref.get_id());
 }
 
 const scenegraph::node_ref& model_scenegraph_tree::ref_from_index(const QModelIndex& index) const {
@@ -35,7 +42,6 @@ QModelIndex model_scenegraph_tree::index_from_ref(const scenegraph::node_ref& re
     const auto& children = parent->get_children();
     while (children[row] != ref) ++row;
     return index(row, 0, parent_index);
-    
 }
 
 model_scenegraph_tree::model_scenegraph_tree() : insertion_type(std::type_index(typeid(scenegraph::node))) {
@@ -140,6 +146,7 @@ bool model_scenegraph_tree::removeRows(int row, int count, const QModelIndex &pa
     beginRemoveRows(parent, row, row + count - 1);
     const auto& children = ref->get_children();
     for (int i = row + count - 1; i >= row; --i) {
+        remove_node_ref(children[i]);
         children[i]->destroy();
     }
     endRemoveRows();

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <utils/uuid.h>
+#include <filesystem>
 
 namespace element {
     namespace events {
@@ -15,6 +16,20 @@ namespace element {
         
         struct assets_imported {
 
+        };
+
+        struct asset_file_created {
+            std::filesystem::path path;
+            bool is_dir;
+        };
+
+        struct asset_file_moved {
+            std::filesystem::path from;
+            std::filesystem::path to;
+        };
+
+        struct asset_file_deleted {
+            std::filesystem::path path;
         };
 
     } // namespace events
