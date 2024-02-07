@@ -1,7 +1,6 @@
 #include "model_assets_tree.h"
 
 #include <asset/asset_events.h>
-#include <asset/importer.h>
 #include <core/fs.h>
 #include <editor/project.h>
 #include <QMimeData>
@@ -11,22 +10,21 @@
 using namespace element::__detail;
 using namespace element::ui;
 
-static QString mime_type("application/x-element-asset-ref");
+static QString ref_mime_type("application/x-element-asset-ref");
+static QString path_mime_type("application/x-element-asset-path");
 
 void __ui_model_assets_tree_unsorted::create_entries(const std::filesystem::path& path, entry_type* start) {
     for (std::filesystem::directory_entry entry : std::filesystem::directory_iterator(path)) {
-        std::string path = asset_importer::get_fs_path_from_system(entry.path());
-        entry_type& new_entry = entries.try_emplace(path).first->second;
-        new_entry.parent = start;
-        new_entry.path = std::move(path);
-        new_entry.filename = entry.path().filename().generic_string();
+        entry_type* new_entry = new entry_type();
+        new_entry->parent = start;
+        new_entry->filename = entry.path().filename().generic_string();
         if (entry.is_directory()) {
-            new_entry.is_dir = true;
-            create_entries(entry.path(), &new_entry);
+            new_entry->is_dir = true;
+            create_entries(entry.path(), new_entry);
         } else {
-            new_entry.is_dir = false;
+            new_entry->is_dir = false;
         }
-        start->children.push_back(&new_entry);
+        start->children.push_back(new_entry);
     }
 }
 
@@ -34,7 +32,7 @@ void __ui_model_assets_tree_unsorted::remove_entry(entry_type* entry) {
     for (entry_type* child : entry->children) {
         remove_entry(child);
     }
-    entries.erase(entry->path);
+    delete entry;
 }
 
 __ui_model_assets_tree_unsorted::entry_type* __ui_model_assets_tree_unsorted::entry_from_index(const QModelIndex& index) const {
@@ -42,6 +40,25 @@ __ui_model_assets_tree_unsorted::entry_type* __ui_model_assets_tree_unsorted::en
         return root_entry;
     }
     return static_cast<entry_type*>(index.internalPointer());
+}
+
+__ui_model_assets_tree_unsorted::entry_type* __ui_model_assets_tree_unsorted::entry_from_path(const std::filesystem::path& path) const {
+    std::filesystem::path asset_relative = std::filesystem::relative(path, project::project_assets_path);
+    entry_type* ret = root_entry;
+    for (const auto& part : asset_relative) {
+        std::string filename = part.filename().generic_string();
+        if (filename.empty() || filename == ".") continue;
+        for (entry_type* child : ret->children) {
+            if (child->filename == filename) {
+                ret = child;
+                goto next;
+            }
+        }
+        return nullptr;
+        next:
+        continue;
+    }
+    return ret;
 }
 
 QModelIndex __ui_model_assets_tree_unsorted::index_from_entry(const entry_type* entry) const {
@@ -55,17 +72,23 @@ QModelIndex __ui_model_assets_tree_unsorted::index_from_entry(const entry_type* 
     return index(row, 0, parent_index);
 }
 
+std::string __ui_model_assets_tree_unsorted::asset_from_entry(const entry_type* entry) const {
+    std::string s = entry->filename;
+    entry = entry->parent;
+    while (entry != nullptr && entry->parent != nullptr) {
+        s = entry->filename + "/" + s;
+        entry = entry->parent;
+    }
+    return s;
+}
+
 bool __ui_model_assets_tree_unsorted::asset_created(events::asset_file_created& event) {
     std::filesystem::path parent = event.path;
     parent.remove_filename();
-    std::string asset_parent = asset_importer::get_fs_path_from_system(parent);
-    std::string asset = asset_importer::get_fs_path_from_system(event.path);
-    auto it = entries.find(asset_parent);
-    if (it == entries.end()) return true;
-    entry_type* entry = &it->second;
-    entry_type* new_entry = &entries.try_emplace(asset).first->second;
+    entry_type* entry = entry_from_path(parent);
+    if (entry == nullptr) return false;
+    entry_type* new_entry = new entry_type();
     new_entry->parent = entry;
-    new_entry->path = std::move(asset);
     new_entry->filename = event.path.filename().generic_string();
     if (event.is_dir) {
         new_entry->is_dir = true;
@@ -80,10 +103,8 @@ bool __ui_model_assets_tree_unsorted::asset_created(events::asset_file_created& 
 }
 
 bool __ui_model_assets_tree_unsorted::asset_deleted(events::asset_file_deleted& event) {
-    std::string asset = asset_importer::get_fs_path_from_system(event.path);
-    auto it = entries.find(asset);
-    if (it == entries.end()) return false;
-    entry_type* entry = &it->second;
+    entry_type* entry = entry_from_path(event.path);
+    if (entry == nullptr) return false;
     entry_type* parent = entry->parent;
     if (parent == nullptr) return false;
     int child = 0;
@@ -97,26 +118,15 @@ bool __ui_model_assets_tree_unsorted::asset_deleted(events::asset_file_deleted& 
 }
 
 bool __ui_model_assets_tree_unsorted::asset_moved(events::asset_file_moved& event) {
-    std::filesystem::path from_parent = event.from;
     std::filesystem::path to_parent = event.to;
-    from_parent.remove_filename();
     to_parent.remove_filename();
-    std::string asset_from_parent = asset_importer::get_fs_path_from_system(from_parent);
-    std::string asset_to_parent = asset_importer::get_fs_path_from_system(to_parent);
-    std::string asset_from = asset_importer::get_fs_path_from_system(event.from);
-    std::string asset_to = asset_importer::get_fs_path_from_system(event.to);
-    auto it = entries.find(asset_from_parent);
-    if (it == entries.end()) return false;
-    entry_type* from_entry = &it->second;
-    it = entries.find(asset_to_parent);
-    if (it == entries.end()) return false;
-    entry_type* to_entry = &it->second;
-    it = entries.find(asset_from);
-    if (it == entries.end()) return false;
-    entry_type* orig_entry = &it->second;
-    entry_type* new_entry = &entries.try_emplace(asset_to).first->second;
+    entry_type* orig_entry = entry_from_path(event.from);
+    if (orig_entry == nullptr) return false;
+    entry_type* from_entry = orig_entry->parent;
+    if (from_entry == nullptr) return false;
+    entry_type* to_entry = entry_from_path(to_parent);
+    entry_type* new_entry = new entry_type();
     new_entry->parent = to_entry;
-    new_entry->path = std::move(asset_to);
     new_entry->filename = event.to.filename().generic_string();
     new_entry->is_dir = orig_entry->is_dir;
     int child = 0;
@@ -138,17 +148,15 @@ bool __ui_model_assets_tree_unsorted::asset_moved(events::asset_file_moved& even
         to_entry->children.push_back(new_entry);
         endMoveRows();
     }
-    entries.erase(it);
+    delete orig_entry;
     return true;
 }
 
 __ui_model_assets_tree_unsorted::__ui_model_assets_tree_unsorted() {
-    std::string root_path = asset_importer::get_fs_path_from_system(project::project_assets_path);
-    root_entry = &entries.try_emplace(root_path).first->second;
+    root_entry = new entry_type();
     root_entry->is_dir = true;
     root_entry->parent = nullptr;
-    root_entry->path = root_path;
-    root_entry->filename = std::move(root_path);
+    root_entry->filename = "";
     create_entries(project::project_assets_path, root_entry);
     auto create_fun = [this](events::asset_file_created& event) {
         return this->asset_created(event);
@@ -225,10 +233,12 @@ bool __ui_model_assets_tree_unsorted::moveRows(const QModelIndex &sourceParent, 
     entry_type* entry_src = entry_from_index(sourceParent);
     entry_type* entry_dst = entry_from_index(destinationParent);
     if (entry_src == nullptr || entry_dst == nullptr) return false;
+    std::string dst_asset = asset_from_entry(entry_dst);
     if (entry_src != entry_dst && entry_dst->is_dir) {
         for (int i = 0; i < count; ++i) {
             entry_type* item = entry_src->children[sourceRow + i];
-            std::filesystem::rename(project::project_assets_path / item->path, project::project_assets_path / entry_dst->path / item->filename);
+            std::string path = asset_from_entry(item);
+            std::filesystem::rename(project::project_assets_path / path, project::project_assets_path / dst_asset / item->filename);
         }
         return true;
     }
@@ -240,7 +250,8 @@ bool __ui_model_assets_tree_unsorted::removeRows(int row, int count, const QMode
     if (entry == nullptr) return false;
     for (int i = 0; i < count; ++i) {
         entry_type* item = entry->children[row + count];
-        std::filesystem::remove_all(project::project_assets_path / item->path);
+        std::string path = asset_from_entry(item);
+        std::filesystem::remove_all(project::project_assets_path / path);
     }
     return true;
 }
@@ -249,7 +260,8 @@ bool __ui_model_assets_tree_unsorted::setData(const QModelIndex &index, const QV
     if (!index.isValid() || (role != Qt::DisplayRole && role != Qt::EditRole)) return false;
     entry_type* entry = entry_from_index(index);
     if (entry == nullptr) return false;
-    std::filesystem::rename(project::project_assets_path / entry->path, project::project_assets_path / entry->parent->path / value.toString().toStdString());
+    std::string path_parent = asset_from_entry(entry->parent);
+    std::filesystem::rename(project::project_assets_path / path_parent / entry->filename, project::project_assets_path / path_parent / value.toString().toStdString());
     return true;
 }
 
@@ -262,47 +274,48 @@ Qt::DropActions __ui_model_assets_tree_unsorted::supportedDropActions() const {
 }
 
 QMimeData* __ui_model_assets_tree_unsorted::mimeData(const QModelIndexList &indexes) const {
+    if (indexes.size() != 1) return nullptr;
+    const QModelIndex& index = indexes.at(0);
+    entry_type* entry = entry_from_index(index);
+    if (entry == nullptr) return nullptr;
+    std::string asset = asset_from_entry(entry);
     QMimeData* data = new QMimeData();
-    QByteArray encoded;
-    QDataStream stream(&encoded, QDataStream::WriteOnly);
-    for (const auto& index : indexes) {
-        entry_type* entry = entry_from_index(index);
-        if (entry == nullptr) continue;
-        const uuid& id = fs::get_uuid_from_resource_path(entry->path);
-        stream.writeRawData((const char*) id.bytes, 16);
+    QByteArray encoded_path;
+    QDataStream stream_path(&encoded_path, QDataStream::WriteOnly);
+    stream_path.writeBytes(asset.c_str(), asset.size() + 1);
+    data->setData(path_mime_type, encoded_path);
+    const uuid& id = fs::get_uuid_from_resource_path(asset);
+    if (!id.is_null()) {
+        QByteArray encoded_ref;
+        QDataStream stream_ref(&encoded_ref, QDataStream::WriteOnly);
+        stream_ref.writeRawData((const char*) id.bytes, 16);
+        data->setData(ref_mime_type, encoded_ref);
     }
-    data->setData(QString(mime_type), encoded);
     return data;
 }
 
 QStringList __ui_model_assets_tree_unsorted::mimeTypes() const {
-    return QStringList({QString(mime_type)});
+    return QStringList({ref_mime_type, path_mime_type});
 }
 
 bool __ui_model_assets_tree_unsorted::dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent) {
-    if (data->hasFormat(mime_type)) {
-        bool ret = false;
-        QByteArray encoded = data->data(mime_type);
+    if (data->hasFormat(path_mime_type)) {
+        QByteArray encoded = data->data(path_mime_type);
         QDataStream stream(&encoded, QDataStream::ReadOnly);
-        uuid id = uuid::null();
-        int drow = row;
-        while (!stream.atEnd()) {
-            stream.readRawData((char*) id.bytes, 16);
-            const fs_resource_info& info = fs::get_resource_info(id);
-            auto it = entries.find(info.path);
-            if (it == entries.end()) continue;
-            entry_type* entry = &it->second;
-            if (entry == nullptr || entry == entry_from_index(parent)) continue;
-            entry_type* parent_entry = entry->parent;
-            if (parent_entry == nullptr) continue;
-            int srow = 0;
-            const auto& children = parent_entry->children;
-            while (children[srow] != entry) ++srow;
-            QModelIndex src_parent = index_from_entry(parent_entry);
-            moveRow(src_parent, srow, parent, drow++);
-            ret = true;
-        }
-        return ret;
+        char* path;
+        std::uint32_t length;
+        stream.readBytes(path, length);
+        if (length == 0) return false;
+        entry_type* entry = entry_from_path(project::project_assets_path / path);
+        delete[] path;
+        if (entry == nullptr || entry == entry_from_index(parent)) return false;
+        entry_type* parent_entry = entry->parent;
+        if (parent_entry == nullptr) return false;
+        int srow = 0;
+        const auto& children = parent_entry->children;
+        while (children[srow] != entry) ++srow;
+        QModelIndex src_parent = index_from_entry(parent_entry);
+        return moveRow(src_parent, srow, parent, row);
     }
     return false;
 }

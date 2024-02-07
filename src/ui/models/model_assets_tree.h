@@ -17,7 +17,6 @@ namespace element {
     namespace __detail {
         struct __ui_model_assets_entry {
             std::string filename;
-            std::string path;
             bool is_dir;
             std::vector<__ui_model_assets_entry*> children;
             __ui_model_assets_entry* parent;
@@ -34,13 +33,14 @@ namespace element {
                 event_callback_handle file_move_handle;
                 event_callback_handle file_delete_handle;
 
-                mutable std::unordered_map<std::string, entry_type> entries;
                 entry_type* root_entry;
 
                 void create_entries(const std::filesystem::path& path, entry_type* start);
                 void remove_entry(entry_type* entry);
                 entry_type* entry_from_index(const QModelIndex& index) const;
+                entry_type* entry_from_path(const std::filesystem::path& path) const;
                 QModelIndex index_from_entry(const entry_type* entry) const;
+                std::string asset_from_entry(const entry_type* entry) const;
 
                 bool asset_created(events::asset_file_created& event);
                 bool asset_deleted(events::asset_file_deleted& event);
