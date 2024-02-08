@@ -32,11 +32,11 @@ vec2_input::vec2_input(QWidget* parent) : QWidget(parent) {
     add_labels(2, labels, inputs, this, vec2_input_layout);
 }
 
-float vec2_input::value(std::uint32_t i) {
+float vec2_input::value(std::uint32_t i) const {
     return inputs[i]->value();
 }
 
-glm::vec2 vec2_input::value() {
+glm::vec2 vec2_input::value() const {
     return glm::vec2(inputs[0]->value(), inputs[1]->value());
 }
 
@@ -67,11 +67,11 @@ vec3_input::vec3_input(QWidget* parent) : QWidget(parent) {
     add_labels(3, labels, inputs, this, vec3_input_layout);
 }
 
-float vec3_input::value(std::uint32_t i) {
+float vec3_input::value(std::uint32_t i) const {
     return inputs[i]->value();
 }
 
-glm::vec3 vec3_input::value() {
+glm::vec3 vec3_input::value() const {
     return glm::vec3(inputs[0]->value(), inputs[1]->value(), inputs[2]->value());
 }
 
@@ -103,11 +103,11 @@ vec4_input::vec4_input(QWidget* parent) : QWidget(parent) {
     add_labels(4, labels, inputs, this, vec4_input_layout);
 }
 
-float vec4_input::value(std::uint32_t i) {
+float vec4_input::value(std::uint32_t i) const {
     return inputs[i]->value();
 }
 
-glm::vec4 vec4_input::value() {
+glm::vec4 vec4_input::value() const {
     return glm::vec4(inputs[0]->value(), inputs[1]->value(), inputs[2]->value(), inputs[3]->value());
 }
 

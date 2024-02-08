@@ -17,14 +17,14 @@ namespace element {
                 real_input* inputs[2];
             public:
                 vec2_input(QWidget* parent = nullptr);
-                float value(std::uint32_t i);
-                glm::vec2 value();
+                float value(std::uint32_t i) const;
+                glm::vec2 value() const;
                 void set_value(std::uint32_t i, float v);
                 void set_value(glm::vec2 v);
 
-                inline float x() {return value(0);}
+                inline float x() const {return value(0);}
                 inline void set_x(float v) {set_value(0, v);}
-                inline float y() {return value(1);}
+                inline float y() const {return value(1);}
                 inline void set_y(float v) {set_value(1, v);}
             private slots:
                 void change_component();
@@ -40,16 +40,16 @@ namespace element {
                 real_input* inputs[3];
             public:
                 vec3_input(QWidget* parent = nullptr);
-                float value(std::uint32_t i);
-                glm::vec3 value();
+                float value(std::uint32_t i) const;
+                glm::vec3 value() const;
                 void set_value(std::uint32_t i, float v);
                 void set_value(glm::vec3 v);
 
-                inline float x() {return value(0);}
+                inline float x() const {return value(0);}
                 inline void set_x(float v) {set_value(0, v);}
-                inline float y() {return value(1);}
+                inline float y() const {return value(1);}
                 inline void set_y(float v) {set_value(1, v);}
-                inline float z() {return value(2);}
+                inline float z() const {return value(2);}
                 inline void set_z(float v) {set_value(2, v);}
             private slots:
                 void change_component();
@@ -65,18 +65,18 @@ namespace element {
                 real_input* inputs[4];
             public:
                 vec4_input(QWidget* parent = nullptr);
-                float value(std::uint32_t i);
-                glm::vec4 value();
+                float value(std::uint32_t i) const;
+                glm::vec4 value() const;
                 void set_value(std::uint32_t i, float v);
                 void set_value(glm::vec4 v);
 
-                inline float x() {return value(0);}
+                inline float x() const {return value(0);}
                 inline void set_x(float v) {set_value(0, v);}
-                inline float y() {return value(1);}
+                inline float y() const {return value(1);}
                 inline void set_y(float v) {set_value(1, v);}
-                inline float z() {return value(2);}
+                inline float z() const {return value(2);}
                 inline void set_z(float v) {set_value(2, v);}
-                inline float w() {return value(3);}
+                inline float w() const {return value(3);}
                 inline void set_w(float v) {set_value(3, v);}
             private slots:
                 void change_component();
