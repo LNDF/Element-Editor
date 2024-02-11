@@ -81,6 +81,9 @@ namespace element {
                 model_assets_tree();
                 ~model_assets_tree();
 
+                static const QString& get_ref_mime_type();
+                static const QString& get_path_mime_type();
+
         };
     } // namespace ui    
 } // namespace element 

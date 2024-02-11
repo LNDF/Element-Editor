@@ -337,3 +337,11 @@ bool model_assets_tree::lessThan(const QModelIndex &source_left, const QModelInd
     }
     return !QSortFilterProxyModel::lessThan(source_left, source_right);
 }
+
+const QString& model_assets_tree::get_ref_mime_type() {
+    return ref_mime_type;
+}
+
+const QString& model_assets_tree::get_path_mime_type() {
+    return path_mime_type;
+}

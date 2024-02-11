@@ -211,3 +211,7 @@ bool model_scenegraph_tree::dropMimeData(const QMimeData *data, Qt::DropAction a
     }
     return false;
 }
+
+const QString& model_scenegraph_tree::get_mime_type() {
+    return mime_type;
+}

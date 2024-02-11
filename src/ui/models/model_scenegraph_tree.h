@@ -39,6 +39,8 @@ namespace element {
                 virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
                 virtual QStringList mimeTypes() const;
                 virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
+
+                static const QString& get_mime_type();
         };
 
     } // namespace ui
