@@ -5,7 +5,7 @@
 
 using namespace element::ui;
 
-properties_node_camera_form::properties_node_camera_form(const scenegraph::camera_node_ref& node, QWidget* parent) : properties_standard_form(parent) {
+properties_node_camera_form::properties_node_camera_form(const scenegraph::camera_node_ref& node, QWidget* parent) : properties_standard_form(parent), node(node) {
     setTitle(QCoreApplication::translate("element-editor", "Camera"));
     near_plane_input = new real_input(this);
     far_plane_input = new real_input(this);
