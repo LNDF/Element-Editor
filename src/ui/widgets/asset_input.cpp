@@ -78,9 +78,8 @@ void asset_input::set_value(const uuid& v) {
     emit value_changed(v);
 }
 
-#include <core/log.h>
 void asset_input::open_asset_chooser() {
     asset_chooser* dialog = new asset_chooser(type, this);
+    connect(dialog, SIGNAL(select(uuid)), this, SLOT(set_value(uuid)), Qt::ConnectionType::DirectConnection);
     dialog->open();
-    ELM_WARN("test log after open");
 }

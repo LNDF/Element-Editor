@@ -20,6 +20,7 @@ namespace element {
             public:
                 asset_input(const std::string& type, QWidget* parent = nullptr);
                 uuid value() const;
+            public slots:
                 void set_value(const uuid& v);
             private slots:
                 void open_asset_chooser();

@@ -3,6 +3,8 @@
 using namespace element::ui;
 using namespace element;
 
+static uuid null_uuid = uuid::null();
+
 model_asset_chooser::model_asset_chooser(const std::string& type) {
     for (const auto& [id, info] : fs::get_map()) {
         if (type == info.type) assets.emplace_back(id, &info);
@@ -32,5 +34,6 @@ QModelIndex model_asset_chooser::parent(const QModelIndex &index) const {
 }
 
 const uuid& model_asset_chooser::id_from_index(const QModelIndex& index) const {
+    if (!index.isValid()) return uuid::null();
     return ((std::pair<uuid, const fs_resource_info*>*) index.internalPointer())->first;
 }
