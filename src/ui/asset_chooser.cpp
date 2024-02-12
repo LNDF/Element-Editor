@@ -7,10 +7,13 @@ asset_chooser::asset_chooser(const std::string& type, QWidget* parent) : QDialog
     setFixedSize(minimumSize());
     setWindowFlags(Qt::Sheet | Qt::Dialog);
     model = new model_asset_chooser(type);
-    assets->setModel(model);
+    proxy = new QSortFilterProxyModel();
+    proxy->setSourceModel(model);
+    assets->setModel(proxy);
     connect(unselect, SIGNAL(clicked()), this, SIGNAL(reset()), Qt::ConnectionType::DirectConnection);
 }
 
 asset_chooser::~asset_chooser() {
+    delete proxy;
     delete model;
 }
