@@ -1,6 +1,7 @@
 #include "asset_input.h"
 
 #include <ui/models/model_assets_tree.h>
+#include <ui/asset_chooser.h>
 #include <core/fs.h>
 #include <QCoreApplication>
 #include <QDragEnterEvent>
@@ -77,6 +78,9 @@ void asset_input::set_value(const uuid& v) {
     emit value_changed(v);
 }
 
+#include <core/log.h>
 void asset_input::open_asset_chooser() {
-    
+    asset_chooser* dialog = new asset_chooser(type, this);
+    dialog->open();
+    ELM_WARN("test log after open");
 }
