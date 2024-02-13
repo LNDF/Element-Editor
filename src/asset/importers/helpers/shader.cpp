@@ -12,8 +12,8 @@
 using namespace element;
 
 void element::importers::helpers::shader_compile(const uuid& id, render::shader_stage type) {
-    fs_resource_info info = fs::get_resource_info(id);
-    std::filesystem::path path = project::project_assets_path / info.path;
+    const fs_resource_info& info = fs::get_resource_info(id);
+    std::filesystem::path path = asset_importer::get_system_path_from_fs(info.path);
     render::compilation_result result = render::compile_shader(path, type);
     if (!result.success) ELM_ERROR("Error during shader compilation:\n{0}", result.message);
     if (result.spv.size() > 0) {

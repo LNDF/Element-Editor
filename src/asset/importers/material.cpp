@@ -13,7 +13,7 @@
 using namespace element;
 
 static void material_importer(const uuid& id) {
-    fs_resource_info info = fs::get_resource_info(id);
+    const fs_resource_info& info = fs::get_resource_info(id);
     std::optional<render::material> material = asset_loaders::material_text_load(info.path);
     if (material->get_pipeline_data() != nullptr) {
         auto output = fs::get_resource_ostream(id);

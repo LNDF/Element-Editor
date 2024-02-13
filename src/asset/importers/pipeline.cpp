@@ -14,7 +14,7 @@
 using namespace element;
 
 static void pipeline_importer(const uuid& id) {
-    fs_resource_info info = fs::get_resource_info(id);
+    const fs_resource_info& info = fs::get_resource_info(id);
     std::optional<render::pipeline_data> data = asset_loaders::pipeline_text_load(info.path);
     if (render::pipeline_create_layout_data(data.value())) {
         auto output = fs::get_resource_ostream(id);

@@ -206,6 +206,10 @@ std::string asset_importer::get_fs_path_from_system(const std::filesystem::path&
     return std::filesystem::relative(path, project::project_assets_path).generic_string();
 }
 
+std::filesystem::path asset_importer::get_system_path_from_fs(const std::string& path) {
+    return project::project_assets_path / path;
+}
+
 void asset_importer::reimport() {
     //TODO: cleara cache fs folder
     //TODO: import every file

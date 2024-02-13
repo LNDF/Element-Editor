@@ -14,7 +14,7 @@
 using namespace element;
 
 static void mesh_importer(const uuid& id) {
-    fs_resource_info info = fs::get_resource_info(id);
+    const fs_resource_info& info = fs::get_resource_info(id);
     std::optional<mesh::mesh> m = asset_loaders::mesh_binary_load(info.path);
     auto output = fs::get_resource_ostream(id);
     render::mesh rm;

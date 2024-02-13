@@ -1,5 +1,6 @@
 #pragma once
 
+#include <asset/importer.h>
 #include <core/log.h>
 #include <editor/project.h>
 #include <utils/uuid.h>
@@ -15,7 +16,7 @@ namespace element {
         
         template<typename T>
         std::optional<T> load_editor_text_asset(const std::string& path, const char* top_level_name) {
-            std::filesystem::path sys_path = project::project_assets_path / path;
+            std::filesystem::path sys_path = asset_importer::get_system_path_from_fs(path);
             std::ifstream stream(sys_path);
             if (stream.fail()) {
                 ELM_WARN("Couldn't load asset {0}", path);
@@ -29,7 +30,7 @@ namespace element {
 
         template<typename T>
         bool save_editor_text_asset(const std::string& path, const char* top_level_name, const T& t) {
-            std::filesystem::path sys_path = project::project_assets_path / path;
+            std::filesystem::path sys_path = asset_importer::get_system_path_from_fs(path);
             std::ofstream stream(sys_path);
             if (stream.fail()) {
                 ELM_WARN("Couldn't save asset {0}", path);
@@ -42,7 +43,7 @@ namespace element {
 
         template<typename T>
         std::optional<T> load_editor_binary_asset(const std::string& path) {
-            std::filesystem::path sys_path = project::project_assets_path / path;
+            std::filesystem::path sys_path = asset_importer::get_system_path_from_fs(path);
             std::ifstream stream(sys_path, std::ios::binary);
             if (stream.fail()) {
                 ELM_WARN("Couldn't load asset {0}", path);
@@ -56,7 +57,7 @@ namespace element {
 
         template<typename T>
         bool save_editor_binary_asset(const std::string& path, const T& t) {
-            std::filesystem::path sys_path = project::project_assets_path / path;
+            std::filesystem::path sys_path = asset_importer::get_system_path_from_fs(path);
             std::ofstream stream(sys_path, std::ios::binary);
             if (stream.fail()) {
                 ELM_WARN("Couldn't save asset {0}", path);

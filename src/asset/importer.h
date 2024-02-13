@@ -26,6 +26,7 @@ namespace element {
         void register_importer(std::string&& type, asset_importer_callback importer, std::uint32_t min_iteration);
         void unregister_importer(const std::string& type);
         std::string get_fs_path_from_system(const std::filesystem::path& path);
+        std::filesystem::path get_system_path_from_fs(const std::string& path);
         void reimport();
         void import(const uuid& id);
         void recreate_assets_dir();
