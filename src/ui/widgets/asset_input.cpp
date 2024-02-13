@@ -66,7 +66,6 @@ void asset_input::dropEvent(QDropEvent *event) {
 }
 
 void asset_input::set_value(const uuid& v) {
-    if (asset == v) return;
     asset = v;
     const fs_resource_info& info = fs::get_resource_info(v);
     if (info.path.empty()) {

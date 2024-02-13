@@ -32,7 +32,8 @@ namespace element {
                 inline QWindow* get_game_window() {return game_window;}
                 inline QWidget* get_game_window_container() {return game_window_container;}
             private slots:
-                void node_selected(const QModelIndex& index);
+                void node_select(const QModelIndex& index);
+                void properties_load_values();
         };
 
     } // namespace ui
