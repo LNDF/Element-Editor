@@ -66,6 +66,10 @@ void element_editor::node_select(const QModelIndex& index) {
     load_properties_container();
 }
 
+void element_editor::asset_select(const QModelIndex& index) {
+    
+}
+
 void element_editor::properties_load_values() {
     if (current_properties_container != nullptr) {
         current_properties_container->load_values();
