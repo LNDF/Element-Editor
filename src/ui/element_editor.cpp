@@ -1,12 +1,13 @@
 #include "element_editor.h"
 
 #include <QCloseEvent>
+#include <core/fs.h>
 #include <core/log.h>
 #include <core/engine.h>
 #include <core/core_events.h>
 #include <event/event.h>
 #include <scenegraph/node.h>
-#include <ui/models/model_scenegraph_tree.h>
+#include <ui/widgets/properties_asset.h>
 #include <ui/widgets/properties_node.h>
 #include <ui/vulkan_window.h>
 
@@ -20,6 +21,7 @@ element_editor::element_editor() {
     assets_tree_model = new model_assets_tree();
     filesystem_tree->setModel(assets_tree_model);
     connect(assets_tree_model->sourceModel(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QList<int>&)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
+    connect(filesystem_tree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
 }
 
 element_editor::~element_editor() {
@@ -63,6 +65,15 @@ void element_editor::node_select(const QModelIndex& index) {
     if (ref == nullptr) return;
     auto factory = get_node_properties_container_factory(std::type_index(typeid(*ref.get_node())));
     current_properties_container = factory(ref, nullptr);
+    load_properties_container();
+}
+
+void element_editor::asset_select(const QModelIndex& index) {
+    const uuid& id = assets_tree_model->id_from_index(index);
+    const fs_resource_info& info = fs::get_resource_info(id);
+    auto factory = get_asset_properties_container_factory(info.type);
+    if (factory == nullptr) return;
+    current_properties_container = factory(id, nullptr);
     load_properties_container();
 }
 
