@@ -339,7 +339,13 @@ bool model_assets_tree::lessThan(const QModelIndex &source_left, const QModelInd
 }
 
 const element::uuid& model_assets_tree::id_from_index(const QModelIndex& index) const {
-
+    if (!index.isValid()) return uuid::null();
+    QModelIndex source = mapToSource(index);
+    if (!source.isValid()) return uuid::null();
+    const entry_type* entry = (const entry_type*) source.internalPointer();
+    if (entry == nullptr) return uuid::null();
+    std::string path = source_model->asset_from_entry(entry);
+    return fs::get_uuid_from_resource_path(path);
 }
 
 const QString& model_assets_tree::get_ref_mime_type() {

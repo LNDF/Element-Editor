@@ -32,19 +32,14 @@ properties_asset::properties_asset(const uuid& id, QWidget* parent) : properties
     save_reload_layout->addWidget(save_reload_save);
     save_reload_layout->addWidget(save_reload_reload);
     connect(save_reload_reload, SIGNAL(clicked()), this, SLOT(load_values()), Qt::ConnectionType::DirectConnection);
-    connect(save_reload_save, SIGNAL(clicked()), this, SLOT(save_disable()), Qt::ConnectionType::DirectConnection);
-    connect(save_reload_save, SIGNAL(clicked()), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
     connect(save_reload_save, SIGNAL(clicked()), this, SLOT(save_values()), Qt::ConnectionType::DirectConnection);
 }
 
-void properties_asset::save_disable() {
-    save_reload_save->setDisabled(true);
-}
-
-void properties_asset::save_enable() {
-    save_reload_save->setDisabled(false);
-}
-
 void properties_asset::save_values() {
+    save_reload_save->setDisabled(true);
+    emit values_changed();
+}
 
+void properties_asset::load_values() {
+    save_reload_save->setDisabled(true);
 }
