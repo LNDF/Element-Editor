@@ -42,7 +42,9 @@ namespace element {
                 QPushButton* save_reload_save;
                 QPushButton* save_reload_reload;
             public:
-                properties_asset(const uuid& id, QWidget* parent = nullptr);
+                properties_asset(QWidget* parent = nullptr);
+            protected slots:
+                void enable_save();
             public slots:
                 virtual void save_values();
                 virtual void load_values();

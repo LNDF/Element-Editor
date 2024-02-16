@@ -16,7 +16,7 @@ properties_asset_container_factory element::ui::get_asset_properties_container_f
     return it->second;
 }
 
-properties_asset::properties_asset(const uuid& id, QWidget* parent) : properties_container(parent) {
+properties_asset::properties_asset(QWidget* parent) : properties_container(parent) {
     save_reload = new QWidget(this);
     save_reload_layout = new QHBoxLayout(save_reload);
     save_reload_space = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -34,6 +34,10 @@ properties_asset::properties_asset(const uuid& id, QWidget* parent) : properties
     layout()->addWidget(save_reload);
     connect(save_reload_reload, SIGNAL(clicked()), this, SLOT(load_values()), Qt::ConnectionType::DirectConnection);
     connect(save_reload_save, SIGNAL(clicked()), this, SLOT(save_values()), Qt::ConnectionType::DirectConnection);
+}
+
+void properties_asset::enable_save() {
+    save_reload_save->setDisabled(false);
 }
 
 void properties_asset::save_values() {
