@@ -31,6 +31,7 @@ properties_asset::properties_asset(const uuid& id, QWidget* parent) : properties
     save_reload_layout->addItem(save_reload_space);
     save_reload_layout->addWidget(save_reload_save);
     save_reload_layout->addWidget(save_reload_reload);
+    layout()->addWidget(save_reload);
     connect(save_reload_reload, SIGNAL(clicked()), this, SLOT(load_values()), Qt::ConnectionType::DirectConnection);
     connect(save_reload_save, SIGNAL(clicked()), this, SLOT(save_values()), Qt::ConnectionType::DirectConnection);
 }
