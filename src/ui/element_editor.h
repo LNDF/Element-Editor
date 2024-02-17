@@ -1,5 +1,6 @@
 #pragma once
 
+#include <event/event.h>
 #include <render/vulkan.h>
 #include <ui/models/model_assets_tree.h>
 #include <ui/models/model_scenegraph_tree.h>
@@ -19,6 +20,8 @@ namespace element {
                 model_scenegraph_tree* scene_tree_model = nullptr;
                 model_assets_tree* assets_tree_model = nullptr;
                 properties_container* current_properties_container = nullptr;
+                
+                event_callback_handle reload_on_import;
 
                 void load_properties_container();
             protected:

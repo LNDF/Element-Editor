@@ -1,6 +1,7 @@
 #include "element_editor.h"
 
 #include <QCloseEvent>
+#include <asset/asset_events.h>
 #include <core/fs.h>
 #include <core/log.h>
 #include <core/engine.h>
@@ -22,9 +23,15 @@ element_editor::element_editor() {
     filesystem_tree->setModel(assets_tree_model);
     connect(assets_tree_model->sourceModel(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QList<int>&)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
     connect(filesystem_tree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
+    auto reload_on_import_event = [this](events::assets_imported& event) {
+        this->properties_load_values();
+        return true;
+    };
+    reload_on_import = event_manager::register_event_callback<events::assets_imported>(reload_on_import_event, event_callback_priority::highest);
 }
 
 element_editor::~element_editor() {
+    event_manager::unregister_event_callback<events::assets_imported>(reload_on_import, event_callback_priority::highest);
     delete game_window_container;
     if (scene_tree_model != nullptr) delete scene_tree_model;
     delete assets_tree_model;
