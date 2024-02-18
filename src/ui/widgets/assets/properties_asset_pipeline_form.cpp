@@ -23,7 +23,6 @@ properties_asset_pipeline_form::properties_asset_pipeline_form(render::pipeline_
     add_property(QCoreApplication::translate("element-editor", "Backface culling"), backface_culling_input);
     add_property(QCoreApplication::translate("element-editor", "Frontface"), frontface_input);
     add_property(QCoreApplication::translate("element-editor", "Transparent"), transparent_input);
-    load_values();
     connect(vert_input, SIGNAL(value_changed(uuid)), this, SLOT(set_vert(uuid)), Qt::ConnectionType::DirectConnection);
     connect(frag_input, SIGNAL(value_changed(uuid)), this, SLOT(set_frag(uuid)), Qt::ConnectionType::DirectConnection);
     connect(backface_culling_input, SIGNAL(stateChanged(int)), this, SLOT(set_backface_culling(int)), Qt::ConnectionType::DirectConnection);

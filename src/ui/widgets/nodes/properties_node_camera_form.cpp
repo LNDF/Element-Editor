@@ -16,7 +16,6 @@ properties_node_camera_form::properties_node_camera_form(const scenegraph::camer
     add_property(QCoreApplication::translate("element-editor", "Near plane"), near_plane_input);
     add_property(QCoreApplication::translate("element-editor", "Far plane"), far_plane_input);
     add_property(QCoreApplication::translate("element-editor", "Field of view"), fov_input);
-    load_values();
     connect(near_plane_input, SIGNAL(valueChanged(double)), SLOT(set_near_plane(double)), Qt::ConnectionType::DirectConnection);
     connect(far_plane_input, SIGNAL(valueChanged(double)), SLOT(set_far_plane(double)), Qt::ConnectionType::DirectConnection);
     connect(fov_input, SIGNAL(valueChanged(double)), SLOT(set_fov(double)), Qt::ConnectionType::DirectConnection);

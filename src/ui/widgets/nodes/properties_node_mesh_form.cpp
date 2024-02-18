@@ -13,7 +13,6 @@ properties_node_mesh_form::properties_node_mesh_form(const scenegraph::mesh_node
     mesh_input->setObjectName("mesh_input");
     add_property(QCoreApplication::translate("element-editor", "Mesh"), mesh_input);
     add_property(QCoreApplication::translate("element-editor", "Material"), material_input);
-    load_values();
     connect(material_input, SIGNAL(value_changed(uuid)), SLOT(set_material(uuid)), Qt::ConnectionType::DirectConnection);
     connect(mesh_input, SIGNAL(value_changed(uuid)), SLOT(set_mesh(uuid)), Qt::ConnectionType::DirectConnection);
     connect(material_input, SIGNAL(value_changed(uuid)), SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
