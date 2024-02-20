@@ -4,6 +4,7 @@
 #include <ui/widgets/properties_asset.h>
 #include <ui/widgets/assets/properties_asset_material_form.h>
 #include <utils/uuid.h>
+#include <vector>
 
 namespace element {
     namespace ui {
@@ -15,7 +16,7 @@ namespace element {
                 render::material data;
                 bool material_loaded;
                 properties_asset_material_form* material;
-                //TODO: vector of layout forms
+                std::vector<properties_asset_material_layout_form*> resource_layouts;
             public:
                 properties_asset_material(const uuid& id, QWidget* parent = nullptr);
             private slots:

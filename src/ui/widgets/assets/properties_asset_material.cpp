@@ -14,7 +14,19 @@ properties_asset_material::properties_asset_material(const uuid& id, QWidget* pa
 }
 
 void properties_asset_material::load_material_properties() {
-    //TODO
+    for (auto& resource_layout : resource_layouts) {
+        layout()->removeWidget(resource_layout);
+        resource_layout->deleteLater();
+    }
+    resource_layouts.clear();
+    render::pipeline_data* pipeline = data.get_pipeline_data();
+    if (pipeline == nullptr) return; 
+    for (auto& [resource_layout, _] : pipeline->layouts) {
+        if (resource_layout.set == 0) continue;
+        properties_asset_material_layout_form* widget = new properties_asset_material_layout_form(&data, &resource_layout, this);
+        layout()->addWidget(widget);
+        resource_layouts.push_back(widget);
+    }
 }
 
 void properties_asset_material::save_values() {
@@ -32,6 +44,9 @@ void properties_asset_material::load_values() {
     if (asset == std::nullopt) return;
     data = *asset;
     material->load_values();
+    for (auto& resource_layout : resource_layouts) {
+        resource_layout->load_values();
+    }
     properties_asset::load_values();
     material_loaded = true;
 }
