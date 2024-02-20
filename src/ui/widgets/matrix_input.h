@@ -161,5 +161,158 @@ namespace element {
                 void value_changed(glm::mat4 v);
         };
 
+        class dmat2_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat2_input_layout = nullptr;
+                double_input* inputs[2 * 2];
+            public:
+                dmat2_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat2 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat2 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat2 v);
+        };
+
+        class dmat23_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat23_input_layout = nullptr;
+                double_input* inputs[2 * 3];
+            public:
+                dmat23_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat2x3 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat2x3 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat2x3 v);
+        };
+
+        class dmat24_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat24_input_layout = nullptr;
+                double_input* inputs[2 * 4];
+            public:
+                dmat24_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat2x4 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat2x4 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat2x4 v);
+        };
+
+        class dmat32_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat32_input_layout = nullptr;
+                double_input* inputs[3 * 2];
+            public:
+                dmat32_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat3x2 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat3x2 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat3x2 v);
+        };
+
+        class dmat3_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat3_input_layout = nullptr;
+                double_input* inputs[3 * 3];
+            public:
+                dmat3_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat3 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat3 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat3 v);
+        };
+
+        class dmat34_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat34_input_layout = nullptr;
+                double_input* inputs[3 * 4];
+            public:
+                dmat34_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat3x4 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat3x4 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat3x4 v);
+        };
+
+        class dmat42_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat42_input_layout = nullptr;
+                double_input* inputs[4 * 2];
+            public:
+                dmat42_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat4x2 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat4x2 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat4x2 v);
+        };
+
+        class dmat43_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat43_input_layout = nullptr;
+                double_input* inputs[4 * 3];
+            public:
+                dmat43_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat4x3 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat4x3 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat4x3 v);
+        };
+
+        class dmat4_input : public QWidget {
+            Q_OBJECT
+            private:
+                QGridLayout* dmat4_input_layout = nullptr;
+                double_input* inputs[4 * 4];
+            public:
+                dmat4_input(QWidget* parent = nullptr);
+                double value(std::uint32_t i, std::uint32_t j) const;
+                glm::dmat4 value() const;
+                void set_value(std::uint32_t i, std::uint32_t j, double v);
+                void set_value(glm::dmat4 v);
+            private slots:
+                void change_value();
+            signals:
+                void value_changed(glm::dmat4 v);
+        };
+
     } // namespace ui    
 } // namespace element
