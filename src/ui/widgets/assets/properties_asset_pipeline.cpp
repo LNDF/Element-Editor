@@ -13,6 +13,7 @@ properties_asset_pipeline::properties_asset_pipeline(const uuid& id, QWidget* pa
 }
 
 void properties_asset_pipeline::save_values() {
+    pipeline->save_values();
     const fs_resource_info& info = fs::get_resource_info(id);
     if (info.path.empty()) return;
     asset_loaders::pipeline_text_save(info.path, data);

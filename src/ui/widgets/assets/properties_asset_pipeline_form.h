@@ -21,13 +21,8 @@ namespace element {
                 QCheckBox* transparent_input;
             public:
                 properties_asset_pipeline_form(render::pipeline_data* data, QWidget* parent = nullptr);
-            private slots:
-                void set_vert(uuid id);
-                void set_frag(uuid id);
-                void set_backface_culling(int cull);
-                void set_frontface(int face);
-                void set_transparent(int transparent);
             public slots:
+                void save_values();
                 void load_values();
         };
 

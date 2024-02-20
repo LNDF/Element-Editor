@@ -23,11 +23,6 @@ properties_asset_pipeline_form::properties_asset_pipeline_form(render::pipeline_
     add_property(QCoreApplication::translate("element-editor", "Backface culling"), backface_culling_input);
     add_property(QCoreApplication::translate("element-editor", "Frontface"), frontface_input);
     add_property(QCoreApplication::translate("element-editor", "Transparent"), transparent_input);
-    connect(vert_input, SIGNAL(value_changed(uuid)), this, SLOT(set_vert(uuid)), Qt::ConnectionType::DirectConnection);
-    connect(frag_input, SIGNAL(value_changed(uuid)), this, SLOT(set_frag(uuid)), Qt::ConnectionType::DirectConnection);
-    connect(backface_culling_input, SIGNAL(stateChanged(int)), this, SLOT(set_backface_culling(int)), Qt::ConnectionType::DirectConnection);
-    connect(frontface_input, SIGNAL(currentIndexChanged(int)), this, SLOT(set_frontface(int)), Qt::ConnectionType::DirectConnection);
-    connect(transparent_input, SIGNAL(stateChanged(int)), this, SLOT(set_transparent(int)), Qt::ConnectionType::DirectConnection);
     connect(vert_input, SIGNAL(value_changed(uuid)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
     connect(frag_input, SIGNAL(value_changed(uuid)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
     connect(backface_culling_input, SIGNAL(stateChanged(int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
@@ -35,24 +30,12 @@ properties_asset_pipeline_form::properties_asset_pipeline_form(render::pipeline_
     connect(transparent_input, SIGNAL(stateChanged(int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
 }
 
-void properties_asset_pipeline_form::set_vert(uuid id) {
-    data->vert_id = id;
-}
-
-void properties_asset_pipeline_form::set_frag(uuid id) {
-    data->frag_id = id;
-}
-
-void properties_asset_pipeline_form::set_backface_culling(int cull) {
-    data->backface_culling = cull == Qt::Checked;
-}
-
-void properties_asset_pipeline_form::set_frontface(int face) {
-    data->frontface = (render::culling_face) face;
-}
-
-void properties_asset_pipeline_form::set_transparent(int transparent) {
-    data->transparent = transparent == Qt::Checked;
+void properties_asset_pipeline_form::save_values() {
+    data->vert_id = vert_input->value();
+    data->frag_id = frag_input->value();
+    data->backface_culling = backface_culling_input->isChecked();
+    data->frontface = (render::culling_face) frontface_input->currentIndex();
+    data->transparent = transparent_input->isChecked();
 }
 
 void properties_asset_pipeline_form::load_values() {
