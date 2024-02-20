@@ -29,12 +29,22 @@ static std::function<QWidget*(QWidget*)> get_widget_factory(const render::shader
         case render::shader_block_member_type::sint32_type:
             if (member.columns > 1) return nullptr;
             if (member.vecsize > 1) {
-                //TODO: implement integer vectors
+                switch (member.vecsize) {
+                    case 2:
+                        return generic_widget_factory<ivec2_input>;
+                    case 3:
+                        return generic_widget_factory<ivec3_input>;
+                    case 4:
+                        return generic_widget_factory<ivec4_input>;
+                    default:
+                        return nullptr;
+                }
                 return nullptr;
             }
             return generic_widget_factory<integer_input>;
         case render::shader_block_member_type::uint32_type:
             //TODO: implement uint32 input and vector.
+            return nullptr;
         case render::shader_block_member_type::float32_type:
             if (member.columns > 1) {
                 switch (member.columns) {
@@ -89,8 +99,58 @@ static std::function<QWidget*(QWidget*)> get_widget_factory(const render::shader
             }
             return generic_widget_factory<float_input>;
         case render::shader_block_member_type::float64_type:
-            //TODO
-            return nullptr;
+            if (member.columns > 1) {
+                switch (member.columns) {
+                    case 2:
+                        switch (member.vecsize) {
+                            case 2:
+                                return generic_widget_factory<dmat2_input>;
+                            case 3:
+                                return generic_widget_factory<dmat23_input>;
+                            case 4:
+                                return generic_widget_factory<dmat24_input>;
+                            default:
+                                return nullptr;
+                        }
+                    case 3:
+                        switch (member.vecsize) {
+                            case 2:
+                                return generic_widget_factory<dmat32_input>;
+                            case 3:
+                                return generic_widget_factory<dmat3_input>;
+                            case 4:
+                                return generic_widget_factory<dmat34_input>;
+                            default:
+                                return nullptr;
+                        }
+                    case 4:
+                        switch (member.vecsize) {
+                            case 2:
+                                return generic_widget_factory<dmat42_input>;
+                            case 3:
+                                return generic_widget_factory<dmat43_input>;
+                            case 4:
+                                return generic_widget_factory<dmat4_input>;
+                            default:
+                                return nullptr;
+                        }
+                    default:
+                        return nullptr;
+                }
+            }
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        return generic_widget_factory<dvec2_input>;
+                    case 3:
+                        return generic_widget_factory<dvec3_input>;
+                    case 4:
+                        return generic_widget_factory<dvec4_input>;
+                    default:
+                        return nullptr;
+                }
+            }
+            return generic_widget_factory<double_input>;
         default:
             return nullptr;
     }
@@ -100,9 +160,10 @@ properties_asset_material_layout_form::properties_asset_material_layout_form(ren
     setTitle(data_layout->name.c_str());
     for (auto& member : data_layout->members) {
         auto factory = get_widget_factory(member);
-        if (factory == nullptr) continue;
         QWidget* widget = nullptr;
-        if (member.array_cols > 1) {
+        if (factory == nullptr) {
+            widget = new QWidget(this);
+        } else if (member.array_cols > 1) {
             widget = new array2d_input(member.array_cols, member.array_rows, factory, this);
             //TODO: connect
         } else if (member.array_rows > 1) {
