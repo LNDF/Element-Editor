@@ -12,7 +12,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat2_input_layout = nullptr;
-                real_input* inputs[2 * 2];
+                float_input* inputs[2 * 2];
             public:
                 mat2_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -29,7 +29,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat23_input_layout = nullptr;
-                real_input* inputs[2 * 3];
+                float_input* inputs[2 * 3];
             public:
                 mat23_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -46,7 +46,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat24_input_layout = nullptr;
-                real_input* inputs[2 * 4];
+                float_input* inputs[2 * 4];
             public:
                 mat24_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -63,7 +63,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat32_input_layout = nullptr;
-                real_input* inputs[3 * 2];
+                float_input* inputs[3 * 2];
             public:
                 mat32_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -80,7 +80,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat3_input_layout = nullptr;
-                real_input* inputs[3 * 3];
+                float_input* inputs[3 * 3];
             public:
                 mat3_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -97,7 +97,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat34_input_layout = nullptr;
-                real_input* inputs[3 * 4];
+                float_input* inputs[3 * 4];
             public:
                 mat34_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -114,7 +114,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat42_input_layout = nullptr;
-                real_input* inputs[4 * 2];
+                float_input* inputs[4 * 2];
             public:
                 mat42_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -131,7 +131,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat43_input_layout = nullptr;
-                real_input* inputs[4 * 3];
+                float_input* inputs[4 * 3];
             public:
                 mat43_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;
@@ -148,7 +148,7 @@ namespace element {
             Q_OBJECT
             private:
                 QGridLayout* mat4_input_layout = nullptr;
-                real_input* inputs[4 * 4];
+                float_input* inputs[4 * 4];
             public:
                 mat4_input(QWidget* parent = nullptr);
                 float value(std::uint32_t i, std::uint32_t j) const;

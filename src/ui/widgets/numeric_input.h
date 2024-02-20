@@ -14,10 +14,18 @@ namespace element {
                 integer_input(QWidget* parent = nullptr);
         };
 
-        class real_input : public QDoubleSpinBox {
+        class float_input : public QDoubleSpinBox {
             Q_OBJECT
             public:
-                real_input(QWidget* parent = nullptr);
+                float_input(QWidget* parent = nullptr);
+
+                virtual QString textFromValue(double value) const;
+        };
+
+        class double_input : public QDoubleSpinBox {
+            Q_OBJECT
+            public:
+                double_input(QWidget* parent = nullptr);
 
                 virtual QString textFromValue(double value) const;
         };

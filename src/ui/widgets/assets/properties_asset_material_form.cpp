@@ -87,7 +87,7 @@ static std::function<QWidget*(QWidget*)> get_widget_factory(const render::shader
                         return nullptr;
                 }
             }
-            return generic_widget_factory<real_input>;
+            return generic_widget_factory<float_input>;
         case render::shader_block_member_type::float64_type:
             //TODO
             return nullptr;

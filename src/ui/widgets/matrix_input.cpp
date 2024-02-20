@@ -8,11 +8,11 @@ static const char* input_names[16] = {"11_input", "12_input", "13_input", "14_in
                                       "41_input", "42_input", "43_input", "44_input"
                                      };
 
-static void add_inputs(std::uint32_t i, std::uint32_t j, real_input** inputs, QWidget* parent, QGridLayout* layout) {
+static void add_inputs(std::uint32_t i, std::uint32_t j, float_input** inputs, QWidget* parent, QGridLayout* layout) {
     for (std::uint16_t x = 0; x < i; ++x) {
         for (std::uint32_t y = 0; y < j; ++y)  {
             std::uint32_t index = (x * i) + y;
-            inputs[index] = new real_input(parent);
+            inputs[index] = new float_input(parent);
             inputs[index]->setObjectName(input_names[index]);
             layout->addWidget(inputs[index], y, x);
             QObject::connect(inputs[index], SIGNAL(valueChanged(double)), parent, SLOT(change_component()), Qt::ConnectionType::DirectConnection);
