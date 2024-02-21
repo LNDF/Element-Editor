@@ -14,6 +14,11 @@ properties_asset_material::properties_asset_material(const uuid& id, QWidget* pa
 }
 
 void properties_asset_material::load_material_properties() {
+    if (material_loaded) {
+        data = render::material();
+        data.set_pipeline_id(material->get_pipeline_id());
+        data.init(true);
+    }
     for (auto& resource_layout : resource_layouts) {
         layout()->removeWidget(resource_layout);
         resource_layout->deleteLater();
