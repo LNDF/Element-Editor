@@ -45,6 +45,19 @@ static void add_labels(std::uint32_t count, QLabel** labels, integer_input** inp
     }
 }
 
+static void add_labels(std::uint32_t count, QLabel** labels, uinteger_input** inputs, QWidget* parent, QHBoxLayout* layout) {
+    for (std::uint32_t i = 0; i < count; ++i) {
+        labels[i] = new QLabel(parent);
+        labels[i]->setObjectName(label_names[i]);
+        labels[i]->setText(label_texts[i]);
+        layout->addWidget(labels[i]);
+        inputs[i] = new uinteger_input(parent);
+        inputs[i]->setObjectName(input_names[i]);
+        layout->addWidget(inputs[i]);
+        QObject::connect(inputs[i], SIGNAL(valueChanged(int)), parent, SLOT(change_component()), Qt::ConnectionType::DirectConnection);
+    }
+}
+
 vec2_input::vec2_input(QWidget* parent) : QWidget(parent) {
     QSizePolicy size_policy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
     size_policy.setHorizontalStretch(0);
@@ -359,5 +372,110 @@ void ivec4_input::set_value(glm::ivec4 v) {
 }
 
 void ivec4_input::change_component() {
+    emit value_changed(value());
+}
+
+uvec2_input::uvec2_input(QWidget* parent) : QWidget(parent) {
+    QSizePolicy size_policy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    size_policy.setHorizontalStretch(0);
+    size_policy.setVerticalStretch(0);
+    size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
+    setSizePolicy(size_policy);
+    uvec2_input_layout = new QHBoxLayout(this);
+    uvec2_input_layout->setObjectName("uvec2_input_layout");
+    uvec2_input_layout->setSpacing(0);
+    uvec2_input_layout->setContentsMargins(0, 0, 0, 0);
+    add_labels(2, labels, inputs, this, uvec2_input_layout);
+}
+
+unsigned int uvec2_input::value(std::uint32_t i) const {
+    return inputs[i]->value();
+}
+
+glm::uvec2 uvec2_input::value() const {
+    return glm::uvec2(inputs[0]->value(), inputs[1]->value());
+}
+
+void uvec2_input::set_value(std::uint32_t i, unsigned int v) {
+    inputs[i]->setValue(v);
+}
+
+void uvec2_input::set_value(glm::uvec2 v) {
+    inputs[0]->setValue(v.x);
+    inputs[1]->setValue(v.y);
+}
+
+void uvec2_input::change_component() {
+    emit value_changed(value());
+}
+
+uvec3_input::uvec3_input(QWidget* parent) : QWidget(parent) {
+    QSizePolicy size_policy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    size_policy.setHorizontalStretch(0);
+    size_policy.setVerticalStretch(0);
+    size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
+    setSizePolicy(size_policy);
+    uvec3_input_layout = new QHBoxLayout(this);
+    uvec3_input_layout->setObjectName("uvec3_input_layout");
+    uvec3_input_layout->setSpacing(0);
+    uvec3_input_layout->setContentsMargins(0, 0, 0, 0);
+    add_labels(3, labels, inputs, this, uvec3_input_layout);
+}
+
+unsigned int uvec3_input::value(std::uint32_t i) const {
+    return inputs[i]->value();
+}
+
+glm::uvec3 uvec3_input::value() const {
+    return glm::uvec3(inputs[0]->value(), inputs[1]->value(), inputs[2]->value());
+}
+
+void uvec3_input::set_value(std::uint32_t i, unsigned int v) {
+    inputs[i]->setValue(v);
+}
+
+void uvec3_input::set_value(glm::uvec3 v) {
+    inputs[0]->setValue(v.x);
+    inputs[1]->setValue(v.y);
+    inputs[2]->setValue(v.z);
+}
+
+void uvec3_input::change_component() {
+    emit value_changed(value());
+}
+
+uvec4_input::uvec4_input(QWidget* parent) : QWidget(parent) {
+    QSizePolicy size_policy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+    size_policy.setHorizontalStretch(0);
+    size_policy.setVerticalStretch(0);
+    size_policy.setHeightForWidth(sizePolicy().hasHeightForWidth());
+    setSizePolicy(size_policy);
+    uvec4_input_layout = new QHBoxLayout(this);
+    uvec4_input_layout->setObjectName("uvec4_input_layout");
+    uvec4_input_layout->setSpacing(0);
+    uvec4_input_layout->setContentsMargins(0, 0, 0, 0);
+    add_labels(4, labels, inputs, this, uvec4_input_layout);
+}
+
+unsigned int uvec4_input::value(std::uint32_t i) const {
+    return inputs[i]->value();
+}
+
+glm::uvec4 uvec4_input::value() const {
+    return glm::uvec4(inputs[0]->value(), inputs[1]->value(), inputs[2]->value(), inputs[3]->value());
+}
+
+void uvec4_input::set_value(std::uint32_t i, unsigned int v) {
+    inputs[i]->setValue(v);
+}
+
+void uvec4_input::set_value(glm::uvec4 v) {
+    inputs[0]->setValue(v.x);
+    inputs[1]->setValue(v.y);
+    inputs[2]->setValue(v.z);
+    inputs[3]->setValue(v.w);
+}
+
+void uvec4_input::change_component() {
     emit value_changed(value());
 }

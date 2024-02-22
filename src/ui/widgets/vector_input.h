@@ -234,5 +234,80 @@ namespace element {
                 void value_changed(glm::ivec4 v);
         };
 
+        class uvec2_input : public QWidget {
+            Q_OBJECT
+            private:
+                QHBoxLayout* uvec2_input_layout = nullptr;
+                QLabel* labels[2];
+                uinteger_input* inputs[2];
+            public:
+                uvec2_input(QWidget* parent = nullptr);
+                unsigned int value(std::uint32_t i) const;
+                glm::uvec2 value() const;
+                void set_value(std::uint32_t i, unsigned int v);
+                void set_value(glm::uvec2 v);
+
+                inline unsigned int x() const { return value(0); }
+                inline void set_x(unsigned int v) { set_value(0, v); }
+                inline unsigned int y() const { return value(1); }
+                inline void set_y(unsigned int v) { set_value(1, v); }
+            private slots:
+                void change_component();
+            signals:
+                void value_changed(glm::uvec2 v);
+        };
+
+        class uvec3_input : public QWidget {
+            Q_OBJECT
+            private:
+                QHBoxLayout* uvec3_input_layout = nullptr;
+                QLabel* labels[3];
+                uinteger_input* inputs[3];
+            public:
+                uvec3_input(QWidget* parent = nullptr);
+                unsigned int value(std::uint32_t i) const;
+                glm::uvec3 value() const;
+                void set_value(std::uint32_t i, unsigned int v);
+                void set_value(glm::uvec3 v);
+
+                inline unsigned int x() const { return value(0); }
+                inline void set_x(unsigned int v) { set_value(0, v); }
+                inline unsigned int y() const { return value(1); }
+                inline void set_y(unsigned int v) { set_value(1, v); }
+                inline unsigned int z() const { return value(2); }
+                inline void set_z(unsigned int v) { set_value(2, v); }
+            private slots:
+                void change_component();
+            signals:
+                void value_changed(glm::uvec3 v);
+        };
+
+        class uvec4_input : public QWidget {
+            Q_OBJECT
+            private:
+                QHBoxLayout* uvec4_input_layout = nullptr;
+                QLabel* labels[4];
+                uinteger_input* inputs[4];
+            public:
+                uvec4_input(QWidget* parent = nullptr);
+                unsigned int value(std::uint32_t i) const;
+                glm::uvec4 value() const;
+                void set_value(std::uint32_t i, unsigned int v);
+                void set_value(glm::uvec4 v);
+
+                inline unsigned int x() const { return value(0); }
+                inline void set_x(unsigned int v) { set_value(0, v); }
+                inline unsigned int y() const { return value(1); }
+                inline void set_y(unsigned int v) { set_value(1, v); }
+                inline unsigned int z() const { return value(2); }
+                inline void set_z(unsigned int v) { set_value(2, v); }
+                inline unsigned int w() const { return value(3); }
+                inline void set_w(unsigned int v) { set_value(3, v); }
+            private slots:
+                void change_component();
+            signals:
+                void value_changed(glm::uvec4 v);
+        };
+
     } // namespace ui
 } // namespace element
