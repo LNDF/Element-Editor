@@ -69,8 +69,20 @@ std::function<QWidget*(QWidget*)> properties_asset_material_layout_form::get_wid
             }
             return generic_widget_factory<integer_input>;
         case render::shader_block_member_type::uint32_type:
-            //TODO: implement uint32 input and vector.
-            return nullptr;
+            if (member.columns > 1) return nullptr;
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        return generic_widget_factory<uvec2_input>;
+                    case 3:
+                        return generic_widget_factory<uvec3_input>;
+                    case 4:
+                        return generic_widget_factory<uvec4_input>;
+                    default:
+                        return nullptr;
+                }
+            }
+            return generic_widget_factory<uinteger_input>;
         case render::shader_block_member_type::float32_type:
             if (member.columns > 1) {
                 switch (member.columns) {
@@ -213,7 +225,24 @@ void properties_asset_material_layout_form::connect_widget(QWidget* widget, cons
             connect(widget, SIGNAL(valueChanged(int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
             break;
         case render::shader_block_member_type::uint32_type:
-            //TODO: implement uint32 input and vector.
+            if (member.columns > 1) break;
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        connect(widget, SIGNAL(value_changed(glm::uvec2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 3:
+                        connect(widget, SIGNAL(value_changed(glm::uvec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 4:
+                        connect(widget, SIGNAL(value_changed(glm::uvec4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            connect(widget, SIGNAL(valueChanged(unsigned int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
             break;
         case render::shader_block_member_type::float32_type:
             if (member.columns > 1) {
@@ -437,7 +466,24 @@ void properties_asset_material_layout_form::load_value(QWidget* widget, const re
             load_value_widget<int>(widget, member, spin_set<int, integer_input>);
             break;
         case render::shader_block_member_type::uint32_type:
-            //TODO: implement uint32 input and vector.
+            if (member.columns > 1) break;
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        load_value_widget<glm::uvec2>(widget, member, input_set<glm::uvec2, uvec2_input>);
+                        break;
+                    case 3:
+                        load_value_widget<glm::uvec3>(widget, member, input_set<glm::uvec3, uvec3_input>);
+                        break;
+                    case 4:
+                        load_value_widget<glm::uvec4>(widget, member, input_set<glm::uvec4, uvec4_input>);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            load_value_widget<unsigned int>(widget, member, spin_set<unsigned int, uinteger_input>);
             break;
         case render::shader_block_member_type::float32_type:
             if (member.columns > 1) {
@@ -617,7 +663,24 @@ void properties_asset_material_layout_form::save_value(QWidget* widget, const re
             save_value_widget<int>(widget, member, spin_get<int, integer_input>);
             break;
         case render::shader_block_member_type::uint32_type:
-            //TODO: implement uint32 input and vector.
+            if (member.columns > 1) break;
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        save_value_widget<glm::uvec2>(widget, member, input_get<glm::uvec2, uvec2_input>);
+                        break;
+                    case 3:
+                        save_value_widget<glm::uvec3>(widget, member, input_get<glm::uvec3, uvec3_input>);
+                        break;
+                    case 4:
+                        save_value_widget<glm::uvec4>(widget, member, input_get<glm::uvec4, uvec4_input>);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            save_value_widget<unsigned int>(widget, member, spin_get<unsigned int, uinteger_input>);
             break;
         case render::shader_block_member_type::float32_type:
             if (member.columns > 1) {
