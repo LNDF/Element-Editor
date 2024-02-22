@@ -36,8 +36,9 @@ class Q_WIDGETS_EXPORT QULongSpinBox : public QAbstractSpinBox {
         virtual QString textFromValue(quint32 val) const;
         virtual void fixup(QString &str) const;
         virtual QAbstractSpinBox::StepEnabled stepEnabled() const;
-    private Q_SLOT:
+    public Q_SLOTS:
         void setValue(quint32 val);
+    private Q_SLOT:
         void onEditFinished();
     Q_SIGNALS:
         void textChanged(const QString &text);
