@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ui/widgets/QULongSpinBox.h>
 #include <QSpinBox>
 #include <QDoubleSpinBox>
 
@@ -12,6 +13,14 @@ namespace element {
                 virtual QString textFromValue(int value) const;
             public:
                 integer_input(QWidget* parent = nullptr);
+        };
+
+        class uinteger_input : public QULongSpinBox {
+            Q_OBJECT
+            protected:
+                virtual QString textFromValue(quint32 value) const;
+            public:
+                uinteger_input(QWidget* parent = nullptr);
         };
 
         class float_input : public QDoubleSpinBox {
