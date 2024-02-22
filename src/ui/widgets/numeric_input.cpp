@@ -34,7 +34,7 @@ uinteger_input::uinteger_input(QWidget* parent) : QULongSpinBox(parent) {
 }
 
 QString uinteger_input::textFromValue(quint32 value) const { //This is a hack to allow minimum size to be 0
-    if (value == std::numeric_limits<unsigned int>::min() || value == std::numeric_limits<unsigned int>::max()) {
+    if (value == std::numeric_limits<unsigned int>::max()) {
         return "";
     }
     return QULongSpinBox::textFromValue(value);
