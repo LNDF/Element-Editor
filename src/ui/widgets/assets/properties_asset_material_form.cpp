@@ -182,6 +182,186 @@ std::function<QWidget*(QWidget*)> properties_asset_material_layout_form::get_wid
     }
 }
 
+void properties_asset_material_layout_form::connect_widget(QWidget* widget, const render::shader_block_member& member) {
+    switch (member.type) {
+        case render::shader_block_member_type::boolean_type:
+            if (member.columns > 1) break;
+            if (member.vecsize > 1) {
+                //TODO: implement boolean vector
+                break;
+            }
+            connect(widget, SIGNAL(stateChanged(int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+            break;
+        case render::shader_block_member_type::sint32_type:
+            if (member.columns > 1) break;
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        connect(widget, SIGNAL(value_changed(glm::ivec2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 3:
+                        connect(widget, SIGNAL(value_changed(glm::ivec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 4:
+                        connect(widget, SIGNAL(value_changed(glm::ivec4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            connect(widget, SIGNAL(valueChanged(int)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+            break;
+        case render::shader_block_member_type::uint32_type:
+            //TODO: implement uint32 input and vector.
+            break;
+        case render::shader_block_member_type::float32_type:
+            if (member.columns > 1) {
+                switch (member.columns) {
+                    case 2:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::mat2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::mat2x3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::mat2x4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::mat3x2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::mat3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::mat3x4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::mat4x2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::mat4x3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::mat4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        connect(widget, SIGNAL(value_changed(glm::vec2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 3:
+                        connect(widget, SIGNAL(value_changed(glm::vec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 4:
+                        connect(widget, SIGNAL(value_changed(glm::vec4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            connect(widget, SIGNAL(valueChanged(double)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+            break;
+        case render::shader_block_member_type::float64_type:
+            if (member.columns > 1) {
+                switch (member.columns) {
+                    case 2:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::dmat2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::dmat2x3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::dmat2x4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 3:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::dmat3x2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::dmat3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::dmat3x4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    case 4:
+                        switch (member.vecsize) {
+                            case 2:
+                                connect(widget, SIGNAL(value_changed(glm::dmat4x2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 3:
+                                connect(widget, SIGNAL(value_changed(glm::dmat4x3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            case 4:
+                                connect(widget, SIGNAL(value_changed(glm::dmat4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                                break;
+                            default:
+                                break;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            if (member.vecsize > 1) {
+                switch (member.vecsize) {
+                    case 2:
+                        connect(widget, SIGNAL(value_changed(glm::dvec2)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 3:
+                        connect(widget, SIGNAL(value_changed(glm::dvec3)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    case 4:
+                        connect(widget, SIGNAL(value_changed(glm::dvec4)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            }
+            connect(widget, SIGNAL(valueChanged(double)), this, SIGNAL(values_changed()), Qt::ConnectionType::DirectConnection);
+            break;
+        default:
+            break;
+    }
+}
+
 template<typename T>
 void properties_asset_material_layout_form::load_value_widget(QWidget* widget, const render::shader_block_member& member, void(*setter)(QWidget*, const T&)) {
     if (member.array_cols > 1 || member.array_rows > 1) {
@@ -595,13 +775,17 @@ properties_asset_material_layout_form::properties_asset_material_layout_form(ren
             widget = new QWidget(this);
         } else if (member.array_cols > 1) {
             widget = new array2d_input(member.array_cols, member.array_rows, factory, this);
-            //TODO: connect
+            for (QWidget* w : static_cast<array2d_input*>(widget)->get_widgets()) {
+                connect_widget(w, member);
+            }
         } else if (member.array_rows > 1) {
             widget = new array_input(member.array_rows, factory, this);
-            //TODO: connect
+            for (QWidget* w : static_cast<array_input*>(widget)->get_widgets()) {
+                connect_widget(w, member);
+            }
         } else {
             widget = factory(this);
-            //TODO: connect
+            connect_widget(widget, member);
         }
         add_property(member.name.c_str(), widget);
         widgets.push_back(widget);

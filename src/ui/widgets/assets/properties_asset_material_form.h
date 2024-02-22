@@ -20,6 +20,8 @@ namespace element {
 
                 std::function<QWidget*(QWidget*)> get_widget_factory(const render::shader_block_member& member);
                 
+                void connect_widget(QWidget* widget, const render::shader_block_member& member);
+
                 template<typename T>
                 void load_value_widget(QWidget* widget, const render::shader_block_member& member, void(*setter)(QWidget*, const T&));
 
