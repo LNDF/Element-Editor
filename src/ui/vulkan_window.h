@@ -20,6 +20,10 @@ namespace element {
             vulkan::swapchain_info swapchain;
             qt_vulkan_window_drag drag_status;
             QPoint pre_drag_pos;
+            QPoint drag_last_pos;
+            bool can_set_cursor;
+
+            void center_cursor();
         protected:
             void resizeEvent(QResizeEvent *ev) override;
             void mouseMoveEvent(QMouseEvent *ev) override;

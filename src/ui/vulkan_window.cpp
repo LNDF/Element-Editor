@@ -18,6 +18,20 @@ qt_vulkan_window::qt_vulkan_window(QWindow* parent) : QWindow(parent), drag_stat
         vulkan::init_device(surface);
         render::init_renderer();
     }
+    QString platform = QGuiApplication::platformName();
+    can_set_cursor = !platform.startsWith("wayland");
+    if (!can_set_cursor) {
+        ELM_WARN("This platform ({}) doesn't support moving the mouse cursor", platform.toStdString());
+    }
+}
+
+void qt_vulkan_window::center_cursor() {
+    if (can_set_cursor) {
+        drag_last_pos = mapToGlobal(QPoint(width() / 2, height() / 2));
+        QCursor::setPos(drag_last_pos);
+    } else {
+        drag_last_pos = QCursor::pos();
+    }
 }
 
 qt_vulkan_window::~qt_vulkan_window() {
@@ -47,12 +61,11 @@ void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
 void qt_vulkan_window::mouseMoveEvent(QMouseEvent* ev) {
     if (drag_status != qt_vulkan_window_drag::none) {
         QPoint pos = QCursor::pos();
-        QPoint center = mapToGlobal(QPoint(width() / 2, height() / 2));
-        if (pos == center) return;
-        QCursor::setPos(center);
+        if (pos == drag_last_pos) return;
         scenegraph::transform& trans = scenegraph::get_editor_camera()->get_transform();
-        float dx = (float) (pos.x() - center.x()) / -width();
-        float dy = (float) (pos.y() - center.y()) / height();
+        float dx = (float) (pos.x() - drag_last_pos.x()) / -width();
+        float dy = (float) (pos.y() - drag_last_pos.y()) / height();
+        center_cursor();
         if (drag_status == qt_vulkan_window_drag::translate) {
             glm::vec3 pos = trans.get_position();
             pos += dx * trans.get_right();
@@ -73,13 +86,13 @@ void qt_vulkan_window::mousePressEvent(QMouseEvent* ev) {
         if (ev->button() == Qt::RightButton) {
             drag_status = qt_vulkan_window_drag::rotate;
             pre_drag_pos = QCursor::pos();
-            setCursor(Qt::BlankCursor);
-            QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
+            if (can_set_cursor) setCursor(Qt::BlankCursor);
+            center_cursor();
         } else if (ev->button() == Qt::MiddleButton) {
             drag_status = qt_vulkan_window_drag::translate;
             pre_drag_pos = QCursor::pos();
-            setCursor(Qt::BlankCursor);
-            QCursor::setPos(mapToGlobal(QPoint(width() / 2, height() / 2)));
+            if (can_set_cursor) setCursor(Qt::BlankCursor);
+            center_cursor();
         }
     }
 }
@@ -88,7 +101,7 @@ void qt_vulkan_window::mouseReleaseEvent(QMouseEvent* ev) {
     if ((drag_status == qt_vulkan_window_drag::translate && ev->button() == Qt::MiddleButton) ||
         (drag_status == qt_vulkan_window_drag::rotate && ev->button() == Qt::RightButton)) {
         drag_status = qt_vulkan_window_drag::none;
-        QCursor::setPos(pre_drag_pos);
+        if (can_set_cursor) QCursor::setPos(pre_drag_pos);
         setCursor(Qt::ArrowCursor);
     }
 }
