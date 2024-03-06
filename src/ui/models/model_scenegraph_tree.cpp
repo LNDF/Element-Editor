@@ -43,9 +43,81 @@ QModelIndex model_scenegraph_tree::index_from_ref(const scenegraph::node_ref& re
     while (children[row] != ref) ++row;
     return index(row, 0, parent_index);
 }
+#include <core/log.h>
+bool model_scenegraph_tree::before_node_added(events::before_node_added& event) {
+    beginInsertRows(index_from_ref(event.parent), event.index, event.index);
+    return true;
+}
 
-model_scenegraph_tree::model_scenegraph_tree() : insertion_type(std::type_index(typeid(scenegraph::node))) {
+bool model_scenegraph_tree::after_node_added(events::after_node_added& event) {
+    endInsertRows();
+    return true;
+}
+
+bool model_scenegraph_tree::before_node_moved(events::before_node_moved& event) {
+    QModelIndex from_parent_index = index_from_ref(event.from_parent);
+    QModelIndex to_parent_index = index_from_ref(event.to_parent);
+    int index = 0;
+    const auto& from_children = event.from_parent->get_children();
+    while (from_children[index] != event.this_node) ++index;
+    beginMoveRows(from_parent_index, index, index, to_parent_index, event.dest_index);
+    return true;
+}
+
+bool model_scenegraph_tree::after_node_moved(events::after_node_moved& event) {
+    endMoveRows();
+    return true;
+}
+
+bool model_scenegraph_tree::before_node_deleted(events::before_node_deleted& event) {
+    int index = 0;
+    const auto& parent_children = event.parent->get_children();
+    while (parent_children[index] != event.this_node) ++index;
+    beginRemoveRows(index_from_ref(event.parent), index, index);
+    remove_node_ref(event.this_node);
+    return true;
+}
+
+bool model_scenegraph_tree::after_node_deleted(events::after_node_deleted& event) {
+    endRemoveRows();
+    return true;
+}
+
+model_scenegraph_tree::model_scenegraph_tree() {
     current_scene = scenegraph::get_current_scene();
+    auto before_added_fun = [this](events::before_node_added& event) {
+        return this->before_node_added(event);
+    };
+    auto after_added_fun = [this](events::after_node_added& event) {
+        return this->after_node_added(event);
+    };
+    auto before_moved_fun = [this](events::before_node_moved& event) {
+        return this->before_node_moved(event);
+    };
+    auto after_moved_fun = [this](events::after_node_moved& event) {
+        return this->after_node_moved(event);
+    };
+    auto before_deleted_fun = [this](events::before_node_deleted& event) {
+        return this->before_node_deleted(event);
+    };
+    auto after_deleted_fun = [this](events::after_node_deleted& event) {
+        return this->after_node_deleted(event);
+    };
+    before_node_added_handle = event_manager::register_event_callback<events::before_node_added>(before_added_fun, event_callback_priority::highest);
+    after_node_added_handle = event_manager::register_event_callback<events::after_node_added>(after_added_fun, event_callback_priority::highest);
+    before_node_moved_handle = event_manager::register_event_callback<events::before_node_moved>(before_moved_fun, event_callback_priority::highest);
+    after_node_moved_handle = event_manager::register_event_callback<events::after_node_moved>(after_moved_fun, event_callback_priority::highest);
+    before_node_deleted_handle = event_manager::register_event_callback<events::before_node_deleted>(before_deleted_fun, event_callback_priority::highest);
+    after_node_deleted_handle = event_manager::register_event_callback<events::after_node_deleted>(after_deleted_fun, event_callback_priority::highest);
+}
+
+model_scenegraph_tree::~model_scenegraph_tree() {
+    event_manager::unregister_event_callback<events::before_node_added>(before_node_added_handle, event_callback_priority::highest);
+    event_manager::unregister_event_callback<events::after_node_added>(after_node_added_handle, event_callback_priority::highest);
+    event_manager::unregister_event_callback<events::before_node_moved>(before_node_moved_handle, event_callback_priority::highest);
+    event_manager::unregister_event_callback<events::after_node_moved>(after_node_moved_handle, event_callback_priority::highest);
+    event_manager::unregister_event_callback<events::before_node_deleted>(before_node_deleted_handle, event_callback_priority::highest);
+    event_manager::unregister_event_callback<events::after_node_deleted>(after_node_deleted_handle, event_callback_priority::highest);
 }
 
 QModelIndex model_scenegraph_tree::index(int row, int column, const QModelIndex &parent) const {
@@ -96,19 +168,6 @@ Qt::ItemFlags model_scenegraph_tree::flags(const QModelIndex &index) const {
     return Qt::ItemIsSelectable | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | Qt::ItemIsEnabled;
 }
 
-bool model_scenegraph_tree::insertRows(int row, int count, const QModelIndex &parent) {
-    if (current_scene == nullptr) return false;
-    const std::string& name = scenegraph::get_node_type_info(insertion_type).name;
-    const scenegraph::node_ref& ref = ref_from_index(parent);
-    if (ref == nullptr) return false;
-    beginInsertRows(parent, row, row + count - 1);
-    for (int i = 0; i < count; ++i) {
-        ref->add_child(insertion_type, name, row + i);
-    }
-    endInsertRows();
-    return true;
-}
-
 bool model_scenegraph_tree::moveRows(const QModelIndex &sourceParent, int sourceRow, int count, const QModelIndex &destinationParent, int destinationChild) {
     if (current_scene == nullptr) return false;
     const scenegraph::node_ref& ref_src = ref_from_index(sourceParent);
@@ -118,7 +177,6 @@ bool model_scenegraph_tree::moveRows(const QModelIndex &sourceParent, int source
     if (ref_src == ref_dst) {
         int move_diff = destinationChild - sourceRow;
         if (move_diff == 0 || move_diff == 1) return false;
-        beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild);
         if (sourceRow < destinationChild) {
             for (int i = count - 1; i >= 0; --i) {
                 ref_src->move_child(sourceRow + i, destinationChild + i);
@@ -129,13 +187,11 @@ bool model_scenegraph_tree::moveRows(const QModelIndex &sourceParent, int source
             }
         }
     } else {
-        beginMoveRows(sourceParent, sourceRow, sourceRow + count - 1, destinationParent, destinationChild);
         const auto& children = ref_src->get_children();
         for (int i = count - 1; i >= 0; --i) {
             ref_dst->add_child(children[sourceRow + i], destinationChild);
         }
     }
-    endMoveRows();
     return true;
 }
 
@@ -143,13 +199,10 @@ bool model_scenegraph_tree::removeRows(int row, int count, const QModelIndex &pa
     if (current_scene == nullptr) return false;
     const scenegraph::node_ref& ref = ref_from_index(parent);
     if (ref == nullptr) return false;
-    beginRemoveRows(parent, row, row + count - 1);
     const auto& children = ref->get_children();
     for (int i = row + count - 1; i >= row; --i) {
-        remove_node_ref(children[i]);
         children[i]->destroy();
     }
-    endRemoveRows();
     return true;
 }
 
