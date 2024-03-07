@@ -2,12 +2,19 @@
 
 using namespace element::ui;
 
-acticable_tree::acticable_tree(QWidget* parent) : QTreeView(parent) {}
-
-void acticable_tree::mousePressEvent(QMouseEvent *event) {
+activable_tree::activable_tree(QWidget* parent) : QTreeView(parent) {
     
 }
 
-void acticable_tree::dragLeaveEvent(QDragLeaveEvent *event) {
+#include <core/log.h>
+void activable_tree::mousePressEvent(QMouseEvent *event) {
+    QTreeView::mousePressEvent(event);
+}
 
+void activable_tree::mouseReleaseEvent(QMouseEvent *event) {
+    QTreeView::mouseReleaseEvent(event);
+}
+
+void activable_tree::dragMoveEvent(QDragMoveEvent *event) {
+    QTreeView::dragMoveEvent(event);
 }

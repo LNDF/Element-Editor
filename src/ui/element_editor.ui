@@ -81,7 +81,7 @@
       <number>15</number>
      </property>
      <item>
-      <widget class="QTreeView" name="scene_tree">
+      <widget class="element::ui::activable_tree" name="scene_tree">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
@@ -133,7 +133,7 @@
       <number>15</number>
      </property>
      <item>
-      <widget class="QTreeView" name="filesystem_tree">
+      <widget class="element::ui::activable_tree" name="filesystem_tree">
        <property name="frameShape">
         <enum>QFrame::NoFrame</enum>
        </property>
@@ -212,8 +212,8 @@
          <rect>
           <x>0</x>
           <y>0</y>
-          <width>399</width>
-          <height>554</height>
+          <width>403</width>
+          <height>556</height>
          </rect>
         </property>
        </widget>
@@ -223,6 +223,13 @@
    </widget>
   </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>element::ui::activable_tree</class>
+   <extends>QTreeView</extends>
+   <header location="global">ui/widgets/activable_tree.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
