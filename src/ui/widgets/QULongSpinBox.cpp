@@ -6,7 +6,7 @@
  * From https://stackoverflow.com/questions/8383620/64bit-int-spin-box-in-qt
 */
 
-QULongSpinBox::QULongSpinBox(QWidget* parent) {
+QULongSpinBox::QULongSpinBox(QWidget* parent) : QAbstractSpinBox(parent) {
     connect(lineEdit(), SIGNAL(textEdited(const QString&)), this, SLOT(onEditFinished()));
     connect(lineEdit(), SIGNAL(textChanged(const QString&)), this, SIGNAL(textChanged(const QString&)));
 }
