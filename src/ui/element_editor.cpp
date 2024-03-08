@@ -22,7 +22,8 @@ element_editor::element_editor() {
     assets_tree_model = new model_assets_tree();
     filesystem_tree->setModel(assets_tree_model);
     connect(assets_tree_model->sourceModel(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QList<int>&)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
-    connect(filesystem_tree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
+    connect(filesystem_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
+    connect(scene_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(node_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
     auto reload_on_import_event = [this](events::assets_imported& event) {
         this->properties_load_values();
         return true;
@@ -53,16 +54,11 @@ void element_editor::closeEvent(QCloseEvent* event) {
 }
 
 void element_editor::load_scene() {
-    bool first_time = true;
     if (scene_tree_model != nullptr) {
         delete scene_tree_model;
-        first_time = false;
     }
     scene_tree_model = new model_scenegraph_tree();
     scene_tree->setModel(scene_tree_model);
-    if (first_time) {
-        connect(scene_tree->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(node_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
-    }
     connect(scene_tree_model, SIGNAL(rowsMoved(const QModelIndex&, int, int, const QModelIndex&, int)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
 }
 
