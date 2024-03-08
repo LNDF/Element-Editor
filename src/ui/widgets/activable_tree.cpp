@@ -16,7 +16,7 @@ void activable_tree::mousePressEvent(QMouseEvent* event) {
 
 void activable_tree::mouseReleaseEvent(QMouseEvent* event) {
     if (do_click_select && select_index.isValid()) {
-        emit activate(select_index);
+        emit activated(select_index);
     }
     do_click_select = false;
     QTreeView::mouseReleaseEvent(event);
@@ -33,5 +33,7 @@ void activable_tree::setModel(QAbstractItemModel* model) {
 }
 
 void activable_tree::on_selection_changed(const QModelIndex& index) {
-    if (!do_click_select) emit activate(index);
+    if (!do_click_select) {
+        emit activated(index);
+    }
 }

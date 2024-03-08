@@ -24,7 +24,7 @@ namespace element {
             private slots:
                 void on_selection_changed(const QModelIndex& index);
             signals:
-                void activate(const QModelIndex& index);
+                void activated(const QModelIndex& index);
         };
 
     } // namespace ui
