@@ -89,3 +89,35 @@ void element_editor::properties_load_values() {
         current_properties_container->load_values();
     }
 }
+
+void element_editor::file_open() {
+
+}
+
+void element_editor::file_reload() {
+
+}
+
+void element_editor::file_properties() {
+
+}
+
+void element_editor::file_preview() {
+
+}
+
+void element_editor::file_exit() {
+
+}
+
+void element_editor::tools_import_3d_model() {
+
+}
+
+void element_editor::help_about() {
+
+}
+
+void element_editor::help_about_qt() {
+
+}

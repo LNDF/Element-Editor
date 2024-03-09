@@ -31,13 +31,25 @@ namespace element {
                 virtual ~element_editor();
 
                 void load_scene();
-
+                void unload_scene();
+                
                 inline QWindow* get_game_window() {return game_window;}
                 inline QWidget* get_game_window_container() {return game_window_container;}
+
             private slots:
                 void node_select(const QModelIndex& index);
                 void asset_select(const QModelIndex& index);
                 void properties_load_values();
+
+                void file_open();
+                void file_reload();
+                void file_properties();
+                void file_preview();
+                void file_exit();
+                void tools_import_3d_model();
+                void help_about();
+                void help_about_qt();
+
         };
 
     } // namespace ui
