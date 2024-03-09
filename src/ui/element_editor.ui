@@ -81,7 +81,7 @@
       <number>15</number>
      </property>
      <item>
-      <widget class="QTreeView" name="scene_tree">
+      <widget class="element::ui::activable_tree" name="scene_tree">
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -136,7 +136,7 @@
       <number>15</number>
      </property>
      <item>
-      <widget class="QTreeView" name="filesystem_tree">
+      <widget class="element::ui::activable_tree" name="filesystem_tree">
        <property name="contextMenuPolicy">
         <enum>Qt::CustomContextMenu</enum>
        </property>
@@ -408,6 +408,11 @@
    <class>element::ui::menu_new_node</class>
    <extends>QMenu</extends>
    <header location="global">ui/menus/menu_new_node.h</header>
+  </customwidget>
+  <customwidget>
+   <class>element::ui::activable_tree</class>
+   <extends>QTreeView</extends>
+   <header location="global">ui/widgets/activable_tree.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
