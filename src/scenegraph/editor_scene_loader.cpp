@@ -23,6 +23,7 @@ static void open_and_import(const uuid& id, const std::string& path) {
         ELM_WARN("Couldn't open scene {0} {{1}}", path, id.str());
         return;
     }
+    ELM_INFO("Loading scene {} in editor...", path);
     if (!scenegraph::close_scene()) return;
     current_scene = scenegraph::import_scene(id, std::move(s.value()));
     editor::main_window->load_scene();
@@ -51,11 +52,20 @@ void scenegraph::open_scene(const std::string& path) {
 
 bool scenegraph::close_scene() {
     //TODO: saving and stuff
+    ELM_INFO("Unloading editor scene...");
     current_scene = nullptr;
+    editor::main_window->unload_scene();
     render::get_screen_scene_renderer()->select_scene(uuid::null());
     scenegraph::destroy_all_scenes();
     render::render_screen_safe();
     return true;
+}
+
+void scenegraph::save_scene() {
+    if (current_scene == nullptr) return;
+    ELM_INFO("Saving current scene...");
+    const fs_resource_info& info = fs::get_resource_info(current_scene->get_id());
+    asset_loader::scene_text_save(info.path, *current_scene);
 }
 
 scenegraph::scene* scenegraph::get_current_scene() {

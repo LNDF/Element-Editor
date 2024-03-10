@@ -10,6 +10,7 @@ namespace element {
         void open_scene(const uuid& id);
         void open_scene(const std::string& path);
         bool close_scene();
+        void save_scene();
 
         scene* get_current_scene();
 

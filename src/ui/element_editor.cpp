@@ -8,6 +8,7 @@
 #include <core/core_events.h>
 #include <event/event.h>
 #include <scenegraph/node.h>
+#include <scenegraph/editor_scene_loader.h>
 #include <ui/widgets/properties_asset.h>
 #include <ui/widgets/properties_node.h>
 #include <ui/vulkan_window.h>
@@ -60,6 +61,23 @@ void element_editor::load_scene() {
     scene_tree_model = new model_scenegraph_tree();
     scene_tree->setModel(scene_tree_model);
     connect(scene_tree_model, SIGNAL(rowsMoved(const QModelIndex&, int, int, const QModelIndex&, int)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
+    action_save->setEnabled(true);
+    action_reload->setEnabled(true);
+    action_preview_current_scene->setEnabled(true);
+    action_close->setEnabled(true);
+    menu_new_node->setEnabled(true);
+}
+
+void element_editor::unload_scene() {
+    if (scene_tree_model != nullptr) {
+        delete scene_tree_model;
+    }
+    scene_tree->setModel(nullptr);
+    action_save->setEnabled(false);
+    action_reload->setEnabled(false);
+    action_preview_current_scene->setEnabled(false);
+    action_close->setEnabled(false);
+    menu_new_node->setEnabled(false);
 }
 
 void element_editor::node_select(const QModelIndex& index) {
@@ -86,34 +104,42 @@ void element_editor::properties_load_values() {
     }
 }
 
-void element_editor::file_open() {
-
+void element_editor::file_save() {
+    scenegraph::save_scene();
 }
 
 void element_editor::file_reload() {
-
+    scenegraph::open_scene(scenegraph::get_current_scene()->get_id());
 }
 
-void element_editor::file_properties() {
-
+void element_editor::file_close() {
+    scenegraph::close_scene();
 }
 
 void element_editor::file_preview() {
+    //TODO: preview
+}
 
+void element_editor::file_preview_current_scene() {
+    //TODO: preview current scene
+}
+
+void element_editor::file_properties() {
+    //TODO: open properties
 }
 
 void element_editor::file_exit() {
-
+    close();
 }
 
 void element_editor::tools_import_3d_model() {
-
+    //TODO: import 3d model dialog
 }
 
 void element_editor::help_about() {
-
+    //TODO: about
 }
 
 void element_editor::help_about_qt() {
-
+    //TODO: about qt
 }

@@ -18,7 +18,7 @@ namespace element {
 
                 void retranslate();
             private slots:
-                void create_node(bool checked);
+                void create_node();
             signals:
                 void trigger(std::type_index  type);
         };

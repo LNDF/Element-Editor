@@ -41,10 +41,12 @@ namespace element {
                 void asset_select(const QModelIndex& index);
                 void properties_load_values();
 
-                void file_open();
+                void file_save();
                 void file_reload();
-                void file_properties();
+                void file_close();
                 void file_preview();
+                void file_preview_current_scene();
+                void file_properties();
                 void file_exit();
                 void tools_import_3d_model();
                 void help_about();
