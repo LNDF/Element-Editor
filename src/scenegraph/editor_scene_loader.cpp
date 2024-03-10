@@ -51,6 +51,7 @@ void scenegraph::open_scene(const std::string& path) {
 }
 
 bool scenegraph::close_scene() {
+    if (current_scene == nullptr) return true;
     //TODO: saving and stuff
     ELM_INFO("Unloading editor scene...");
     current_scene = nullptr;
