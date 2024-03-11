@@ -173,22 +173,22 @@ void element_editor::help_about_qt() {
 }
 
 void element_editor::context_scene_tree(const QPoint& pos) {
-    QMenu* menu = new QMenu(this);
+    QMenu menu(this);
     QModelIndex index = scene_tree->indexAt(pos);
     const scenegraph::node_ref& ref = scene_tree_model->ref_from_index(index);
     if (ref == nullptr) return;
-    QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), menu);
-    QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), menu);
-    ui::menu_new_node* menu_new_node = new ui::menu_new_node(ref, menu);
+    QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
+    QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), &menu);
+    ui::menu_new_node* menu_new_node = new ui::menu_new_node(ref, &menu);
     menu_new_node->setTitle(QCoreApplication::translate("element-editor", "New node..."));
-    menu->addAction(action_rename);
-    menu->addAction(action_delete);
-    menu->addSeparator();
-    menu->addMenu(menu_new_node);
+    menu.addAction(action_rename);
+    menu.addAction(action_delete);
+    menu.addSeparator();
+    menu.addMenu(menu_new_node);
     connect(action_rename, SIGNAL(triggered(bool)), this, SLOT(context_node_rename()), Qt::ConnectionType::DirectConnection);
     connect(action_delete, SIGNAL(triggered(bool)), this, SLOT(context_node_delete()), Qt::ConnectionType::DirectConnection);
     node_select(index);
-    menu->exec(scene_tree->mapToGlobal(pos));
+    menu.exec(scene_tree->mapToGlobal(pos));
 }
 
 void element_editor::context_node_rename() {
