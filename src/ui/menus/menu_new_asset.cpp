@@ -9,7 +9,7 @@
 
 using namespace element::ui;
 
-menu_new_asset_action::menu_new_asset_action(const std::string& type, QObject* parent) : QAction(parent) {
+menu_new_asset_action::menu_new_asset_action(const std::string& type, QObject* parent) : QAction(parent), type(type) {
     retranslate();
     connect(this, SIGNAL(triggered(bool)), this, SLOT(create_asset()), Qt::ConnectionType::DirectConnection);
 }
@@ -65,8 +65,8 @@ bool menu_new_asset::check_exists(const std::string& path) {
 }
 
 void menu_new_asset::retranslate() {
-    new_folder_action->setText(QCoreApplication::translate("element-editor", "New folder"));
-    new_file_action->setText(QCoreApplication::translate("element-editor", "New file"));
+    new_folder_action->setText(QCoreApplication::translate("element-editor", "Folder"));
+    new_file_action->setText(QCoreApplication::translate("element-editor", "File"));
     for (const auto& action : actions) {
         action->retranslate();
     }

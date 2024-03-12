@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-#define ELM_REGISTER_ASSET_CREATOR(type, name, factory) ELM_PRE_EXECUTE(element::__detail::__asset_creator_register_creatory_factory, type, {name, factory})
+#define ELM_REGISTER_ASSET_CREATOR(type, name, factory) ELM_PRE_EXECUTE(element::__detail::__asset_creator_register_creator_info, type, {name, factory})
 
 namespace element {
     namespace asset_creator {
