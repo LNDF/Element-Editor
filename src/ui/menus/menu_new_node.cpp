@@ -9,7 +9,6 @@
 using namespace element::ui;
 
 menu_new_node_action::menu_new_node_action(std::type_index type, QObject* parent) : QAction(parent), type(type) {
-    retranslate();
     connect(this, SIGNAL(triggered(bool)), this, SLOT(create_node()), Qt::ConnectionType::DirectConnection);
 }
 
@@ -31,6 +30,7 @@ menu_new_node::menu_new_node(const scenegraph::node_ref& parent_node, QWidget* p
         connect(action, SIGNAL(trigger(std::type_index)), this, SLOT(action_triggered(std::type_index)), Qt::ConnectionType::DirectConnection);
         actions.push_back(action);
     }
+    retranslate();
 }
 
 void menu_new_node::create_node(std::type_index type, const scenegraph::node_ref& parent) {
