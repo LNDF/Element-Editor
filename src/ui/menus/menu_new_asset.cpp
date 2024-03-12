@@ -1,6 +1,7 @@
 #include "menu_new_asset.h"
 
 #include <asset/creators/asset_creators_info.h>
+#include <editor/editor.h>
 #include <editor/project.h>
 #include <QCoreApplication>
 #include <QInputDialog>
@@ -48,14 +49,14 @@ menu_new_asset::menu_new_asset(const std::string& parent_path, QWidget* parent) 
 }
 
 std::string menu_new_asset::get_file_path(bool* ok) {
-    return QInputDialog::getText(this, QCoreApplication::translate("element-editor", "Filename"), QCoreApplication::translate("element-editor", "Enter the name for the new file."), QLineEdit::Normal, QString(), ok).toStdString();
+    return QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Filename"), QCoreApplication::translate("element-editor", "Enter the name for the new file."), QLineEdit::Normal, QString(), ok).toStdString();
 }
 
 bool menu_new_asset::check_exists(const std::string& path) {
     if (std::filesystem::exists(project::project_assets_path / path)) {
-        QMessageBox box(this);
-        box.setText(QCoreApplication::translate("element-editor", "Can't create file or directory"));
-        box.setInformativeText(QCoreApplication::translate("element-editor", "The file or directory aleady exists."));
+        QMessageBox box(editor::main_window);
+        box.setWindowTitle(QCoreApplication::translate("element-editor", "Can't create file or directory"));
+        box.setText(QCoreApplication::translate("element-editor", "The file or directory aleady exists."));
         box.setIcon(QMessageBox::Critical);
         box.setStandardButtons(QMessageBox::Ok);
         box.exec();
@@ -83,7 +84,7 @@ void menu_new_asset::action_triggered(const std::string& type) {
 
 void menu_new_asset::action_new_folder() {
     bool ok;
-    std::string path = QInputDialog::getText(this, QCoreApplication::translate("element-editor", "Folder name"), QCoreApplication::translate("element-editor", "Enter the name for the new folder."), QLineEdit::Normal, QString(), &ok).toStdString();
+    std::string path = QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Folder name"), QCoreApplication::translate("element-editor", "Enter the name for the new folder."), QLineEdit::Normal, QString(), &ok).toStdString();
     if (!ok) return;
     if (check_exists(path)) return;
     std::filesystem::create_directories(project::project_assets_path / path);
