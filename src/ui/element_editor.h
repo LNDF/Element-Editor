@@ -56,9 +56,14 @@ namespace element {
                 void help_about_qt();
 
                 void context_scene_tree(const QPoint& pos);
+                void context_assets_tree(const QPoint& pos);
 
                 void context_node_rename();
                 void context_node_delete();
+
+                void context_asset_rename();
+                void context_asset_reimport();
+                void context_asset_delete();
 
         };
 
