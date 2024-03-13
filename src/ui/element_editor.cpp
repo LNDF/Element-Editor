@@ -180,7 +180,7 @@ void element_editor::help_about_qt() {
 void element_editor::context_scene_tree(const QPoint& pos) {
     QModelIndex index = scene_tree->indexAt(pos);
     const scenegraph::node_ref& ref = scene_tree_model->ref_from_index(index);
-    if (ref == nullptr) return;
+    if (ref == nullptr || ref == scenegraph::get_current_scene()->get_root_node()) return;
     QMenu menu(this);
     QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
     QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), &menu);
@@ -199,6 +199,7 @@ void element_editor::context_scene_tree(const QPoint& pos) {
 void element_editor::context_assets_tree(const QPoint& pos) {
     QModelIndex index = assets_tree->indexAt(pos);
     std::string path = assets_tree_model->asset_from_index(index);
+    if (path.empty()) return;
     QMenu menu(this);
     QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
     QAction* action_reimport = new QAction(QCoreApplication::translate("element-editor", "Reimport"), &menu);
