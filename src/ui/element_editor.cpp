@@ -1,6 +1,7 @@
 #include "element_editor.h"
 
 #include <QCloseEvent>
+#include <asset/importer.h>
 #include <asset/asset_events.h>
 #include <core/fs.h>
 #include <core/log.h>
@@ -28,7 +29,7 @@ element_editor::element_editor() {
     assets_tree->setModel(assets_tree_model);
     connect(assets_tree_model->sourceModel(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QList<int>&)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
     connect(assets_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
-    connect(assets_tree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(context_scene_tree(const QPoint&)), Qt::ConnectionType::DirectConnection);
+    connect(assets_tree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(context_assets_tree(const QPoint&)), Qt::ConnectionType::DirectConnection);
     connect(scene_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(node_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
     connect(scene_tree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(context_scene_tree(const QPoint&)), Qt::ConnectionType::DirectConnection);
     auto reload_on_import_event = [this](events::assets_imported& event) {
@@ -202,7 +203,7 @@ void element_editor::context_assets_tree(const QPoint& pos) {
     QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
     QAction* action_reimport = new QAction(QCoreApplication::translate("element-editor", "Reimport"), &menu);
     QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), &menu);
-    ui::menu_new_asset* menu_new_asset = new ui::menu_new_asset("", &menu);
+    ui::menu_new_asset* menu_new_asset = new ui::menu_new_asset(path, &menu);
     menu_new_asset->setTitle(QCoreApplication::translate("element-editor", "New asset..."));
     menu.addAction(action_rename);
     menu.addAction(action_reimport);
@@ -213,7 +214,7 @@ void element_editor::context_assets_tree(const QPoint& pos) {
     connect(action_reimport, SIGNAL(triggered(bool)), this, SLOT(context_asset_reimport()), Qt::ConnectionType::DirectConnection);
     connect(action_delete, SIGNAL(triggered(bool)), this, SLOT(context_asset_delete()), Qt::ConnectionType::DirectConnection);
     asset_select(index);
-    if (std::filesystem::is_directory(path)) {
+    if (std::filesystem::is_directory(project::project_assets_path / path)) {
         action_reimport->setEnabled(false);
     } else {
         menu_new_asset->setEnabled(false);
@@ -234,13 +235,21 @@ void element_editor::context_node_delete() {
 }
 
 void element_editor::context_asset_rename() {
-
+    QModelIndex index = assets_tree->selectionModel()->currentIndex();
+    if (!index.isValid()) return;
+    assets_tree->edit(index);
 }
 
 void element_editor::context_asset_reimport() {
-
+    QModelIndex index = assets_tree->selectionModel()->currentIndex();
+    if (!index.isValid()) return;
+    const uuid& id = assets_tree_model->id_from_index(index);
+    asset_importer::import(id);
 }
 
 void element_editor::context_asset_delete() {
-    
+    QModelIndex index = assets_tree->selectionModel()->currentIndex();
+    if (!index.isValid()) return;
+    std::string path = assets_tree_model->asset_from_index(index);
+    std::filesystem::remove_all(project::project_assets_path / path);
 }
