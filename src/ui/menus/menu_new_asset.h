@@ -32,7 +32,6 @@ namespace element {
                 std::vector<menu_new_asset_action*> actions;
 
                 std::string get_file_path(bool* ok);
-                bool check_exists(const std::string& path);
             public:
                 menu_new_asset(QWidget* parent = nullptr);
                 menu_new_asset(const std::string& parent_path, QWidget* parent = nullptr);

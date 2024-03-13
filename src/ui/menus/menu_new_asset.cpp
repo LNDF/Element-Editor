@@ -3,9 +3,9 @@
 #include <asset/creators/asset_creators_info.h>
 #include <editor/editor.h>
 #include <editor/project.h>
+#include <ui/utils.h>
 #include <QCoreApplication>
 #include <QInputDialog>
-#include <QMessageBox>
 #include <filesystem>
 
 using namespace element::ui;
@@ -52,19 +52,6 @@ std::string menu_new_asset::get_file_path(bool* ok) {
     return QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Filename"), QCoreApplication::translate("element-editor", "Enter the name for the new file."), QLineEdit::Normal, QString(), ok).toStdString();
 }
 
-bool menu_new_asset::check_exists(const std::string& path) {
-    if (std::filesystem::exists(project::project_assets_path / path)) {
-        QMessageBox box(editor::main_window);
-        box.setWindowTitle(QCoreApplication::translate("element-editor", "Can't create file or directory"));
-        box.setText(QCoreApplication::translate("element-editor", "The file or directory aleady exists."));
-        box.setIcon(QMessageBox::Critical);
-        box.setStandardButtons(QMessageBox::Ok);
-        box.exec();
-        return true;
-    }
-    return false;
-}
-
 void menu_new_asset::retranslate() {
     new_folder_action->setText(QCoreApplication::translate("element-editor", "Folder"));
     new_file_action->setText(QCoreApplication::translate("element-editor", "File"));
@@ -77,7 +64,7 @@ void menu_new_asset::action_triggered(const std::string& type) {
     bool ok;
     std::string path = get_file_path(&ok) + "." + type;
     if (!ok) return;
-    if (check_exists(path)) return;
+    if (file_check_exists_ui(path)) return;
     const auto& info = asset_creator::get_creator_info(type);
     info.factory(path);
 }
@@ -86,7 +73,7 @@ void menu_new_asset::action_new_folder() {
     bool ok;
     std::string path = QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Folder name"), QCoreApplication::translate("element-editor", "Enter the name for the new folder."), QLineEdit::Normal, QString(), &ok).toStdString();
     if (!ok) return;
-    if (check_exists(path)) return;
+    if (file_check_exists_ui(path)) return;
     std::filesystem::create_directories(project::project_assets_path / path);
 }
 
@@ -94,6 +81,6 @@ void menu_new_asset::action_new_file() {
     bool ok;
     std::string path = get_file_path(&ok);
     if (!ok) return;
-    if (check_exists(path)) return;
+    if (file_check_exists_ui(path)) return;
     asset_creator::blank_file_creator(path);
 }
