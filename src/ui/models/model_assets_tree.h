@@ -82,6 +82,7 @@ namespace element {
                 ~model_assets_tree();
 
                 const uuid& id_from_index(const QModelIndex& index) const;
+                std::string asset_from_index(const QModelIndex& index) const;
 
                 static const QString& get_ref_mime_type();
                 static const QString& get_path_mime_type();

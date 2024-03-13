@@ -348,6 +348,15 @@ const element::uuid& model_assets_tree::id_from_index(const QModelIndex& index) 
     return fs::get_uuid_from_resource_path(path);
 }
 
+std::string model_assets_tree::asset_from_index(const QModelIndex& index) const {
+    if (!index.isValid()) return "";
+    QModelIndex source = mapToSource(index);
+    if (!source.isValid()) return "";
+    const entry_type* entry = (const entry_type*) source.internalPointer();
+    if (entry == nullptr) return "";
+    return source_model->asset_from_entry(entry);
+}
+
 const QString& model_assets_tree::get_ref_mime_type() {
     return ref_mime_type;
 }
