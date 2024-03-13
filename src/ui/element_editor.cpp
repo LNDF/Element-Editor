@@ -6,13 +6,16 @@
 #include <core/log.h>
 #include <core/engine.h>
 #include <core/core_events.h>
+#include <editor/project.h>
 #include <event/event.h>
 #include <scenegraph/node.h>
 #include <scenegraph/scene_events.h>
 #include <scenegraph/editor_scene_loader.h>
+#include <ui/menus/menu_new_asset.h>
 #include <ui/menus/menu_new_node.h>
 #include <ui/widgets/properties_asset.h>
 #include <ui/widgets/properties_node.h>
+#include <filesystem>
 
 using namespace element::ui;
 
@@ -25,6 +28,7 @@ element_editor::element_editor() {
     assets_tree->setModel(assets_tree_model);
     connect(assets_tree_model->sourceModel(), SIGNAL(dataChanged(const QModelIndex&, const QModelIndex&, const QList<int>&)), this, SLOT(properties_load_values()), Qt::ConnectionType::DirectConnection);
     connect(assets_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(asset_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
+    connect(assets_tree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(context_scene_tree(const QPoint&)), Qt::ConnectionType::DirectConnection);
     connect(scene_tree, SIGNAL(activated(const QModelIndex&)), this, SLOT(node_select(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
     connect(scene_tree, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(context_scene_tree(const QPoint&)), Qt::ConnectionType::DirectConnection);
     auto reload_on_import_event = [this](events::assets_imported& event) {
@@ -173,10 +177,10 @@ void element_editor::help_about_qt() {
 }
 
 void element_editor::context_scene_tree(const QPoint& pos) {
-    QMenu menu(this);
     QModelIndex index = scene_tree->indexAt(pos);
     const scenegraph::node_ref& ref = scene_tree_model->ref_from_index(index);
     if (ref == nullptr) return;
+    QMenu menu(this);
     QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
     QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), &menu);
     ui::menu_new_node* menu_new_node = new ui::menu_new_node(ref, &menu);
@@ -191,6 +195,32 @@ void element_editor::context_scene_tree(const QPoint& pos) {
     menu.exec(scene_tree->mapToGlobal(pos));
 }
 
+void element_editor::context_assets_tree(const QPoint& pos) {
+    QModelIndex index = assets_tree->indexAt(pos);
+    std::string path = assets_tree_model->asset_from_index(index);
+    QMenu menu(this);
+    QAction* action_rename = new QAction(QCoreApplication::translate("element-editor", "Rename"), &menu);
+    QAction* action_reimport = new QAction(QCoreApplication::translate("element-editor", "Reimport"), &menu);
+    QAction* action_delete = new QAction(QCoreApplication::translate("element-editor", "Delete"), &menu);
+    ui::menu_new_asset* menu_new_asset = new ui::menu_new_asset("", &menu);
+    menu_new_asset->setTitle(QCoreApplication::translate("element-editor", "New asset..."));
+    menu.addAction(action_rename);
+    menu.addAction(action_reimport);
+    menu.addAction(action_delete);
+    menu.addSeparator();
+    menu.addMenu(menu_new_asset);
+    connect(action_rename, SIGNAL(triggered(bool)), this, SLOT(context_asset_rename()), Qt::ConnectionType::DirectConnection);
+    connect(action_reimport, SIGNAL(triggered(bool)), this, SLOT(context_asset_reimport()), Qt::ConnectionType::DirectConnection);
+    connect(action_delete, SIGNAL(triggered(bool)), this, SLOT(context_asset_delete()), Qt::ConnectionType::DirectConnection);
+    asset_select(index);
+    if (std::filesystem::is_directory(path)) {
+        action_reimport->setEnabled(false);
+    } else {
+        menu_new_asset->setEnabled(false);
+    }
+    menu.exec(assets_tree->mapToGlobal(pos));
+}
+
 void element_editor::context_node_rename() {
     QModelIndex index = scene_tree->selectionModel()->currentIndex();
     if (!index.isValid()) return;
@@ -201,4 +231,16 @@ void element_editor::context_node_delete() {
     const scenegraph::node_ref& ref = scene_tree_model->ref_from_index(scene_tree->selectionModel()->currentIndex());
     if (ref == nullptr) return;
     ref->destroy();
+}
+
+void element_editor::context_asset_rename() {
+
+}
+
+void element_editor::context_asset_reimport() {
+
+}
+
+void element_editor::context_asset_delete() {
+    
 }
