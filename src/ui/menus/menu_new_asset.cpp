@@ -6,6 +6,7 @@
 #include <ui/utils.h>
 #include <QCoreApplication>
 #include <QInputDialog>
+#include <QLineEdit>
 #include <filesystem>
 
 using namespace element::ui;
@@ -62,7 +63,7 @@ void menu_new_asset::retranslate() {
 
 void menu_new_asset::action_triggered(const std::string& type) {
     bool ok;
-    std::string path = get_file_path(&ok) + "." + type;
+    std::string path = parent_path + get_file_path(&ok) + "." + type;
     if (!ok) return;
     if (file_check_exists_ui(path)) return;
     const auto& info = asset_creator::get_creator_info(type);
@@ -71,7 +72,7 @@ void menu_new_asset::action_triggered(const std::string& type) {
 
 void menu_new_asset::action_new_folder() {
     bool ok;
-    std::string path = QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Folder name"), QCoreApplication::translate("element-editor", "Enter the name for the new folder."), QLineEdit::Normal, QString(), &ok).toStdString();
+    std::string path = parent_path + QInputDialog::getText(editor::main_window, QCoreApplication::translate("element-editor", "Folder name"), QCoreApplication::translate("element-editor", "Enter the name for the new folder."), QLineEdit::Normal, QString(), &ok).toStdString();
     if (!ok) return;
     if (file_check_exists_ui(path)) return;
     std::filesystem::create_directories(project::project_assets_path / path);
@@ -79,7 +80,7 @@ void menu_new_asset::action_new_folder() {
 
 void menu_new_asset::action_new_file() {
     bool ok;
-    std::string path = get_file_path(&ok);
+    std::string path = parent_path + get_file_path(&ok);
     if (!ok) return;
     if (file_check_exists_ui(path)) return;
     asset_creator::blank_file_creator(path);
