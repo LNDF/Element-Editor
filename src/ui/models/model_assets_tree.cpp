@@ -3,6 +3,7 @@
 #include <asset/asset_events.h>
 #include <core/fs.h>
 #include <editor/project.h>
+#include <ui/utils.h>
 #include <QMimeData>
 #include <algorithm>
 #include <functional>
@@ -238,6 +239,11 @@ bool __ui_model_assets_tree_unsorted::moveRows(const QModelIndex &sourceParent, 
         for (int i = 0; i < count; ++i) {
             entry_type* item = entry_src->children[sourceRow + i];
             std::string path = asset_from_entry(item);
+            if (dst_asset.empty()) {
+                if (file_check_exists_ui(item->filename)) continue;
+            } else {
+                if (file_check_exists_ui(dst_asset + "/" + item->filename)) continue;
+            }
             std::filesystem::rename(project::project_assets_path / path, project::project_assets_path / dst_asset / item->filename);
         }
         return true;
@@ -261,9 +267,16 @@ bool __ui_model_assets_tree_unsorted::setData(const QModelIndex &index, const QV
     entry_type* entry = entry_from_index(index);
     if (entry == nullptr) return false;
     std::string path_parent = asset_from_entry(entry->parent);
+    if (path_parent.empty()) {
+        if (file_check_exists_ui(value.toString().toStdString())) return false;
+    } else {
+        if (file_check_exists_ui(path_parent +  "/" + value.toString().toStdString())) return false;
+    }
     std::filesystem::rename(project::project_assets_path / path_parent / entry->filename, project::project_assets_path / path_parent / value.toString().toStdString());
     return true;
 }
+
+
 
 Qt::DropActions __ui_model_assets_tree_unsorted::supportedDragActions() const {
     return Qt::CopyAction;
