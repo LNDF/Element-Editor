@@ -16,6 +16,7 @@
 #include <ui/menus/menu_new_node.h>
 #include <ui/widgets/properties_asset.h>
 #include <ui/widgets/properties_node.h>
+#include <ui/widgets/properties_scene.h>
 #include <filesystem>
 
 using namespace element::ui;
@@ -124,9 +125,13 @@ void element_editor::node_select(const QModelIndex& index) {
 void element_editor::asset_select(const QModelIndex& index) {
     const uuid& id = assets_tree_model->id_from_index(index);
     const fs_resource_info& info = fs::get_resource_info(id);
-    auto factory = get_asset_properties_container_factory(info.type);
-    if (factory == nullptr) return;
-    current_properties_container = factory(id, nullptr);
+    if (info.type == "scene") {
+        current_properties_container = new properties_scene(id, nullptr);
+    } else {
+        auto factory = get_asset_properties_container_factory(info.type);
+        if (factory == nullptr) return;
+        current_properties_container = factory(id, nullptr);
+    }
     load_properties_container();
 }
 
