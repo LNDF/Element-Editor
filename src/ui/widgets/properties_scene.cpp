@@ -28,5 +28,6 @@ void properties_scene::load_values() {
 }
 
 void properties_scene::load_scene() {
-    scenegraph::open_scene(scene);
+    uuid id = scene;
+    scenegraph::open_scene(id);
 }
