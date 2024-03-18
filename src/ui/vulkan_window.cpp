@@ -39,11 +39,10 @@ qt_vulkan_window::~qt_vulkan_window() {
     vulkan::instance.destroySurfaceKHR(surface, nullptr, vulkan::dld);
     swapchain_created = false;
 }
-#include <scenegraph/editor_scene_loader.h>
+
 void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
     if (ev->size() == ev->oldSize()) return;
     ELM_DEBUG("Editor renderer resized to {0}x{1}", ev->size().width(), ev->size().height());
-    bool first_time = !swapchain_created;
     if (swapchain_created) {
         render::unselect_swapchain();
         vulkan::destroy_swapchain(swapchain);
@@ -52,9 +51,6 @@ void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
     swapchain = vulkan::create_swapchain(info);
     render::select_swapchain(swapchain);
     swapchain_created = true;
-    if (first_time) {
-        scenegraph::open_scene("test.scene");
-    }
     render();
 }
 
