@@ -12,6 +12,7 @@
 #include <scenegraph/node.h>
 #include <scenegraph/scene_events.h>
 #include <scenegraph/editor_scene_loader.h>
+#include <ui/project_properties.h>
 #include <ui/menus/menu_new_asset.h>
 #include <ui/menus/menu_new_node.h>
 #include <ui/widgets/properties_asset.h>
@@ -163,7 +164,8 @@ void element_editor::file_preview_current_scene() {
 }
 
 void element_editor::file_properties() {
-    //TODO: open properties
+    project_properties dialog(this);
+    dialog.exec();
 }
 
 void element_editor::file_exit() {
