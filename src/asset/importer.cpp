@@ -90,7 +90,7 @@ static asset_importer_node& get_dir_node(const std::filesystem::path& path) {
     std::filesystem::path rpath = std::filesystem::relative(path, project::project_assets_path);
     asset_importer_node* node = &root_node;
     for (const std::filesystem::path::string_type part : rpath) {
-        if (part == DOT_FOLDER) continue;
+        if (part == DOT_FOLDER || part.empty()) continue;
         node = &node->children[part];
         node->is_dir = true;
     }
@@ -319,6 +319,7 @@ void __detail::__asset_importer_tracker_path_delete(const std::filesystem::path 
     asset_importer_node& dirnode = get_dir_node(dirpath);
     asset_importer_node& node = dirnode.children[path.filename()];
     delete_dir_nodes(path, node);
+    dirnode.children.erase(path.filename());
     fs::save_resources();
     asset_importer::save_dependencies();
     dirnode.children.erase(path.filename());
