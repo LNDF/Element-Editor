@@ -18,10 +18,9 @@ namespace element {
                 asset_chooser(const std::string& type, QWidget* parent = nullptr);
                 virtual ~asset_chooser();
             private slots:
-                void select_null();
-                void select_current();
+                void hadle_click(QAbstractButton* button);
+                void selected(const QModelIndex& index);
             signals:
-                void reseted();
                 void select(uuid id);
         };
 

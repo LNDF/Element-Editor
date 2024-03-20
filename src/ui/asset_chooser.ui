@@ -52,75 +52,14 @@
     <widget class="QListView" name="assets"/>
    </item>
    <item>
-    <widget class="QWidget" name="buttonbar" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <widget class="QPushButton" name="unselect">
-        <property name="text">
-         <string>Unselect</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QDialogButtonBox" name="buttons">
-        <property name="standardButtons">
-         <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-        </property>
-       </widget>
-      </item>
-     </layout>
+    <widget class="QDialogButtonBox" name="buttons">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok|QDialogButtonBox::Reset</set>
+     </property>
     </widget>
    </item>
   </layout>
  </widget>
  <resources/>
- <connections>
-  <connection>
-   <sender>buttons</sender>
-   <signal>accepted()</signal>
-   <receiver>asset_chooser</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>190</x>
-     <y>305</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>227</x>
-     <y>328</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>buttons</sender>
-   <signal>rejected()</signal>
-   <receiver>asset_chooser</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>463</x>
-     <y>307</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>306</x>
-     <y>324</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+ <connections/>
 </ui>
