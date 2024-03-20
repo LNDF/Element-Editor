@@ -12,8 +12,8 @@ namespace element {
             bool generate_smooth_normals = true;
             float normal_smooth_angle = 80.0f;
             bool fix_infacing_normals = false;
-            bool optimize_meshes = false;
-            bool optimize_graph = false;
+            bool optimize_meshes = true;
+            bool optimize_graph = true;
             bool flip_faces = false;
             std::filesystem::path model;
             std::filesystem::path destination;
