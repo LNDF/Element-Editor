@@ -14,7 +14,7 @@ asset_chooser::asset_chooser(const std::string& type, QWidget* parent) : QDialog
     assets->setModel(proxy);
     proxy->setFilterCaseSensitivity(Qt::CaseInsensitive);
     buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
-    connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(hadle_click(QAbstractButton*)), Qt::ConnectionType::DirectConnection);
+    connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(handle_click(QAbstractButton*)), Qt::ConnectionType::DirectConnection);
     connect(filter, SIGNAL(textChanged(const QString&)), proxy, SLOT(setFilterFixedString(const QString&)), Qt::ConnectionType::DirectConnection);
     connect(assets->selectionModel(), SIGNAL(currentChanged(const QModelIndex&, const QModelIndex&)), this, SLOT(selected(const QModelIndex&)), Qt::ConnectionType::DirectConnection);
 }
@@ -24,7 +24,7 @@ asset_chooser::~asset_chooser() {
     delete model;
 }
 
-void asset_chooser::hadle_click(QAbstractButton* button) {
+void asset_chooser::handle_click(QAbstractButton* button) {
     if (button == buttons->button(QDialogButtonBox::Reset)) {
         emit select(uuid::null());
         emit accept();
