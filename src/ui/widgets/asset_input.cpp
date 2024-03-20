@@ -78,7 +78,7 @@ void asset_input::set_value(const uuid& v) {
 }
 
 void asset_input::open_asset_chooser() {
-    asset_chooser* dialog = new asset_chooser(type, this);
-    connect(dialog, SIGNAL(select(uuid)), this, SLOT(set_value(uuid)), Qt::ConnectionType::DirectConnection);
-    dialog->open();
+    asset_chooser dialog(type, this);
+    connect(&dialog, SIGNAL(select(uuid)), this, SLOT(set_value(uuid)), Qt::ConnectionType::DirectConnection);
+    dialog.exec();
 }
