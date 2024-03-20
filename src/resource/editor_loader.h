@@ -22,9 +22,14 @@ namespace element {
                 ELM_WARN("Couldn't load asset {0}", path);
                 return std::nullopt;
             }
-            text_deserializer deserialize = create_text_deserializer(stream);
             T t;
-            deserialize(ELM_SERIALIZE_NVP(top_level_name, t));
+            try {
+                text_deserializer deserialize = create_text_deserializer(stream);
+                deserialize(ELM_SERIALIZE_NVP(top_level_name, t));
+            } catch (const std::exception& e) {
+                ELM_WARN("Couldn't deserialize asset {0}: {1}", path, e.what());
+                return std::nullopt;
+            }
             return t;
         }
 
@@ -49,9 +54,14 @@ namespace element {
                 ELM_WARN("Couldn't load asset {0}", path);
                 return std::nullopt;
             }
-            binary_deserializer deserialize = create_binary_deserializer(stream);
             T t;
-            deserialize(t);
+            try {
+                binary_deserializer deserialize = create_binary_deserializer(stream);
+                deserialize(t);
+            } catch (const std::exception& e) {
+                ELM_WARN("Couldn't deserialize asset {0}: {1}", path, e.what());
+                return std::nullopt;
+            }
             return t;
         }
 
