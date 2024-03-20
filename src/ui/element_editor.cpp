@@ -13,6 +13,7 @@
 #include <scenegraph/scene_events.h>
 #include <scenegraph/editor_scene_loader.h>
 #include <ui/project_properties.h>
+#include <ui/import_3d_model.h>
 #include <ui/menus/menu_new_asset.h>
 #include <ui/menus/menu_new_node.h>
 #include <ui/widgets/properties_asset.h>
@@ -173,7 +174,8 @@ void element_editor::file_exit() {
 }
 
 void element_editor::tools_import_3d_model() {
-    //TODO: import 3d model dialog
+    import_3d_model dialog(this);
+    dialog.exec();
 }
 
 void element_editor::help_about() {
