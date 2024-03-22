@@ -13,6 +13,8 @@ namespace element {
                 import_3d_model(QWidget* parent = nullptr);
             private slots:
                 void browse_model();
+                void browse_destination();
+                void import();
         };
 
     } // namespace ui    
