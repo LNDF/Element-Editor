@@ -1,6 +1,8 @@
 #include "import_3d_model.h"
 
 #include <editor/project.h>
+#include <mesh/model_importer.h>
+#include <QCoreApplication>
 #include <QFileDialog>
 
 using namespace element::ui;
@@ -9,9 +11,12 @@ import_3d_model::import_3d_model(QWidget* parent) : QDialog(parent) {
     setupUi(this);
     setFixedSize(minimumSize());
     setWindowFlags(Qt::Sheet | Qt::Dialog);
+    buttons->button(QDialogButtonBox::Ok)->setEnabled(false);
     connect(source_browse, SIGNAL(clicked()), this, SLOT(browse_model()), Qt::ConnectionType::DirectConnection);
     connect(dest_browse, SIGNAL(clicked()), this, SLOT(browse_destination()), Qt::ConnectionType::DirectConnection);
     connect(this, SIGNAL(accepted()), this, SLOT(import()), Qt::ConnectionType::DirectConnection);
+    connect(source_edit, SIGNAL(textChanged(const QString&)), this, SLOT(enable_import_button()), Qt::ConnectionType::DirectConnection);
+    connect(dest_edit, SIGNAL(textChanged(const QString&)), this, SLOT(enable_import_button()), Qt::ConnectionType::DirectConnection);
 }
 
 void import_3d_model::browse_model() {
@@ -94,6 +99,22 @@ void import_3d_model::browse_destination() {
     }
 }
 
+void import_3d_model::enable_import_button() {
+    buttons->button(QDialogButtonBox::Ok)->setEnabled(!source_edit->text().isEmpty() && !dest_edit->text().isEmpty());
+}
+
 void import_3d_model::import() {
-    //TODO: Implement 3D model import
+    mesh::model_import_settings settings;
+    settings.model = source_edit->text().toStdString();
+    settings.destination = dest_edit->text().toStdString();
+    settings.tangent_smooth_angle = tangent_smoothing_angle_spin->value();
+    settings.join_identical_vertices = join_identical_vertices_check->isChecked();
+    settings.force_generate_normals = force_normal_generation_check->isChecked();
+    settings.generate_smooth_normals = generate_smooth_normals_check->isChecked();
+    settings.normal_smooth_angle = normal_smoothing_angle_spin->value();
+    settings.fix_infacing_normals = fix_infacing_normals_check->isChecked();
+    settings.optimize_meshes = optimize_meshes_check->isChecked();
+    settings.optimize_graph = optimize_graph_check->isChecked();
+    settings.flip_faces = flip_faces_check->isChecked();
+    mesh::model_import(settings);
 }

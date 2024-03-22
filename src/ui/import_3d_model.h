@@ -14,6 +14,7 @@ namespace element {
             private slots:
                 void browse_model();
                 void browse_destination();
+                void enable_import_button();
                 void import();
         };
 
