@@ -13,6 +13,7 @@ namespace element {
             Q_OBJECT
             private:
                 std::vector<QLineEdit*> required_inputs;
+                bool new_project;
             public:
                 project_properties(QWidget* parent = nullptr);
             private slots:

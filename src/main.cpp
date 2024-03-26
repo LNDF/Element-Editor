@@ -5,6 +5,7 @@
 #include <editor/editor.h>
 #include <editor/project.h>
 #include <render/vulkan_qt.h>
+#include <ui/project_properties.h>
 
 using namespace element;
 
@@ -14,14 +15,17 @@ int main(int argc, char** argv) {
     int args = 1;
     QApplication* qt_app = new QApplication(args, argv);
     //TODO: get from program arguments...
-    project::open("testing/project");
+    project::open("testing/project1");
     if (!project::exists()) {
         ELM_INFO("Creating new project...");
-        //TODO: use qt dialog...
-        project::name = "test project";
-        project::author = "test author";
-        project::version = "1.0.0";
-        project::save();
+        project::name = "";
+        project::author = "";
+        project::version = "";
+        ui::project_properties dialog;
+        if (dialog.exec() == QDialog::Rejected) {
+            ELM_INFO("User cancelled project creation. Exiting...");
+            return 0;
+        }
     } else {
         project::mkdir();
         project::load();
