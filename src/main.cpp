@@ -4,6 +4,7 @@
 #include <core/log.h>
 #include <editor/editor.h>
 #include <editor/project.h>
+#include <render/vulkan_qt.h>
 
 using namespace element;
 
@@ -27,6 +28,7 @@ int main(int argc, char** argv) {
     }
     engine::settings.app_name = "Element editor";
     engine::settings.app_version = ELM_EDITOR_VERSION;
+    vulkan::vulkan_init_qt_extensions();
     engine::setup();
     ELM_INFO("This is the editor. Running editor...");
     editor::run_editor(qt_app);

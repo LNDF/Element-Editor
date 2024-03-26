@@ -20,25 +20,26 @@ struct wl_surface;
 
 using namespace element;
 
-static void editor_required_vulkan_extensions(std::vector<const char*>& extensions) {
+void element::vulkan::vulkan_init_qt_extensions() {
     std::string qpa = QGuiApplication::platformName().toStdString();
-    extensions.push_back("VK_KHR_surface");
+    std::uint32_t count;
+    const char* extensions[] = {"VK_KHR_surface", nullptr};
     ELM_DEBUG("Qt QPA is {}", qpa);
     if (qpa == "windows") {
         ELM_DEBUG("Extensions are VK_KHR_surface and VK_KHR_win32_surface");
-        extensions.push_back("VK_KHR_win32_surface");
+        extensions[1] = "VK_KHR_win32_surface";
     } else if (qpa == "wayland" || qpa == "wayland-egl") {
         ELM_DEBUG("Extensions are VK_KHR_surface and VK_KHR_wayland_surface");
-        extensions.push_back("VK_KHR_wayland_surface");
+        extensions[1] = "VK_KHR_wayland_surface";
     } else if (qpa == "xcb") {
         ELM_DEBUG("Extensions are VK_KHR_surface and VK_KHR_xlib_surface");
-        extensions.push_back("VK_KHR_xlib_surface");
+        extensions[1] = "VK_KHR_xlib_surface";
     } else {
         ELM_WARN("Unsupported QPA");
     }
+    count = extensions[1] == nullptr ? 1 : 2;
+    vulkan::add_instance_extensions(extensions, count);
 }
-
-ELM_REGISTER_VULKAN_REQUIRED_EXTENSION_HOOK(editor_required_vulkan_extensions)
 
 vk::SurfaceKHR element::vulkan::create_surface_from_qt(QWindow* window) {
     VkSurfaceKHR c_surface = nullptr;
