@@ -220,16 +220,16 @@ public:
      * Specialization of longID.
      * \param val - value to be used.
      */
-    virtual std::string longID(const std::string &val = "val") const;
+        virtual std::string longID(const std::string &val = "val") const;
 
-    virtual void reset();
+        virtual void reset();
 
-private:
-    /**
-     * Prevent accidental copying
-     */
-    ValueArg<T>(const ValueArg<T> &rhs);
-    ValueArg<T> &operator=(const ValueArg<T> &rhs);
+    private:
+        /**
+         * Prevent accidental copying
+         */
+        ValueArg(const ValueArg<T> &rhs);
+        ValueArg<T> &operator=(const ValueArg<T> &rhs);
 };
 
 /**

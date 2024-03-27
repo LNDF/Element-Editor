@@ -195,18 +195,18 @@ public:
      * Returns the a long id string.  Used in the usage.
      * \param val - value to be used.
      */
-    virtual std::string longID(const std::string &val = "val") const;
+        virtual std::string longID(const std::string &val = "val") const;
 
-    virtual bool allowMore();
+        virtual bool allowMore();
 
-    virtual void reset();
+        virtual void reset();
 
-private:
-    /**
-     * Prevent accidental copying
-     */
-    MultiArg<T>(const MultiArg<T> &rhs);
-    MultiArg<T> &operator=(const MultiArg<T> &rhs);
+    private:
+        /**
+         * Prevent accidental copying
+         */
+        MultiArg(const MultiArg<T> &rhs);
+        MultiArg<T> &operator=(const MultiArg<T> &rhs);
 };
 
 template <class T>
