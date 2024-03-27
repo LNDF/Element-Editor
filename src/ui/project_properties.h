@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ui/widgets/asset_input.h>
 #include <QDialog>
 #include <QLineEdit>
 #include <vector>
@@ -13,6 +14,7 @@ namespace element {
             Q_OBJECT
             private:
                 std::vector<QLineEdit*> required_inputs;
+                asset_input* startup_scene_input;
                 bool new_project;
             public:
                 project_properties(QWidget* parent = nullptr);
