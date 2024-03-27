@@ -83,6 +83,9 @@ add_subdirectory(lib/SPIRV-Cross EXCLUDE_FROM_ALL)
 target_link_libraries(element-editor PUBLIC spirv-cross-glsl)
 target_include_directories(element-editor PUBLIC lib/SPIRV-Cross)
 
+# tclap
+target_include_directories(element-editor PUBLIC lib/tclap/include)
+
 #end libs
 
 # CMake options
