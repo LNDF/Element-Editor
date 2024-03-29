@@ -86,6 +86,36 @@ target_include_directories(element-editor PUBLIC lib/SPIRV-Cross)
 # tclap
 target_include_directories(element-editor PUBLIC lib/tclap/include)
 
+# SDL2
+override_option(SDL_SHARED BOOL OFF)
+override_option(SDL_STATIC BOOL ON)
+override_option(SDL_DISABLE_INSTALL BOOl ON)
+override_option(SDL_TEST BOOL OFF)
+override_option(SDL_ATOMIC BOOL OFF)
+override_option(SDL_AUDIO BOOL OFF)
+override_option(SDL_CPUINFO BOOL OFF)
+override_option(SDL_DLOPEN BOOL ON)
+override_option(SDL_EVENTS BOOL OFF)
+override_option(SDL_FILE BOOL OFF)
+override_option(SDL_FILESYSTEM BOOL OFF)
+override_option(SDL_JOYSTICK BOOL ON)
+override_option(SDL_HAPTIC BOOL OFF)
+override_option(SDL_LOADSO BOOL ON)
+override_option(SDL_POWER BOOL OFF)
+override_option(SDL_RENDER BOOL OFF)
+override_option(SDL_SENSOR BOOL OFF)
+override_option(SDL_STDINC BOOL OFF)
+override_option(SDL_THREADS BOOL ON)
+override_option(SDL_TIMERS BOOL OFF)
+override_option(SDL_VIDEO BOOL ON)
+override_option(SDL_SHARED BOOL OFF)
+override_option(SDL_STATIC BOOL ON)
+add_subdirectory(lib/sdl EXCLUDE_FROM_ALL)
+IF(TARGET SDL2main)
+  target_link_libraries(element-editor PUBLIC SDL2main)
+endif()
+target_link_libraries(element-editor PUBLIC SDL2-static)
+
 #end libs
 
 # CMake options
