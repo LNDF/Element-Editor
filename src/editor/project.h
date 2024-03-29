@@ -1,5 +1,6 @@
 #pragma once
 
+#include <utils/uuid.h>
 #include <string>
 #include <filesystem>
 
@@ -9,6 +10,7 @@ namespace element {
         extern std::string name;
         extern std::string author;
         extern std::string version;
+        extern uuid startup_scene;
         extern std::filesystem::path project_path;
         extern std::filesystem::path project_filename;
         extern std::filesystem::path project_cache_path;

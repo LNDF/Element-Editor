@@ -20,6 +20,7 @@ project_properties::project_properties(QWidget* parent) : QDialog(parent) {
     project_name_edit->setText(project::name.c_str());
     version_edit->setText(project::version.c_str());
     author_edit->setText(project::author.c_str());
+    startup_scene_input->set_value(project::startup_scene);
     //TODO: load startup scene
     handle_inputs_empty();
     buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
@@ -47,6 +48,7 @@ void project_properties::apply_properties() {
     project::name = project_name_edit->text().toStdString();
     project::version = version_edit->text().toStdString();
     project::author = author_edit->text().toStdString();
+    project::startup_scene = startup_scene_input->value();
     project::save();
 }
 
