@@ -30,6 +30,7 @@ void run(char* argv0, const std::string& project_path, bool preview_mode, const 
         project::name = "";
         project::author = "";
         project::version = "";
+        project::startup_scene = uuid::null();
         ui::project_properties dialog;
         if (dialog.exec() == QDialog::Rejected) {
             ELM_INFO("User cancelled project creation. Exiting...");
