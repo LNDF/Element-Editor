@@ -2,9 +2,13 @@
 
 #include <core/engine.h>
 #include <core/log.h>
+#include <display/backend.h>
+#include <display/window.h>
 #include <editor/editor.h>
 #include <editor/project.h>
 #include <render/vulkan_qt.h>
+#include <render/render.h>
+#include <scenegraph/scene_manager.h>
 #include <ui/project_properties.h>
 #include <utils/uuid.h>
 #include <tclap/CmdLine.h>
@@ -15,7 +19,7 @@ static QApplication* qt_app = nullptr;
 
 using namespace element;
 
-void launch_editor(QApplication* qt_app) {
+static void launch_editor(QApplication* qt_app) {
     vulkan::vulkan_init_qt_extensions();
     engine::setup();
     ELM_INFO("This is the editor. Running editor...");
@@ -23,7 +27,21 @@ void launch_editor(QApplication* qt_app) {
     engine::cleanup();
 }
 
-void run(char* argv0, const std::string& project_path, bool preview_mode, const element::uuid& preview_scene) {
+static void launch_preview(const element::uuid& preview_scene) {
+    display::init_backend();
+    engine::setup();
+    ELM_INFO("Loading preview scene...");
+    display::open_window();
+    scenegraph::load_scene(preview_scene);
+    render::get_screen_scene_renderer()->select_scene(preview_scene);
+    ELM_INFO("This is the editor. Running preview...");
+    engine::execute();
+    display::close_window();
+    engine::cleanup();
+    display::cleanup_backend();
+}
+
+static void run(char* argv0, const std::string& project_path, bool preview_mode, const element::uuid& preview_scene) {
     project::open(project_path);
     if (!project::exists()) {
         ELM_INFO("Creating new project...");
@@ -42,10 +60,20 @@ void run(char* argv0, const std::string& project_path, bool preview_mode, const 
     }
     engine::settings.app_name = "Element editor";
     engine::settings.app_version = ELM_EDITOR_VERSION;
-    launch_editor(qt_app);
+    if (preview_mode) {
+        if (preview_scene == uuid::null()) {
+            ELM_DEBUG("No preview scene specified. Using project startup scene.");
+            launch_preview(project::startup_scene);
+        } else {
+            ELM_DEBUG("Preview scene specified: {0}", preview_scene.str());
+            launch_preview(preview_scene);
+        }
+    } else {
+        launch_editor(qt_app);
+    }
 }
 
-void terminate() {
+static void terminate() {
     {   
         QMessageBox msg;
         msg.setWindowTitle("Element editor");
