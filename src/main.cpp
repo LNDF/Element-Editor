@@ -32,6 +32,7 @@ static void launch_preview(const element::uuid& preview_scene) {
     engine::setup();
     ELM_INFO("Loading preview scene...");
     display::open_window();
+    display::set_window_resizable(true);
     scenegraph::load_scene(preview_scene);
     render::get_screen_scene_renderer()->select_scene(preview_scene);
     ELM_INFO("This is the editor. Running preview...");

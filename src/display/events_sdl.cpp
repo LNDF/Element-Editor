@@ -2,6 +2,7 @@
 
 #include <core/core_events.h>
 #include <event/event.h>
+#include <render/render.h>
 #include <SDL2/SDL.h>
 
 using namespace element;
@@ -76,6 +77,7 @@ static bool poll(events::update& update) {
                 break;
         }
     }
+    render::render_screen();
     return true;
 }
 

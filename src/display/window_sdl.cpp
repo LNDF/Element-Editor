@@ -1,7 +1,10 @@
 #include <display/window.h>
 
 #include <core/log.h>
+#include <display/events.h>
+#include <event/event.h>
 #include <render/render.h>
+#include <render/render_events.h>
 #include <render/vulkan.h>
 #include <render/vulkan_swapchain.h>
 #include <SDL.h>
@@ -68,3 +71,26 @@ void display::set_window_mode(window_mode mode) {
 void display::set_window_resizable(bool resizable) {
     SDL_SetWindowResizable(window, resizable ? SDL_TRUE : SDL_FALSE);
 }
+
+static void recreate_swapchain(std::uint32_t width, std::uint32_t height) {
+    vulkan::destroy_swapchain(swapchain);
+    vulkan::swapchain_creation_info info = vulkan::query_swapchain_info(surface, width, height);
+    swapchain = vulkan::create_swapchain(info);
+    render::select_swapchain(swapchain);
+}
+
+static bool window_resize(events::window_resize& event) {
+    ELM_DEBUG("Window resized to {0}x{1}", event.width, event.height);
+    if (window == nullptr) return true;
+    recreate_swapchain(static_cast<std::uint32_t>(event.width), static_cast<std::uint32_t>(event.height));
+    return true;
+}
+
+static bool swapchain_suboptimal(events::render_suboptimal_swapchain& event) {
+    ELM_DEBUG("Swapchain suboptimal");
+    recreate_swapchain(event.swapchain->width, event.swapchain->height);
+    return true;
+}
+
+ELM_REGISTER_EVENT_CALLBACK(events::window_resize, window_resize, event_callback_priority::highest);
+ELM_REGISTER_EVENT_CALLBACK(events::render_suboptimal_swapchain, swapchain_suboptimal, event_callback_priority::highest);
