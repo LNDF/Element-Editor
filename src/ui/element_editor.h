@@ -7,6 +7,7 @@
 #include <ui/widgets/properties_container.h>
 #include <ui/vulkan_window.h>
 #include <QMainWindow>
+#include <QProcess>
 
 #include "ui_element_editor.h"
 
@@ -16,6 +17,7 @@ namespace element {
         class element_editor : public QMainWindow, private Ui::element_editor {
             Q_OBJECT
             private:
+                QProcess* preview_process = nullptr;
                 qt_vulkan_window* game_window;
                 QWidget* game_window_container;
                 model_scenegraph_tree* scene_tree_model = nullptr;
@@ -43,6 +45,8 @@ namespace element {
                 void node_select(const QModelIndex& index);
                 void asset_select(const QModelIndex& index);
                 void properties_load_values();
+                
+                void preivew_process_finished();
 
                 void file_save();
                 void file_reload();

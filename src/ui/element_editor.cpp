@@ -7,6 +7,7 @@
 #include <core/log.h>
 #include <core/engine.h>
 #include <core/core_events.h>
+#include <editor/preview_launcher.h>
 #include <editor/project.h>
 #include <event/event.h>
 #include <scenegraph/node.h>
@@ -63,6 +64,15 @@ element_editor::element_editor() {
 }
 
 element_editor::~element_editor() {
+    if (preview_process != nullptr) {
+        if (preview_process->processId() != 0 && preview_process->state() != QProcess::NotRunning) {
+            preview_process->terminate();
+            preview_process->waitForFinished();
+        } else {
+            editor::cancel_preview_deferred_launch();
+        }
+        delete preview_process;
+    }
     event_manager::unregister_event_callback<events::assets_imported>(reload_on_import, event_callback_priority::highest);
     event_manager::unregister_event_callback<events::before_node_added>(render_on_node_added, event_callback_priority::highest);
     event_manager::unregister_event_callback<events::before_node_deleted>(render_on_node_deleted, event_callback_priority::highest);
@@ -99,6 +109,7 @@ void element_editor::load_scene() {
     action_close->setEnabled(true);
     menu_new_node->setEnabled(true);
     properties_scroll->setWidget(new QWidget());
+    current_properties_container = nullptr;
 }
 
 void element_editor::unload_scene() {
@@ -113,6 +124,7 @@ void element_editor::unload_scene() {
     action_close->setEnabled(false);
     menu_new_node->setEnabled(false);
     properties_scroll->setWidget(new QWidget());
+    current_properties_container = nullptr;
 }
 
 void element_editor::node_select(const QModelIndex& index) {
@@ -143,6 +155,15 @@ void element_editor::properties_load_values() {
     }
 }
 
+void element_editor::preivew_process_finished() {
+    action_preview->setEnabled(true);
+    if (scenegraph::get_current_scene() != nullptr) {
+        action_preview_current_scene->setEnabled(true);
+    }
+    preview_process->deleteLater();
+    preview_process = nullptr;
+}
+
 void element_editor::file_save() {
     scenegraph::save_scene();
 }
@@ -157,11 +178,19 @@ void element_editor::file_close() {
 }
 
 void element_editor::file_preview() {
-    //TODO: preview
+    action_preview->setEnabled(false);
+    action_preview_current_scene->setEnabled(false);
+    preview_process = new QProcess();
+    connect(preview_process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(preivew_process_finished()), Qt::ConnectionType::DirectConnection);
+    editor::launch_preview(preview_process, false);
 }
 
 void element_editor::file_preview_current_scene() {
-    //TODO: preview current scene
+    action_preview->setEnabled(false);
+    action_preview_current_scene->setEnabled(false);
+    preview_process = new QProcess();
+    connect(preview_process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(preivew_process_finished()), Qt::ConnectionType::DirectConnection);
+    editor::launch_preview(preview_process, true);
 }
 
 void element_editor::file_properties() {
