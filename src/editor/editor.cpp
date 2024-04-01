@@ -4,6 +4,7 @@
 #include <core/log.h>
 #include <core/fs_editor.h>
 #include <asset/importer.h>
+#include <editor/preview_launcher.h>
 #include <render/vulkan_qt.h>
 #include <render/shader_compiler.h>
 
@@ -17,6 +18,7 @@ void editor::execute_in_editor_thread(std::function<void()> call) {
 }
 
 void editor::run_editor(QApplication* app, char* argv0) {
+    editor::setup_preview_launcher(argv0);
     fs::save_resources();
     qt_app = app;
     main_window = new ui::element_editor();
