@@ -16,7 +16,7 @@
 
 using namespace element;
 
-static std::regex name_pattern("[^a-z0-9]", std::regex_constants::icase | std::regex_constants::optimize);
+static const std::regex name_pattern("[^a-z0-9]", std::regex_constants::icase | std::regex_constants::optimize);
 
 class unique_name_generator {
     private:
