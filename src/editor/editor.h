@@ -9,6 +9,6 @@ namespace element {
         extern ui::element_editor* main_window;
 
         void execute_in_editor_thread(std::function<void()> call);
-        void run_editor(QApplication* app);
+        void run_editor(QApplication* app, char* argv0);
     }
 } // namespace element

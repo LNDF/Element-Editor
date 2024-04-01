@@ -16,7 +16,7 @@ void editor::execute_in_editor_thread(std::function<void()> call) {
     QMetaObject::invokeMethod(main_window, call, Qt::QueuedConnection);
 }
 
-void editor::run_editor(QApplication* app) {
+void editor::run_editor(QApplication* app, char* argv0) {
     fs::save_resources();
     qt_app = app;
     main_window = new ui::element_editor();

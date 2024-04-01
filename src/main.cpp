@@ -19,11 +19,11 @@ static QApplication* qt_app = nullptr;
 
 using namespace element;
 
-static void launch_editor(QApplication* qt_app) {
+static void launch_editor(char* argv0) {
     vulkan::vulkan_init_qt_extensions();
     engine::setup();
     ELM_INFO("This is the editor. Running editor...");
-    editor::run_editor(qt_app);
+    editor::run_editor(qt_app, argv0);
     engine::cleanup();
 }
 
@@ -70,7 +70,7 @@ static void run(char* argv0, const std::string& project_path, bool preview_mode,
             launch_preview(preview_scene);
         }
     } else {
-        launch_editor(qt_app);
+        launch_editor(argv0);
     }
 }
 
