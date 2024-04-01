@@ -45,7 +45,7 @@ static void launch_preview(const element::uuid& preview_scene) {
 static void run(char* argv0, const std::string& project_path, bool preview_mode, const element::uuid& preview_scene) {
     project::open(project_path);
     if (!project::exists()) {
-        ELM_INFO("Creating new project...");
+        ELM_INFO("Creating new project at {}...", project_path);
         project::name = "";
         project::author = "";
         project::version = "";
