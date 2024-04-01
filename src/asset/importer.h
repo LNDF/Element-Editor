@@ -32,6 +32,9 @@ namespace element {
         void recreate_assets_dir();
 
         void import_pending_assets();
+        bool are_imports_pending();
+        void pause_imports();
+        void resume_imports();
         
         bool is_tracker_running();
         
