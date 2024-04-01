@@ -287,16 +287,16 @@ void asset_importer::pause_imports() {
     ELM_DEBUG("Pausing imports");
     if (pending_import_timer->isActive()) {
         pending_import_timer->stop();
-        should_restart_timer = false;
     }
+    should_restart_timer = false;
 }
 
 void asset_importer::resume_imports() {
     ELM_DEBUG("Resuming imports");
     if (are_imports_pending()) {
         pending_import_timer->start(100);
-        should_restart_timer = true;
     }
+    should_restart_timer = true;
 }
 
 bool asset_importer::is_tracker_running() {
