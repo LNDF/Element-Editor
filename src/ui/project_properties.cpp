@@ -11,6 +11,7 @@ project_properties::project_properties(QWidget* parent) : QDialog(parent) {
     setWindowFlags(Qt::Sheet | Qt::Dialog);
     new_project = !project::exists();
     startup->setEnabled(!new_project);
+    plugins->setEnabled(!new_project);
     startup_scene_input = new asset_input("scene", startup_scene_container);
     startup_scene_input->setObjectName("startup_scene_input");
     startup_scene_container->layout()->addWidget(startup_scene_input);
@@ -21,7 +22,6 @@ project_properties::project_properties(QWidget* parent) : QDialog(parent) {
     version_edit->setText(project::version.c_str());
     author_edit->setText(project::author.c_str());
     startup_scene_input->set_value(project::startup_scene);
-    //TODO: load startup scene
     handle_inputs_empty();
     buttons->button(QDialogButtonBox::Apply)->setEnabled(false);
     connect(buttons, SIGNAL(clicked(QAbstractButton*)), this, SLOT(handle_click(QAbstractButton*)), Qt::ConnectionType::DirectConnection);
