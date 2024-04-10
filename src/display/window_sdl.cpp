@@ -88,6 +88,7 @@ static bool window_resize(events::window_resize& event) {
 
 static bool swapchain_suboptimal(events::render_suboptimal_swapchain& event) {
     ELM_DEBUG("Swapchain suboptimal");
+    if (window == nullptr) return true;
     recreate_swapchain(event.swapchain->width, event.swapchain->height);
     return true;
 }
