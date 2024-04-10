@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Project properties</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="project_properties_layout">
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -41,7 +41,7 @@
       <attribute name="title">
        <string>General</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_2">
+      <layout class="QVBoxLayout" name="general_layout">
        <item>
         <widget class="QGroupBox" name="general_info">
          <property name="title">
@@ -50,7 +50,7 @@
          <property name="flat">
           <bool>true</bool>
          </property>
-         <layout class="QFormLayout" name="formLayout">
+         <layout class="QFormLayout" name="general_info_layout">
           <item row="0" column="0">
            <widget class="QLabel" name="project_name_label">
             <property name="text">
@@ -93,7 +93,7 @@
       <attribute name="title">
        <string>Startup</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
+      <layout class="QVBoxLayout" name="startup_layout">
        <item>
         <widget class="QGroupBox" name="startup_info">
          <property name="title">
@@ -102,7 +102,7 @@
          <property name="flat">
           <bool>true</bool>
          </property>
-         <layout class="QFormLayout" name="formLayout_2">
+         <layout class="QFormLayout" name="startup_info_layout">
           <item row="0" column="0">
            <widget class="QLabel" name="startup_scene_label">
             <property name="text">
@@ -112,7 +112,7 @@
           </item>
           <item row="0" column="1">
            <widget class="QWidget" name="startup_scene_container" native="true">
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
+            <layout class="QHBoxLayout" name="startup_scene_container_layout">
              <property name="spacing">
               <number>0</number>
              </property>
@@ -140,7 +140,7 @@
    </item>
    <item>
     <widget class="QWidget" name="button_container" native="true">
-     <layout class="QHBoxLayout" name="horizontalLayout">
+     <layout class="QHBoxLayout" name="button_container_layout">
       <property name="spacing">
        <number>0</number>
       </property>

@@ -34,7 +34,7 @@
   <property name="modal">
    <bool>true</bool>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="asset_chooset_layout">
    <item>
     <widget class="QLineEdit" name="filter">
      <property name="placeholderText">

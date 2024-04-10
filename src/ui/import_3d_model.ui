@@ -19,7 +19,7 @@
   <property name="windowTitle">
    <string>Import 3D model</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QVBoxLayout" name="import_3d_model_layout">
    <item>
     <widget class="QGroupBox" name="model">
      <property name="sizePolicy">
@@ -34,7 +34,7 @@
      <property name="flat">
       <bool>true</bool>
      </property>
-     <layout class="QFormLayout" name="formLayout">
+     <layout class="QFormLayout" name="model_layout">
       <item row="0" column="0">
        <widget class="QLabel" name="source_label">
         <property name="text">
@@ -44,7 +44,7 @@
       </item>
       <item row="0" column="1">
        <widget class="QWidget" name="source_widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout_2">
+        <layout class="QHBoxLayout" name="source_widget_layout">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -79,7 +79,7 @@
       </item>
       <item row="1" column="1">
        <widget class="QWidget" name="dest_widget" native="true">
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="dest_widget_layout">
          <property name="leftMargin">
           <number>0</number>
          </property>
@@ -113,7 +113,7 @@
      <property name="flat">
       <bool>true</bool>
      </property>
-     <layout class="QGridLayout" name="gridLayout">
+     <layout class="QGridLayout" name="properties_layout">
       <item row="0" column="0">
        <widget class="QGroupBox" name="optimizations">
         <property name="title">
@@ -122,7 +122,7 @@
         <property name="flat">
          <bool>true</bool>
         </property>
-        <layout class="QFormLayout" name="formLayout_2">
+        <layout class="QFormLayout" name="optimizations_layout">
          <item row="0" column="0">
           <widget class="QLabel" name="fix_infacing_normals_label">
            <property name="text">
@@ -213,7 +213,7 @@
         <property name="flat">
          <bool>true</bool>
         </property>
-        <layout class="QFormLayout" name="formLayout_3">
+        <layout class="QFormLayout" name="postprocessing_layout">
          <item row="0" column="0">
           <widget class="QLabel" name="tangent_smoothing_angle_label">
            <property name="text">
