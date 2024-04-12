@@ -54,6 +54,7 @@ namespace element {
                 void file_preview();
                 void file_preview_current_scene();
                 void file_properties();
+                void file_reload_plugins();
                 void file_exit();
                 void tools_import_3d_model();
                 void help_about();

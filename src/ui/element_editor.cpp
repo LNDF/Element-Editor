@@ -1,6 +1,5 @@
 #include "element_editor.h"
 
-#include <QCloseEvent>
 #include <asset/importer.h>
 #include <asset/asset_events.h>
 #include <core/fs.h>
@@ -10,16 +9,18 @@
 #include <editor/preview_launcher.h>
 #include <editor/project.h>
 #include <event/event.h>
+#include <plugins/editor.h>
 #include <scenegraph/node.h>
 #include <scenegraph/scene_events.h>
 #include <scenegraph/editor_scene_loader.h>
-#include <ui/project_properties.h>
 #include <ui/import_3d_model.h>
 #include <ui/menus/menu_new_asset.h>
 #include <ui/menus/menu_new_node.h>
+#include <ui/project_properties.h>
 #include <ui/widgets/properties_asset.h>
 #include <ui/widgets/properties_node.h>
 #include <ui/widgets/properties_scene.h>
+#include <QCloseEvent>
 #include <filesystem>
 
 using namespace element::ui;
@@ -55,6 +56,7 @@ element_editor::element_editor() {
     connect(action_reload, SIGNAL(triggered(bool)), this, SLOT(file_reload()), Qt::ConnectionType::DirectConnection);
     connect(action_preview, SIGNAL(triggered(bool)), this, SLOT(file_preview()), Qt::ConnectionType::DirectConnection);
     connect(action_preview_current_scene, SIGNAL(triggered(bool)), this, SLOT(file_preview_current_scene()), Qt::ConnectionType::DirectConnection);
+    connect(action_reload_plugins, SIGNAL(triggered(bool)), this, SLOT(file_reload_plugins()), Qt::ConnectionType::DirectConnection);
     connect(action_close, SIGNAL(triggered(bool)), this, SLOT(file_close()), Qt::ConnectionType::DirectConnection);
     connect(action_properties, SIGNAL(triggered(bool)), this, SLOT(file_properties()), Qt::ConnectionType::DirectConnection);
     connect(action_exit, SIGNAL(triggered(bool)), this, SLOT(file_exit()), Qt::ConnectionType::DirectConnection);
@@ -196,6 +198,10 @@ void element_editor::file_preview_current_scene() {
 void element_editor::file_properties() {
     project_properties dialog(this);
     dialog.exec();
+}
+
+void element_editor::file_reload_plugins() {
+    plugins::load_plugins();
 }
 
 void element_editor::file_exit() {

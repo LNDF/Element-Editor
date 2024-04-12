@@ -248,6 +248,8 @@
     <addaction name="action_preview"/>
     <addaction name="action_preview_current_scene"/>
     <addaction name="separator"/>
+    <addaction name="action_reload_plugins"/>
+    <addaction name="separator"/>
     <addaction name="action_properties"/>
     <addaction name="separator"/>
     <addaction name="action_exit"/>
@@ -400,6 +402,11 @@
   <action name="actiona_2">
    <property name="text">
     <string>a</string>
+   </property>
+  </action>
+  <action name="action_reload_plugins">
+   <property name="text">
+    <string>Reload plugins...</string>
    </property>
   </action>
  </widget>
