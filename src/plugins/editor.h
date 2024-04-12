@@ -7,5 +7,7 @@ namespace element {
         
         extern std::array<const char*, 2> platforms;
 
+        void load_plugins();
+
     } // namespace plugins    
 } // namespace element
