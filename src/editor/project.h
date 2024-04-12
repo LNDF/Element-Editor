@@ -3,6 +3,9 @@
 #include <utils/uuid.h>
 #include <string>
 #include <filesystem>
+#include <unordered_map>
+#include <string>
+#include <vector>
 
 namespace element {
     namespace project {
@@ -11,7 +14,9 @@ namespace element {
         extern std::string author;
         extern std::string version;
         extern uuid startup_scene;
+        extern std::unordered_map<std::string, std::vector<std::string>> plugins;
         extern std::filesystem::path project_path;
+        extern std::filesystem::path project_bin_path;
         extern std::filesystem::path project_filename;
         extern std::filesystem::path project_cache_path;
         extern std::filesystem::path project_metadata_path;
