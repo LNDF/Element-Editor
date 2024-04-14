@@ -6,6 +6,7 @@
 #include <display/window.h>
 #include <editor/editor.h>
 #include <editor/project.h>
+#include <plugins/editor.h>
 #include <render/vulkan_qt.h>
 #include <render/render.h>
 #include <scenegraph/scene_manager.h>
@@ -22,6 +23,7 @@ using namespace element;
 static void launch_editor(char* argv0) {
     vulkan::vulkan_init_qt_extensions();
     engine::setup();
+    plugins::load_plugins();
     ELM_INFO("This is the editor. Running editor...");
     editor::run_editor(qt_app, argv0);
     engine::cleanup();
@@ -30,6 +32,7 @@ static void launch_editor(char* argv0) {
 static void launch_preview(const element::uuid& preview_scene) {
     display::init_backend();
     engine::setup();
+    plugins::load_plugins();
     ELM_INFO("Loading preview scene...");
     display::open_window();
     display::set_window_resizable(true);
