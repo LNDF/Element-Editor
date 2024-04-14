@@ -1,7 +1,7 @@
 #include <display/window.h>
 
 #include <core/log.h>
-#include <display/events.h>
+#include <display/display_events.h>
 #include <event/event.h>
 #include <render/render.h>
 #include <render/render_events.h>
