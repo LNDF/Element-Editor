@@ -4,6 +4,9 @@ project(element-editor VERSION 0.0.1)
 #include(CTest)
 #enable_testing()
 
+# enable PIC
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
 macro(override_option option type value)
   set(${option} ${value} CACHE ${type} "" FORCE)
 endmacro()
