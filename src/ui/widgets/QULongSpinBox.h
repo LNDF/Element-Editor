@@ -9,7 +9,7 @@
 */
 
 class QULongSpinBoxPrivate;
-class Q_WIDGETS_EXPORT QULongSpinBox : public QAbstractSpinBox {
+class QULongSpinBox : public QAbstractSpinBox {
     Q_OBJECT
     private:
         Q_PROPERTY(quint32 minimum READ minimum WRITE setMinimum)

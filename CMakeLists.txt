@@ -31,6 +31,14 @@ file(COPY ./resources DESTINATION ${CMAKE_BINARY_DIR})
 set_property(TARGET element-editor PROPERTY CXX_STANDARD 20)
 target_compile_options(element-editor PRIVATE -Wall)
 override_option(BUILD_SHARED_LIBS BOOL OFF)
+#Use bigobj on windows
+if (WIN32)
+  IF (MSVC)
+    target_compile_options(element-editor PRIVATE /bigobj)
+  ELSE()
+    target_compile_options(element-editor PRIVATE -Wa,-mbig-obj)
+  ENDIF()
+ENDIF(WIN32)
 
 # define options
 target_compile_definitions(element-editor PUBLIC ELM_EDITOR_VERSION="${PROJECT_VERSION}")
@@ -92,6 +100,7 @@ target_include_directories(element-editor PUBLIC lib/tclap/include)
 # SDL2
 override_option(SDL_SHARED BOOL OFF)
 override_option(SDL_STATIC BOOL ON)
+override_option(SDL2_DISABLE_SDL2MAIN BOOL ON)
 override_option(SDL_DISABLE_INSTALL BOOL ON)
 override_option(SDL_TEST BOOL OFF)
 override_option(SDL_ATOMIC BOOL OFF)

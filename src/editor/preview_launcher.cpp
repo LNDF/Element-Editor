@@ -22,7 +22,7 @@ void editor::launch_preview(QProcess* process, bool current_scene) {
     if (current_scene) {
         args << "--preview-scene" << scenegraph::get_current_scene()->get_id().str().c_str();
     }
-    args << project::project_path.c_str();
+    args << project::project_path.string().c_str();
     process->setArguments(args);
     QObject::connect(process, &QProcess::finished, asset_importer::resume_imports);
     scenegraph::save_scene();
