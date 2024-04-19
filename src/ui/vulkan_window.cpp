@@ -41,7 +41,7 @@ qt_vulkan_window::~qt_vulkan_window() {
 }
 
 void qt_vulkan_window::resizeEvent(QResizeEvent* ev) {
-    if (ev->size() == ev->oldSize()) return;
+    if (ev->size() == ev->oldSize() || !vulkan::device_initialized) return;
     ELM_DEBUG("Editor renderer resized to {0}x{1}", ev->size().width(), ev->size().height());
     if (swapchain_created) {
         render::unselect_swapchain();

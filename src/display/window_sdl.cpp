@@ -73,6 +73,7 @@ void display::set_window_resizable(bool resizable) {
 }
 
 static void recreate_swapchain(std::uint32_t width, std::uint32_t height) {
+    if (!vulkan::device_initialized) return;
     vulkan::destroy_swapchain(swapchain);
     vulkan::swapchain_creation_info info = vulkan::query_swapchain_info(surface, width, height);
     swapchain = vulkan::create_swapchain(info);
