@@ -20,23 +20,7 @@
      <height>480</height>
     </size>
    </property>
-   <layout class="QHBoxLayout" name="render_canvas_layout">
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <property name="leftMargin">
-     <number>0</number>
-    </property>
-    <property name="topMargin">
-     <number>0</number>
-    </property>
-    <property name="rightMargin">
-     <number>0</number>
-    </property>
-    <property name="bottomMargin">
-     <number>0</number>
-    </property>
-   </layout>
+   <layout class="QHBoxLayout" name="render_canvas_layout"/>
   </widget>
   <widget class="QDockWidget" name="scene_dock">
    <property name="enabled">
