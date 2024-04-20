@@ -20,7 +20,7 @@
      <height>480</height>
     </size>
    </property>
-   <layout class="QHBoxLayout" name="render_canvas_layout"/>
+   <layout class="QVBoxLayout" name="render_canvas_layout"/>
   </widget>
   <widget class="QDockWidget" name="scene_dock">
    <property name="enabled">
