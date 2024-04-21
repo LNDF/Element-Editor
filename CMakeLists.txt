@@ -11,6 +11,15 @@ macro(override_option option type value)
   set(${option} ${value} CACHE ${type} "" FORCE)
 endmacro()
 
+function(target_link_whole_libraries target lib)
+  if(MSVC)
+    target_link_libraries(${target} PRIVATE ${lib})
+  else()
+    # Assuming GCC or Clang or MinGW
+    target_link_libraries(${target} PRIVATE "-Wl,--whole-archive" ${lib} "-Wl,--no-whole-archive")
+  endif()
+endfunction()
+
 #Qt
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
 qt_standard_project_setup()
@@ -50,7 +59,8 @@ target_link_libraries(element-editor PRIVATE Qt6::Widgets Qt6::WidgetsPrivate)
 
 # element core
 add_subdirectory(lib/element EXCLUDE_FROM_ALL)
-target_link_libraries(element-editor PRIVATE element)
+# target_link_libraries(element-editor PRIVATE element)
+target_link_whole_libraries(element-editor element)
 
 # assimp
 override_option(ASSIMP_NO_EXPORT BOOL ON)
