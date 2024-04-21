@@ -1,11 +1,8 @@
-cmake_minimum_required(VERSION 3.5.0)
-project(element-editor VERSION 0.0.1)
+cmake_minimum_required(VERSION 3.9.0)
+project(element-editor VERSION 0.0.1 LANGUAGES C CXX)
 
 #include(CTest)
 #enable_testing()
-
-# enable PIC
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 macro(override_option option type value)
   set(${option} ${value} CACHE ${type} "" FORCE)
@@ -19,6 +16,17 @@ function(target_link_whole_libraries target lib)
     target_link_libraries(${target} PRIVATE "-Wl,--whole-archive" ${lib} "-Wl,--no-whole-archive")
   endif()
 endfunction()
+
+# enable PIC
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+
+# enable LTO if possible
+include(CheckIPOSupported)
+check_ipo_supported(RESULT lto_supported OUTPUT error)
+
+if(lto_supported)
+  set(CMAKE_INTERPROCEDURAL_OPTIMIZATION_RELEASE TRUE)
+endif()
 
 #Qt
 find_package(Qt6 COMPONENTS Widgets REQUIRED)
