@@ -2,8 +2,8 @@
 
 #include <core/log.h>
 #include <SDL.h>
-#include <SDL_vulkan.h>
 #include <render/vulkan.h>
+#include <SDL_vulkan.h>
 
 static const char** instance_extensions;
 static std::uint32_t instance_extension_count;
