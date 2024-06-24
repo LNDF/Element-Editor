@@ -57,6 +57,7 @@ namespace element {
                 void file_reload_plugins();
                 void file_exit();
                 void tools_import_3d_model();
+                void tools_reimport_all_assets();
                 void help_about();
                 void help_about_qt();
 

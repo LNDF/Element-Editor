@@ -36,7 +36,7 @@
     <bool>false</bool>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
     <string>Scene</string>
@@ -67,16 +67,16 @@
      <item>
       <widget class="element::ui::activable_tree" name="scene_tree">
        <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
+        <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="dragEnabled">
         <bool>true</bool>
        </property>
        <property name="dragDropMode">
-        <enum>QAbstractItemView::DragDrop</enum>
+        <enum>QAbstractItemView::DragDropMode::DragDrop</enum>
        </property>
        <attribute name="headerVisible">
         <bool>false</bool>
@@ -94,7 +94,7 @@
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
     <string>Assets</string>
@@ -122,16 +122,16 @@
      <item>
       <widget class="element::ui::activable_tree" name="assets_tree">
        <property name="contextMenuPolicy">
-        <enum>Qt::CustomContextMenu</enum>
+        <enum>Qt::ContextMenuPolicy::CustomContextMenu</enum>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="dragEnabled">
         <bool>true</bool>
        </property>
        <property name="dragDropMode">
-        <enum>QAbstractItemView::DragDrop</enum>
+        <enum>QAbstractItemView::DragDropMode::DragDrop</enum>
        </property>
        <property name="sortingEnabled">
         <bool>true</bool>
@@ -152,10 +152,10 @@
     </size>
    </property>
    <property name="features">
-    <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
+    <set>QDockWidget::DockWidgetFeature::DockWidgetFloatable|QDockWidget::DockWidgetFeature::DockWidgetMovable</set>
    </property>
    <property name="windowTitle">
-    <string>Properties</string>
+    <string>P&amp;roperties</string>
    </property>
    <attribute name="dockWidgetArea">
     <number>2</number>
@@ -186,16 +186,16 @@
         </sizepolicy>
        </property>
        <property name="frameShape">
-        <enum>QFrame::NoFrame</enum>
+        <enum>QFrame::Shape::NoFrame</enum>
        </property>
        <property name="horizontalScrollBarPolicy">
-        <enum>Qt::ScrollBarAlwaysOff</enum>
+        <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOff</enum>
        </property>
        <property name="widgetResizable">
         <bool>true</bool>
        </property>
        <property name="alignment">
-        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+        <set>Qt::AlignmentFlag::AlignLeading|Qt::AlignmentFlag::AlignLeft|Qt::AlignmentFlag::AlignTop</set>
        </property>
        <widget class="QWidget" name="properties_container_default">
         <property name="geometry">
@@ -223,7 +223,7 @@
    </property>
    <widget class="QMenu" name="menu_file">
     <property name="title">
-     <string>File</string>
+     <string>Fi&amp;le</string>
     </property>
     <addaction name="action_save"/>
     <addaction name="action_reload"/>
@@ -247,12 +247,12 @@
       <bool>false</bool>
      </property>
      <property name="title">
-      <string>New node...</string>
+      <string>&amp;New node...</string>
      </property>
     </widget>
     <widget class="element::ui::menu_new_asset" name="menu_create_new_asset">
      <property name="title">
-      <string>Create new asset...</string>
+      <string>&amp;Create new asset...</string>
      </property>
     </widget>
     <addaction name="menu_new_node"/>
@@ -260,7 +260,7 @@
    </widget>
    <widget class="QMenu" name="menu_help">
     <property name="title">
-     <string>Help</string>
+     <string>&amp;Help</string>
     </property>
     <addaction name="action_about"/>
     <addaction name="separator"/>
@@ -271,6 +271,8 @@
      <string>Tools</string>
     </property>
     <addaction name="action_import_3d_model"/>
+    <addaction name="separator"/>
+    <addaction name="action_reimport_all_assets"/>
    </widget>
    <addaction name="menu_file"/>
    <addaction name="menu_insert"/>
@@ -282,7 +284,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>&amp;Save</string>
    </property>
    <property name="toolTip">
     <string>Save current scene</string>
@@ -296,7 +298,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Reload</string>
+    <string>&amp;Reload</string>
    </property>
    <property name="toolTip">
     <string>Reload current scene</string>
@@ -307,7 +309,7 @@
   </action>
   <action name="action_preview">
    <property name="text">
-    <string>Preview</string>
+    <string>&amp;Preview</string>
    </property>
    <property name="toolTip">
     <string>Launch preview mode</string>
@@ -321,7 +323,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Preview current scene</string>
+    <string>Pre&amp;view current scene</string>
    </property>
    <property name="toolTip">
     <string>Launch preview mode (current scene)</string>
@@ -335,7 +337,7 @@
     <bool>false</bool>
    </property>
    <property name="text">
-    <string>Close</string>
+    <string>&amp;Close</string>
    </property>
    <property name="toolTip">
     <string>Close current scene</string>
@@ -346,7 +348,7 @@
   </action>
   <action name="action_properties">
    <property name="text">
-    <string>Properties</string>
+    <string>Pr&amp;operties</string>
    </property>
    <property name="toolTip">
     <string>Project properties</string>
@@ -354,7 +356,7 @@
   </action>
   <action name="action_exit">
    <property name="text">
-    <string>Exit</string>
+    <string>&amp;Exit</string>
    </property>
    <property name="toolTip">
     <string>Exit Element Editor</string>
@@ -365,17 +367,17 @@
   </action>
   <action name="action_about">
    <property name="text">
-    <string>About...</string>
+    <string>&amp;About...</string>
    </property>
   </action>
   <action name="action_about_qt">
    <property name="text">
-    <string>About Qt...</string>
+    <string>About &amp;Qt...</string>
    </property>
   </action>
   <action name="action_import_3d_model">
    <property name="text">
-    <string>Import 3D model...</string>
+    <string>&amp;Import 3D model...</string>
    </property>
   </action>
   <action name="actiona">
@@ -390,7 +392,12 @@
   </action>
   <action name="action_reload_plugins">
    <property name="text">
-    <string>Reload plugins...</string>
+    <string>Re&amp;load plugins...</string>
+   </property>
+  </action>
+  <action name="action_reimport_all_assets">
+   <property name="text">
+    <string>Reimport all assets...</string>
    </property>
   </action>
  </widget>

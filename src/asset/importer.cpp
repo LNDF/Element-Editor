@@ -211,8 +211,13 @@ std::filesystem::path asset_importer::get_system_path_from_fs(const std::string&
 }
 
 void asset_importer::reimport() {
-    //TODO: cleara cache fs folder
-    //TODO: import every file
+    ELM_INFO("Reimporting all assets...");
+    stop();
+    pending_to_import.clear();
+    fs::save_resources();
+    std::filesystem::remove_all(fs::get_fs_data_path());
+    fs::load_resources();
+    start();
 }
 
 void asset_importer::import(const uuid& id) {

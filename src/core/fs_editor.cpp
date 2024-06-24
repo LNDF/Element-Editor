@@ -85,6 +85,10 @@ void fs::delete_resource_data(const uuid& id) {
     if (std::filesystem::exists(path)) std::filesystem::remove_all(path);
 }
 
+const std::filesystem::path& fs::get_fs_data_path() {
+    return fs_path;
+}
+
 std::filesystem::path fs::get_resource_data_path(const uuid& id) {
     return fs_path / id.str();
 }
@@ -102,6 +106,8 @@ void fs::load_resources() {
         return;
     }
     text_deserializer deserialize = create_text_deserializer(file);
+    fs_map.clear();
+    fs_uuid_map.clear();
     deserialize(ELM_SERIALIZE_NVP("fs_map", fs_map));
     fs_uuid_map.reserve(fs_map.size());
     for (const auto& [id, info] : fs_map) {

@@ -63,6 +63,8 @@ element_editor::element_editor() {
     connect(action_about, SIGNAL(triggered(bool)), this, SLOT(help_about()), Qt::ConnectionType::DirectConnection);
     connect(action_about_qt, SIGNAL(triggered(bool)), this, SLOT(help_about_qt()), Qt::ConnectionType::DirectConnection);
     connect(action_import_3d_model, SIGNAL(triggered(bool)), this, SLOT(tools_import_3d_model()), Qt::ConnectionType::DirectConnection);
+    connect(action_reimport_all_assets, SIGNAL(triggered(bool)), this, SLOT(tools_reimport_all_assets()), Qt::ConnectionType::DirectConnection);
+    
 }
 
 element_editor::~element_editor() {
@@ -211,6 +213,10 @@ void element_editor::file_exit() {
 void element_editor::tools_import_3d_model() {
     import_3d_model dialog(this);
     dialog.exec();
+}
+
+void element_editor::tools_reimport_all_assets() {
+    asset_importer::reimport();
 }
 
 void element_editor::help_about() {
