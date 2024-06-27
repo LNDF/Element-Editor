@@ -228,6 +228,7 @@ void element_editor::help_about_qt() {
 }
 
 void element_editor::context_scene_tree(const QPoint& pos) {
+    if (scenegraph::get_current_scene() == nullptr) return;
     QModelIndex index = scene_tree->indexAt(pos);
     const scenegraph::node_ref& ref = scene_tree_model->ref_from_index(index);
     if (ref == nullptr || ref == scenegraph::get_current_scene()->get_root_node()) return;
